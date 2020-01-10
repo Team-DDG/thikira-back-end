@@ -19,4 +19,12 @@ export class Restaurant {
   public readonly description: string;
   public readonly email: string;
   public readonly password: string;
+
+  constructor(restaurant) {
+    Object.assign(this, restaurant);
+  }
+
+  public isEmpty(): boolean {
+    return !this.email;
+  }
 }
