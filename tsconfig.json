@@ -17,9 +17,6 @@
       "@app/mongo": [
         "libs/mongo/src"
       ],
-      "@app/user": [
-        "libs/user/src"
-      ],
       "@app/token": [
         "libs/token/src"
       ],
