@@ -78,7 +78,11 @@
       "@app/config/(.*)": "<rootDir>/libs/config/src/$1",
       "@app/config": "<rootDir>/libs/config/src",
       "@app/mongo/(.*)": "<rootDir>/libs/mongo/src/$1",
-      "@app/mongo": "<rootDir>/libs/mongo/src"
+      "@app/mongo": "<rootDir>/libs/mongo/src",
+      "@app/user/(.*)": "<rootDir>/libs/user/src/$1",
+      "@app/user": "<rootDir>/libs/user/src",
+      "@app/token/(.*)": "<rootDir>/libs/token/src/$1",
+      "@app/token": "<rootDir>/libs/token/src"
     }
   }
 }
