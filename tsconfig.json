@@ -25,6 +25,9 @@
       ],
       "@app/restaurant": [
         "libs/restaurant/src"
+      ],
+      "@app/util": [
+        "libs/util/src"
       ]
     }
   },

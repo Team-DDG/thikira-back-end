@@ -14,6 +14,8 @@
     "@app/config/(.*)": "<rootDir>/../libs/config/src/$1",
     "@app/config": "<rootDir>/../libs/config/src",
     "@app/restaurant/(.*)": "<rootDir>/../libs/rastaurant/src/$1",
-    "@app/restaurant": "<rootDir>/../libs/rastaurant/src"
+    "@app/restaurant": "<rootDir>/../libs/rastaurant/src",
+    "@app/util/(.*)": "<rootDir>/../libs/util/src/$1",
+    "@app/util": "<rootDir>/../libs/util/src"
   }
 }
