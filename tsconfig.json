@@ -22,9 +22,6 @@
       ],
       "@app/token": [
         "libs/token/src"
-      ],
-      "@app/restaurant": [
-        "libs/restaurant/src"
       ]
     }
   },

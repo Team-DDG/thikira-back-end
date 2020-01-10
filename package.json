@@ -82,9 +82,7 @@
       "@app/user/(.*)": "<rootDir>/libs/user/src/$1",
       "@app/user": "<rootDir>/libs/user/src",
       "@app/token/(.*)": "<rootDir>/libs/token/src/$1",
-      "@app/token": "<rootDir>/libs/token/src",
-      "@app/restaurant/(.*)": "<rootDir>/libs/rastaurant/src/$1",
-      "@app/restaurant": "<rootDir>/libs/rastaurant/src"
+      "@app/token": "<rootDir>/libs/token/src"
     }
   }
 }

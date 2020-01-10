@@ -37,15 +37,6 @@
       "compilerOptions": {
         "tsConfigPath": "libs/token/tsconfig.lib.json"
       }
-    },
-    "restaurant": {
-      "type": "library",
-      "root": "libs/restaurant",
-      "entryFile": "index",
-      "sourceRoot": "libs/restaurant/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/restaurant/tsconfig.lib.json"
-      }
     }
   },
   "compilerOptions": {
