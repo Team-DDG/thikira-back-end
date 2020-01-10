@@ -15,7 +15,8 @@ jobs:
     services:
       mongo:
         image: mongo
-        ports: 27017:27017
+        ports:
+          - 27017:27017
     steps:
       - uses: actions/checkout@v1
       - name: Use Node.js ${{ matrix.node-version }}
