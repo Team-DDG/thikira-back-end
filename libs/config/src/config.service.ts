@@ -28,6 +28,9 @@ export class ConfigService {
   @IsString()
   public readonly JWT_SECRET?: string;
 
+  @IsString()
+  public readonly ENCIPHERMENT: string;
+
   constructor(filePath?: string, customConfig?: Config) {
     Object.assign(this, {
       NODE_ENV: NodeEnv.development,

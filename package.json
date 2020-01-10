@@ -28,6 +28,7 @@
     "@types/passport-jwt": "^3.0.3",
     "class-transformer": "^0.2.3",
     "class-validator": "^0.11.0",
+    "crypto": "^1.0.1",
     "dotenv": "^8.2.0",
     "fastify-swagger": "^2.5.0",
     "mongodb": "^3.4.1",
@@ -82,7 +83,9 @@
       "@app/token/(.*)": "<rootDir>/libs/token/src/$1",
       "@app/token": "<rootDir>/libs/token/src",
       "@app/restaurant/(.*)": "<rootDir>/libs/rastaurant/src/$1",
-      "@app/restaurant": "<rootDir>/libs/rastaurant/src"
+      "@app/restaurant": "<rootDir>/libs/rastaurant/src",
+      "@app/util/(.*)": "<rootDir>/libs/util/src/$1",
+      "@app/util": "<rootDir>/libs/util/src"
     }
   }
 }

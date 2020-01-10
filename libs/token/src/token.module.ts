@@ -3,8 +3,8 @@ import { Module } from '@nestjs/common';
 import { TokenService } from './token.service';
 
 @Module({
-  exports: [TokenService],
   imports: [ConfigModule],
   providers: [TokenService],
+  exports: [TokenService],
 })
 export class TokenModule {}
