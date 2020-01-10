@@ -12,6 +12,8 @@
   },
   "moduleNameMapper": {
     "@app/config/(.*)": "<rootDir>/../libs/config/src/$1",
-    "@app/config": "<rootDir>/../libs/config/src"
+    "@app/config": "<rootDir>/../libs/config/src",
+    "@app/restaurant/(.*)": "<rootDir>/../libs/rastaurant/src/$1",
+    "@app/restaurant": "<rootDir>/../libs/rastaurant/src"
   }
 }

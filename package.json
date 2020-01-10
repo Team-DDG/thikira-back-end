@@ -30,7 +30,7 @@
     "class-validator": "^0.11.0",
     "dotenv": "^8.2.0",
     "fastify-swagger": "^2.5.0",
-    "mongodb": "^3.3.5",
+    "mongodb": "^3.4.1",
     "passport-jwt": "^4.0.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.0",
@@ -44,7 +44,7 @@
     "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.1",
     "@types/jest": "^24.0.18",
-    "@types/mongodb": "^3.3.11",
+    "@types/mongodb": "^3.3.14",
     "@types/node": "^12.7.5",
     "@types/supertest": "^2.0.8",
     "jest": "^24.9.0",
@@ -82,7 +82,9 @@
       "@app/user/(.*)": "<rootDir>/libs/user/src/$1",
       "@app/user": "<rootDir>/libs/user/src",
       "@app/token/(.*)": "<rootDir>/libs/token/src/$1",
-      "@app/token": "<rootDir>/libs/token/src"
+      "@app/token": "<rootDir>/libs/token/src",
+      "@app/restaurant/(.*)": "<rootDir>/libs/rastaurant/src/$1",
+      "@app/restaurant": "<rootDir>/libs/rastaurant/src"
     }
   }
 }

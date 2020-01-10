@@ -17,6 +17,7 @@
       true,
       150
     ],
+    "variable-name": false,
     "member-ordering": true,
     "interface-name": true,
     "arrow-parens": true,
