@@ -13,6 +13,9 @@
     "paths": {
       "@app/config": [
         "libs/config/src"
+      ],
+      "@app/mongo": [
+        "libs/mongo/src"
       ]
     }
   },
