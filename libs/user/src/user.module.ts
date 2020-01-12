@@ -1,11 +1,10 @@
 import { MongoModule } from '@app/mongo';
-import { TokenModule } from '@app/token';
 import { Module } from '@nestjs/common';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 
 @Module({
-  imports: [MongoModule, TokenModule],
+  imports: [MongoModule],
   controllers: [UserController],
   exports: [UserService],
   providers: [UserService],
