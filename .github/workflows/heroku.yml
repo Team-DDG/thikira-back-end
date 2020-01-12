@@ -40,4 +40,4 @@ jobs:
       - name: Heroku Login
         run: heroku container:login
       - name: Heroky Release
-        run: heroku container:release web
+        run: heroku container:release master
