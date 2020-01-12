@@ -1,9 +1,10 @@
 import { MongoService } from '@app/mongo';
-import { TokenService } from '@app/token';
+import { Token, TokenService } from '@app/token';
 import { UtilService } from '@app/util';
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { Collection } from 'mongodb';
-import { CheckEmailDto, SignUpDto } from './dto';
+import { TokenTypeEnum } from '../../token/src/token-type.enum';
+import { CheckEmailDto, SignInDto, SignUpDto } from './dto';
 import { Restaurant } from './restaurant.entity';
 
 @Injectable()
@@ -33,5 +34,18 @@ export class RestaurantService {
     if (!found_restaurant.isEmpty()) {
       throw new ConflictException();
     }
+  }
+
+  public async sign_in(payload: SignInDto): Promise<Token> {
+    const found_restaurant = await this.find_restaurant(payload.email);
+    if (found_restaurant.isEmpty() ||
+      found_restaurant.password !== await this.util.encode(payload.password)) {
+      throw new NotFoundException();
+    }
+
+    return {
+      accessToken: await this.token.createToken(payload.email, TokenTypeEnum.access),
+      refreshToken: await this.token.createToken(payload.email, TokenTypeEnum.refresh),
+    };
   }
 }
