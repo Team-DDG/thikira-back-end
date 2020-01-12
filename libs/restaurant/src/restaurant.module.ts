@@ -1,12 +1,11 @@
 import { MongoModule } from '@app/mongo';
-import { TokenModule } from '@app/token';
 import { UtilModule } from '@app/util';
 import { Module } from '@nestjs/common';
 import { RestaurantController } from './restaurant.controller';
 import { RestaurantService } from './restaurant.service';
 
 @Module({
-  imports: [MongoModule, UtilModule, TokenModule],
+  imports: [MongoModule, UtilModule],
   providers: [RestaurantService],
   controllers: [RestaurantController],
   exports: [RestaurantService],

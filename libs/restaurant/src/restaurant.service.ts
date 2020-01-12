@@ -1,9 +1,7 @@
 import { MongoService } from '@app/mongo';
-import { Token, TokenService } from '@app/token';
-import { UtilService } from '@app/util';
+import { Token, TokenTypeEnum, UtilService } from '@app/util';
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { Collection } from 'mongodb';
-import { TokenTypeEnum } from '../../token/src/token-type.enum';
 import { CheckEmailDto, SignInDto, SignUpDto } from './dto';
 import { Restaurant } from './restaurant.entity';
 
@@ -12,7 +10,6 @@ export class RestaurantService {
   private readonly restaurants: Collection<Restaurant>;
 
   constructor(mongo: MongoService,
-              private readonly token: TokenService,
               private readonly util: UtilService) {
     this.restaurants = mongo.collection('restaurants');
   }
@@ -30,22 +27,27 @@ export class RestaurantService {
   }
 
   public async check_email(payload: CheckEmailDto): Promise<void> {
-    const found_restaurant = await this.find_restaurant(payload.email);
+    const found_restaurant: Restaurant = await this.find_restaurant(payload.email);
     if (!found_restaurant.isEmpty()) {
       throw new ConflictException();
     }
   }
 
   public async sign_in(payload: SignInDto): Promise<Token> {
-    const found_restaurant = await this.find_restaurant(payload.email);
+    const found_restaurant: Restaurant = await this.find_restaurant(payload.email);
     if (found_restaurant.isEmpty() ||
       found_restaurant.password !== await this.util.encode(payload.password)) {
       throw new NotFoundException();
     }
 
     return {
-      accessToken: await this.token.createToken(payload.email, TokenTypeEnum.access),
-      refreshToken: await this.token.createToken(payload.email, TokenTypeEnum.refresh),
+      accessToken: await this.util.createToken(payload.email, TokenTypeEnum.access),
+      refreshToken: await this.util.createToken(payload.email, TokenTypeEnum.refresh),
     };
+  }
+
+  public async refresh(token: string): Promise<Token> {
+    const email: string = await this.util.getEmailByToken(token);
+    return { accessToken: await this.util.createToken(email, TokenTypeEnum.access) };
   }
 }
