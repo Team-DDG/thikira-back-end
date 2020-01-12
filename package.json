@@ -80,10 +80,12 @@
       "@app/config": "<rootDir>/libs/config/src",
       "@app/mongo/(.*)": "<rootDir>/libs/mongo/src/$1",
       "@app/mongo": "<rootDir>/libs/mongo/src",
+      "@app/util/(.*)": "<rootDir>/libs/util/src/$1",
+      "@app/util": "<rootDir>/libs/util/src",
       "@app/restaurant/(.*)": "<rootDir>/libs/rastaurant/src/$1",
       "@app/restaurant": "<rootDir>/libs/rastaurant/src",
-      "@app/util/(.*)": "<rootDir>/libs/util/src/$1",
-      "@app/util": "<rootDir>/libs/util/src"
+      "@app/user/(.*)": "<rootDir>/libs/user/src/$1",
+      "@app/user": "<rootDir>/libs/user/src"
     }
   }
 }

@@ -1,5 +1,5 @@
 import { ConfigService } from '@app/config';
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { createHash, randomBytes } from 'crypto';
 import { sign, verify } from 'jsonwebtoken';
 import { TokenTypeEnum } from './token-type.enum';
@@ -22,12 +22,11 @@ export class UtilService {
     return sign({ id: username }, this.secret, { expiresIn });
   }
 
-  public async getTokenBody(token: string): Promise<string> {
-    try {
-      await this.tokenRegExp.test(token);
+  public getTokenBody(token: string): string {
+    if (this.tokenRegExp.test(token)) {
       return token.split(' ', 2)[1];
-    } catch (e) {
-      throw new ForbiddenException();
+    } else {
+      return null;
     }
   }
 
