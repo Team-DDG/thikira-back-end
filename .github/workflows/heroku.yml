@@ -1,5 +1,5 @@
 name: Docker Production
-on: [pull_request]
+on: [push, pull_request]
 env:
   VERSION: $(node -e "console.log(require('./package.json').version)")
   IMAGE_NAME: docker.pkg.github.com/${{ github.repository }}/BackEnd
