@@ -1,5 +1,5 @@
 import { MongoService } from '@app/mongo';
-import { Token, TokenTypeEnum, UtilService } from '@app/util';
+import { ResRefresh, ResSignIn, TokenTypeEnum, UtilService } from '@app/util';
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { Collection } from 'mongodb';
 import { CheckEmailDto, SignInDto, SignUpDto } from './dto';
@@ -18,6 +18,10 @@ export class RestaurantService {
     return new Restaurant(await this.restaurants.findOne({ email: { $eq: email } }));
   }
 
+  private async delete_restaurant(email: string): Promise<void> {
+    await this.restaurants.deleteOne({ email: { $eq: email } });
+  }
+
   public async sign_up(payload: SignUpDto): Promise<void> {
     const restaurant: Restaurant = new Restaurant({
       ...payload,
@@ -33,7 +37,7 @@ export class RestaurantService {
     }
   }
 
-  public async sign_in(payload: SignInDto): Promise<Token> {
+  public async sign_in(payload: SignInDto): Promise<ResSignIn> {
     const found_restaurant: Restaurant = await this.find_restaurant(payload.email);
     if (found_restaurant.isEmpty() ||
       found_restaurant.password !== await this.util.encode(payload.password)) {
@@ -46,8 +50,13 @@ export class RestaurantService {
     };
   }
 
-  public async refresh(token: string): Promise<Token> {
+  public async refresh(token: string): Promise<ResRefresh> {
     const email: string = await this.util.getEmailByToken(token);
     return { accessToken: await this.util.createToken(email, TokenTypeEnum.access) };
+  }
+
+  public async leave(token: string): Promise<void> {
+    const email: string = await this.util.getEmailByToken(token);
+    this.delete_restaurant(email);
   }
 }

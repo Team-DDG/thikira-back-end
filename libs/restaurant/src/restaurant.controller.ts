@@ -1,6 +1,17 @@
-import { Header, Token, UtilService } from '@app/util';
-import { Body, Controller, Get, Headers, HttpCode, InternalServerErrorException, Post, ValidationPipe } from '@nestjs/common';
-import { ApiConflictResponse, ApiHeader, ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Header, ResRefresh, ResSignIn, UtilService } from '@app/util';
+import {
+  Body, Controller, Delete, Get, Headers, HttpCode,
+  InternalServerErrorException, Post, ValidationPipe,
+} from '@nestjs/common';
+import {
+  ApiConflictResponse,
+  ApiForbiddenResponse,
+  ApiHeader,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CheckEmailDto, SignInDto, SignUpDto } from './dto';
 import { RestaurantService } from './restaurant.service';
 
@@ -39,11 +50,8 @@ export class RestaurantController {
   @Post('auth/sign_in')
   @HttpCode(200)
   @ApiOperation({ summary: '로그인' })
-  @ApiResponse({
-    status: 200,
-    type: Token,
-  })
-  @ApiResponse({ status: 404 })
+  @ApiOkResponse({ type: ResSignIn })
+  @ApiNotFoundResponse()
   public async sign_in(@Body(new ValidationPipe()) payload: SignInDto) {
     try {
       return await this.service.sign_in(payload);
@@ -55,15 +63,28 @@ export class RestaurantController {
   @Get('auth/refresh')
   @HttpCode(200)
   @ApiOperation({ summary: '토큰 재발급' })
-  @ApiResponse({ status: 200 })
   @ApiHeader({
-    description: '재발급 토큰',
-    example: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Imxqc3VuZzA4MDUiLCJpYXQiOjE1NzU4NjQwMjAsImV4cCI6MTU3NzA3MzYyMH0.dMt1s60OpFt-7mWIzeVpDdig6r8437DMQOTIB11L4is',
     name: 'X-Refresh-Token',
   })
+  @ApiOkResponse({ type: ResRefresh })
+  @ApiForbiddenResponse()
   public async refresh(@Headers() headers: Header) {
     try {
       return await this.service.refresh(await this.util.getTokenBody(headers.token));
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
+    }
+  }
+
+  @Delete('leave')
+  @HttpCode(200)
+  @ApiOperation({ summary: '회원탈퇴' })
+  @ApiHeader({ name: 'Authorization' })
+  @ApiOkResponse()
+  @ApiForbiddenResponse()
+  public async leave(@Headers() headers: Header) {
+    try {
+      return await this.service.leave(await this.util.getTokenBody(headers.token));
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
