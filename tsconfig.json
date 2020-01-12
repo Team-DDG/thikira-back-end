@@ -20,9 +20,6 @@
       "@app/user": [
         "libs/user/src"
       ],
-      "@app/token": [
-        "libs/token/src"
-      ],
       "@app/restaurant": [
         "libs/restaurant/src"
       ],
