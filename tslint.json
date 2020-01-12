@@ -17,10 +17,11 @@
       true,
       150
     ],
+    "variable-name": false,
     "member-ordering": true,
     "interface-name": true,
     "arrow-parens": true,
-    "object-literal-sort-keys": true,
+    "object-literal-sort-keys": false,
     "semicolon": true,
     "prefer-conditional-expression": true,
     "prefer-const": true,

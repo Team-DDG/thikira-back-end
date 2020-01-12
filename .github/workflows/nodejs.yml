@@ -4,6 +4,8 @@ on: [push]
 
 env:
   CI: true
+  MONGODB_URI: mongodb://localhost:27017/test
+  ENCIPHERMENT: sha512
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,8 +17,6 @@ jobs:
         image: mongo
         ports:
           - 27017:27017
-    env:
-      MONGODB_URI: mongodb://localhost:27017/test
     steps:
       - uses: actions/checkout@v1
       - name: Use Node.js ${{ matrix.node-version }}
