@@ -2,10 +2,10 @@ name: Docker Production
 on: [push, pull_request]
 env:
   VERSION: $(node -e "console.log(require('./package.json').version)")
-  IMAGE_NAME: docker.pkg.github.com/${{ github.repository }}/master
+  IMAGE_NAME: docker.pkg.github.com/${{ github.repository }}/thikira
   HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
   HEROKU_APP: thikira
-  HEROKU_IMAGE: registry.heroku.com/thikira
+  HEROKU_IMAGE: registry.heroku.com/thikira/master
 jobs:
   build:
     runs-on: ubuntu-latest
