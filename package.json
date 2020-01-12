@@ -80,8 +80,6 @@
       "@app/config": "<rootDir>/libs/config/src",
       "@app/mongo/(.*)": "<rootDir>/libs/mongo/src/$1",
       "@app/mongo": "<rootDir>/libs/mongo/src",
-      "@app/token/(.*)": "<rootDir>/libs/token/src/$1",
-      "@app/token": "<rootDir>/libs/token/src",
       "@app/restaurant/(.*)": "<rootDir>/libs/rastaurant/src/$1",
       "@app/restaurant": "<rootDir>/libs/rastaurant/src",
       "@app/util/(.*)": "<rootDir>/libs/util/src/$1",

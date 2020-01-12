@@ -20,15 +20,6 @@
         "tsConfigPath": "libs/mongo/tsconfig.lib.json"
       }
     },
-    "token": {
-      "type": "library",
-      "root": "libs/token",
-      "entryFile": "index",
-      "sourceRoot": "libs/token/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/token/tsconfig.lib.json"
-      }
-    },
     "restaurant": {
       "type": "library",
       "root": "libs/restaurant",
