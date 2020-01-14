@@ -1,9 +1,12 @@
 {
-  "name": "lunatic-princess",
+  "name": "thikira-back-end",
   "version": "0.0.1",
-  "description": "Cooktak Backend",
+  "description": "thikira back_end",
   "author": "JepangLee <ljsung0805@gmail.com>",
   "license": "MIT",
+  "engines": {
+    "yarn": "1.x"
+  },
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
