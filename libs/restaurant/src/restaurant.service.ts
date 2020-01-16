@@ -2,7 +2,7 @@ import { MongoService } from '@app/mongo';
 import { ResRefresh, ResSignIn, TokenTypeEnum, UtilService } from '@app/util';
 import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Collection, ObjectId } from 'mongodb';
-import { CheckEmailDto, CheckPasswordDto, EditPasswordDto, SignInDto, SignUpDto } from './dto';
+import { CheckEmailDto, CheckPasswordDto, SignInDto, SignUpDto } from './dto';
 import { Restaurant } from './restaurant.entity';
 
 @Injectable()
@@ -27,7 +27,8 @@ export class RestaurantService {
   }
 
   private async update_restaurant(email: string, payload): Promise<void> {
-    await this.restaurants.updateOne({ email: { $eq: email } }, payload);
+    payload.password = payload.password ? await this.util.encode(payload.password) : undefined;
+    await this.restaurants.updateOne({ email: { $eq: email } }, { $set: { ...payload } });
   }
 
   public async sign_up(payload: SignUpDto): Promise<void> {
@@ -76,7 +77,7 @@ export class RestaurantService {
     }
   }
 
-  public async edit_password(token: string, payload: EditPasswordDto) {
+  public async edit(token: string, payload) {
     const email: string = await this.util.getEmailByToken(token);
     this.update_restaurant(email, payload);
   }
