@@ -20,6 +20,15 @@
         "tsConfigPath": "libs/mongo/tsconfig.lib.json"
       }
     },
+    "util": {
+      "type": "library",
+      "root": "libs/util",
+      "entryFile": "index",
+      "sourceRoot": "libs/util/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/util/tsconfig.lib.json"
+      }
+    },
     "restaurant": {
       "type": "library",
       "root": "libs/restaurant",
@@ -29,13 +38,13 @@
         "tsConfigPath": "libs/restaurant/tsconfig.lib.json"
       }
     },
-    "util": {
+    "user": {
       "type": "library",
-      "root": "libs/util",
+      "root": "libs/user",
       "entryFile": "index",
-      "sourceRoot": "libs/util/src",
+      "sourceRoot": "libs/user/src",
       "compilerOptions": {
-        "tsConfigPath": "libs/util/tsconfig.lib.json"
+        "tsConfigPath": "libs/user/tsconfig.lib.json"
       }
     }
   },

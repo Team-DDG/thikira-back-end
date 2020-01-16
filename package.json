@@ -1,9 +1,12 @@
 {
-  "name": "lunatic-princess",
+  "name": "thikira-back-end",
   "version": "0.0.1",
-  "description": "Cooktak Backend",
+  "description": "thikira back_end",
   "author": "JepangLee <ljsung0805@gmail.com>",
   "license": "MIT",
+  "engines": {
+    "yarn": "1.x"
+  },
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
@@ -80,10 +83,12 @@
       "@app/config": "<rootDir>/libs/config/src",
       "@app/mongo/(.*)": "<rootDir>/libs/mongo/src/$1",
       "@app/mongo": "<rootDir>/libs/mongo/src",
+      "@app/util/(.*)": "<rootDir>/libs/util/src/$1",
+      "@app/util": "<rootDir>/libs/util/src",
       "@app/restaurant/(.*)": "<rootDir>/libs/rastaurant/src/$1",
       "@app/restaurant": "<rootDir>/libs/rastaurant/src",
-      "@app/util/(.*)": "<rootDir>/libs/util/src/$1",
-      "@app/util": "<rootDir>/libs/util/src"
+      "@app/user/(.*)": "<rootDir>/libs/user/src/$1",
+      "@app/user": "<rootDir>/libs/user/src"
     }
   }
 }
