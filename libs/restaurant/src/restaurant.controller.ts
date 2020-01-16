@@ -1,7 +1,7 @@
 import { Header, ResRefresh, ResSignIn, UtilService } from '@app/util';
 import {
   Body, Controller, Delete, Get, Headers, HttpCode,
-  InternalServerErrorException, Post, ValidationPipe,
+  InternalServerErrorException, Patch, Post, ValidationPipe,
 } from '@nestjs/common';
 import {
   ApiConflictResponse,
@@ -10,9 +10,9 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiTags,
+  ApiTags, ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { CheckEmailDto, SignInDto, SignUpDto } from './dto';
+import { CheckEmailDto, CheckPasswordDto, EditPasswordDto, SignInDto, SignUpDto } from './dto';
 import { RestaurantService } from './restaurant.service';
 
 @ApiTags('Restaurant')
@@ -95,5 +95,37 @@ export class RestaurantController {
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public auth(@Headers() headers: Header) {
+  }
+
+  @Get('auth/password')
+  @HttpCode(200)
+  @ApiOperation({ summary: '비밀번호 확인' })
+  @ApiHeader({ name: 'Authorization' })
+  @ApiOkResponse()
+  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
+  public async check_password(@Headers() headers: Header,
+                              @Body(new ValidationPipe()) payload: CheckPasswordDto) {
+    try {
+      return await this.service.check_password(await this.util.getTokenBody(headers.token), payload);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
+    }
+  }
+
+  @Patch('auth/password')
+  @HttpCode(200)
+  @ApiOperation({ summary: '비밀번호 확인' })
+  @ApiHeader({ name: 'Authorization' })
+  @ApiOkResponse()
+  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
+  public async edit_password(@Headers() headers: Header,
+                             @Body(new ValidationPipe()) payload: EditPasswordDto) {
+    try {
+      return await this.service.edit_password(await this.util.getTokenBody(headers.token), payload);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
+    }
   }
 }

@@ -1,8 +1,8 @@
 import { MongoService } from '@app/mongo';
 import { ResRefresh, ResSignIn, TokenTypeEnum, UtilService } from '@app/util';
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Collection, ObjectId } from 'mongodb';
-import { CheckEmailDto, SignInDto, SignUpDto } from './dto';
+import { CheckEmailDto, CheckPasswordDto, EditPasswordDto, SignInDto, SignUpDto } from './dto';
 import { Restaurant } from './restaurant.entity';
 
 @Injectable()
@@ -24,6 +24,10 @@ export class RestaurantService {
 
   private async delete_restaurant(email: string): Promise<void> {
     await this.restaurants.deleteOne({ email: { $eq: email } });
+  }
+
+  private async update_restaurant(email: string, payload): Promise<void> {
+    await this.restaurants.updateOne({ email: { $eq: email } }, payload);
   }
 
   public async sign_up(payload: SignUpDto): Promise<void> {
@@ -62,5 +66,18 @@ export class RestaurantService {
   public async leave(token: string): Promise<void> {
     const email: string = await this.util.getEmailByToken(token);
     this.delete_restaurant(email);
+  }
+
+  public async check_password(token: string, payload: CheckPasswordDto): Promise<void> {
+    const email: string = await this.util.getEmailByToken(token);
+    const found_restaurant: Restaurant = await this.find_restaurant(email);
+    if (await this.util.encode(payload.password) !== found_restaurant.password) {
+      throw new UnauthorizedException();
+    }
+  }
+
+  public async edit_password(token: string, payload: EditPasswordDto) {
+    const email: string = await this.util.getEmailByToken(token);
+    this.update_restaurant(email, payload);
   }
 }
