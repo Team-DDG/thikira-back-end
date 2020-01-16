@@ -1,7 +1,7 @@
 import { MongoService } from '@app/mongo';
 import { ResRefresh, ResSignIn, TokenTypeEnum, UtilService } from '@app/util';
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { Collection } from 'mongodb';
+import { Collection, ObjectId } from 'mongodb';
 import { CheckEmailDto, SignInDto, SignUpDto } from './dto';
 import { Restaurant } from './restaurant.entity';
 
@@ -14,8 +14,12 @@ export class RestaurantService {
     this.restaurants = mongo.collection('restaurants');
   }
 
-  private async find_restaurant(email: string): Promise<Restaurant> {
-    return new Restaurant(await this.restaurants.findOne({ email: { $eq: email } }));
+  private async find_restaurant(param: string | ObjectId): Promise<Restaurant> {
+    if (typeof param === 'string') {
+      return new Restaurant(await this.restaurants.findOne({ email: { $eq: param } }));
+    } else if (param instanceof ObjectId) {
+      return new Restaurant(await this.restaurants.findOne(param));
+    }
   }
 
   private async delete_restaurant(email: string): Promise<void> {

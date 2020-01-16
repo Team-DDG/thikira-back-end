@@ -22,7 +22,7 @@ export class RestaurantController {
               private readonly util: UtilService) {
   }
 
-  @Post('check_email')
+  @Get('check_email')
   @HttpCode(200)
   @ApiOperation({ summary: '이메일 확인' })
   @ApiOkResponse()
@@ -63,9 +63,7 @@ export class RestaurantController {
   @Get('auth/refresh')
   @HttpCode(200)
   @ApiOperation({ summary: '토큰 재발급' })
-  @ApiHeader({
-    name: 'X-Refresh-Token',
-  })
+  @ApiHeader({ name: 'X-Refresh-Token' })
   @ApiOkResponse({ type: ResRefresh })
   @ApiForbiddenResponse()
   public async refresh(@Headers() headers: Header) {
@@ -88,5 +86,14 @@ export class RestaurantController {
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
+  }
+
+  @Get('auth')
+  @HttpCode(200)
+  @ApiOperation({ summary: '토큰 확인' })
+  @ApiHeader({ name: 'Authorization' })
+  @ApiOkResponse()
+  @ApiForbiddenResponse()
+  public auth(@Headers() headers: Header) {
   }
 }

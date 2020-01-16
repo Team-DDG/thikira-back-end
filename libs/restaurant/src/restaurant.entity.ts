@@ -1,8 +1,6 @@
-import { Exclude } from 'class-transformer';
 import { ObjectId } from 'mongodb';
 
 export class Restaurant {
-  @Exclude()
   public readonly _id: ObjectId;
   public readonly image: string;
   public readonly phone: string;
