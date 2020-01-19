@@ -31,13 +31,6 @@ export class EditInformationDto {
   public readonly area: string[];
 
   @ApiProperty({
-    description: '분류',
-    example: '치킨',
-  })
-  @IsString()
-  public readonly category: string;
-
-  @ApiProperty({
     description: '최소가격',
     example: 17500,
   })

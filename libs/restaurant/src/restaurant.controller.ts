@@ -13,6 +13,7 @@ import {
   ApiTags, ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { CheckEmailDto, CheckPasswordDto, EditPasswordDto, SignInDto, SignUpDto } from './dto';
+import { EditAddressDto } from './dto/edit_address.dto';
 import { EditInformationDto } from './dto/edit_information.dto';
 import { RestaurantService } from './restaurant.service';
 
@@ -96,6 +97,7 @@ export class RestaurantController {
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public auth(@Headers() headers) {
+    return true;
   }
 
   @Get('auth/password')
@@ -139,6 +141,35 @@ export class RestaurantController {
                                 @Body(new ValidationPipe()) payload: EditInformationDto) {
     try {
       return await this.service.edit(this.util.getTokenBody(token), payload);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
+    }
+  }
+
+  @Patch('auth/address')
+  @HttpCode(200)
+  @ApiOperation({ summary: '비밀번호 확인' })
+  @ApiHeader({ name: 'Authorization' })
+  @ApiOkResponse()
+  @ApiForbiddenResponse()
+  public async edit_address(@Headers('authorization') token: string,
+                            @Body(new ValidationPipe()) payload: EditAddressDto) {
+    try {
+      return await this.service.edit(this.util.getTokenBody(token), payload);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
+    }
+  }
+
+  @Get()
+  @HttpCode(200)
+  @ApiOperation({ summary: '업체 조회' })
+  @ApiHeader({ name: 'Authorization' })
+  @ApiOkResponse({})
+  @ApiNotFoundResponse()
+  public async load(@Headers('authorization') token: string) {
+    try {
+      return await this.service.load(this.util.getTokenBody(token));
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }

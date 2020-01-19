@@ -27,8 +27,10 @@ export class RestaurantService {
   }
 
   private async update_restaurant(email: string, payload): Promise<void> {
-    payload.password = payload.password ? await this.util.encode(payload.password) : undefined;
-    await this.restaurants.updateOne({ email: { $eq: email } }, { $set: { ...payload } });
+    if (payload.password) {
+      payload.password = await this.util.encode(payload.password);
+    }
+    await this.restaurants.updateOne({ email: { $eq: email } }, { $set: payload });
   }
 
   public async sign_up(payload: SignUpDto): Promise<void> {
@@ -80,5 +82,11 @@ export class RestaurantService {
   public async edit(token: string, payload) {
     const email: string = await this.util.getEmailByToken(token);
     this.update_restaurant(email, payload);
+  }
+
+  public async load(token: string): Promise<Restaurant> {
+    const email: string = await this.util.getEmailByToken(token);
+    const found_restaurant: Restaurant = await this.find_restaurant(email);
+    return new Restaurant({ ...found_restaurant, _id: undefined, password: undefined, email: undefined });
   }
 }
