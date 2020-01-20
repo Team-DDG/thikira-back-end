@@ -69,29 +69,9 @@ describe('RestaurantService', () => {
     access_token = result.accessToken;
   });
 
-  it('200 check_password()', async () => {
-    await service.check_password(access_token, { password: test_value.password });
-  });
-
-  it('401 check_password()', async () => {
-    await expect(service.check_password(access_token, { password: `${test_value.password}1` })).rejects.toThrow();
-  });
-
-  it('200 edit_password()', async () => {
-    try {
-      test_value.password = `${test_value.email}1`;
-      await service.edit(access_token, { password: test_value.password });
-      await service.sign_in({ email: test_value.email, password: test_value.password });
-    } catch (e) {
-      console.log(e.message);
-    }
-  });
-
   it('200 edit_information()', async () => {
     const edit_data = {
       phone: '01012345679',
-      add_street: '경기 이천시 아리역로 24',
-      add_parcel: '경기도 이천시 증포동 404-8',
       area: ['창전동'],
       min_price: 20000,
       day_off: '절에 다닙니다.',
@@ -113,6 +93,20 @@ describe('RestaurantService', () => {
         throw new InternalServerErrorException();
       }
     });
+  });
+
+  it('200 check_password()', async () => {
+    await service.check_password(access_token, { password: test_value.password });
+  });
+
+  it('401 check_password()', async () => {
+    await expect(service.check_password(access_token, { password: `${test_value.password}1` })).rejects.toThrow();
+  });
+
+  it('200 edit_password()', async () => {
+    test_value.password = `${test_value.email}1`;
+    await service.edit(access_token, { password: test_value.password });
+    await service.sign_in({ email: test_value.email, password: test_value.password });
   });
 
   it('200 leave()', async () => {

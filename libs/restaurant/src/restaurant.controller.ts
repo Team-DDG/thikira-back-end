@@ -68,9 +68,9 @@ export class RestaurantController {
   @ApiHeader({ name: 'X-Refresh-Token' })
   @ApiOkResponse({ type: ResRefresh })
   @ApiForbiddenResponse()
-  public async refresh(@Headers('x-refresh-token') token: string) {
+  public async refresh(@Headers() header) {
     try {
-      return await this.service.refresh(this.util.getTokenBody(token));
+      return await this.service.refresh(this.util.getTokenBody(header['x-refresh-token']));
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -82,9 +82,9 @@ export class RestaurantController {
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse()
   @ApiForbiddenResponse()
-  public async leave(@Headers('authorization') token: string) {
+  public async leave(@Headers() header) {
     try {
-      return await this.service.leave(this.util.getTokenBody(token));
+      return await this.service.leave(this.util.getTokenBody(header.authorization));
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -107,10 +107,10 @@ export class RestaurantController {
   @ApiOkResponse()
   @ApiForbiddenResponse()
   @ApiUnauthorizedResponse()
-  public async check_password(@Headers('authorization') token: string,
-                              @Body(new ValidationPipe()) payload: CheckPasswordDto) {
+  public async check_password(@Headers() header,
+                              @Body() payload: CheckPasswordDto) {
     try {
-      return await this.service.check_password(this.util.getTokenBody(token), payload);
+      return await this.service.check_password(this.util.getTokenBody(header.authorization), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -118,14 +118,14 @@ export class RestaurantController {
 
   @Patch('auth/password')
   @HttpCode(200)
-  @ApiOperation({ summary: '비밀번호 확인' })
+  @ApiOperation({ summary: '비밀번호 수정' })
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse()
   @ApiForbiddenResponse()
-  public async edit_password(@Headers('authorization') token: string,
-                             @Body(new ValidationPipe()) payload: EditPasswordDto) {
+  public async edit_password(@Headers() header,
+                             @Body() payload: EditPasswordDto) {
     try {
-      return await this.service.edit(this.util.getTokenBody(token), payload);
+      return await this.service.edit(this.util.getTokenBody(header.authorization), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -133,14 +133,14 @@ export class RestaurantController {
 
   @Patch('auth/information')
   @HttpCode(200)
-  @ApiOperation({ summary: '비밀번호 확인' })
+  @ApiOperation({ summary: '정보 수정' })
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse()
   @ApiForbiddenResponse()
-  public async edit_information(@Headers('authorization') token: string,
-                                @Body(new ValidationPipe()) payload: EditInformationDto) {
+  public async edit_information(@Headers() header,
+                                @Body() payload: EditInformationDto) {
     try {
-      return await this.service.edit(this.util.getTokenBody(token), payload);
+      return await this.service.edit(this.util.getTokenBody(header.authorization), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -152,10 +152,10 @@ export class RestaurantController {
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse()
   @ApiForbiddenResponse()
-  public async edit_address(@Headers('authorization') token: string,
-                            @Body(new ValidationPipe()) payload: EditAddressDto) {
+  public async edit_address(@Headers() header,
+                            @Body() payload: EditAddressDto) {
     try {
-      return await this.service.edit(this.util.getTokenBody(token), payload);
+      return await this.service.edit(this.util.getTokenBody(header.authorization), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -167,9 +167,9 @@ export class RestaurantController {
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse({})
   @ApiNotFoundResponse()
-  public async load(@Headers('authorization') token: string) {
+  public async load(@Headers() header) {
     try {
-      return await this.service.load(this.util.getTokenBody(token));
+      return await this.service.load(this.util.getTokenBody(header.authorization));
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }

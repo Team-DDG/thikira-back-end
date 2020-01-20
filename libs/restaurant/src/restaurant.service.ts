@@ -2,6 +2,7 @@ import { MongoService } from '@app/mongo';
 import { ResRefresh, ResSignIn, TokenTypeEnum, UtilService } from '@app/util';
 import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Collection, ObjectId } from 'mongodb';
+import { delay } from 'rxjs/operators';
 import { CheckEmailDto, CheckPasswordDto, SignInDto, SignUpDto } from './dto';
 import { Restaurant } from './restaurant.entity';
 
@@ -27,6 +28,7 @@ export class RestaurantService {
   }
 
   private async update_restaurant(email: string, payload): Promise<void> {
+    await delay(1000);
     if (payload.password) {
       payload.password = await this.util.encode(payload.password);
     }
