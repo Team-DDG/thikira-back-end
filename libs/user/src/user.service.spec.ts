@@ -1,16 +1,17 @@
 import { ConfigModule, ConfigService } from '@app/config';
 import { Restaurant, RestaurantModule, RestaurantService } from '@app/restaurant';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { createConnection, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { UserModule } from './user.module';
 import { UserService } from './user.service';
 
 describe('UserService', () => {
+  let app: INestApplication;
   let service: UserService;
   let restaurantService: RestaurantService;
-  let configService: ConfigService;
   const test_value = {
     email: 'test@gmail.com',
     phone: '01012345678',
@@ -43,19 +44,13 @@ describe('UserService', () => {
       ],
     }).compile();
 
+    app = module.createNestApplication();
     service = module.get<UserService>(UserService);
-    configService = module.get<ConfigService>(ConfigService);
     restaurantService = module.get<RestaurantService>(RestaurantService);
   });
 
   afterAll(async () => {
-    const mysqlConnection = await createConnection({
-      ...configService.ormConfig,
-      entities: [
-        Restaurant, User,
-      ],
-    });
-    await mysqlConnection.close();
+    await app.close();
   });
 
   it('200 check_email', () => {
