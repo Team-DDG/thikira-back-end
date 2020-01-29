@@ -1,13 +1,14 @@
-import { MongoModule } from '@app/mongo';
-import { UtilModule } from '@app/util';
-import { Module } from '@nestjs/common';
-import { RestaurantController } from './restaurant.controller';
+import { UserModule } from '@app/user';
+import { forwardRef, Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Restaurant } from './restaurant.entity';
 import { RestaurantService } from './restaurant.service';
 
 @Module({
-  imports: [MongoModule, UtilModule],
+  imports: [
+    TypeOrmModule.forFeature([Restaurant]),
+  ],
   providers: [RestaurantService],
-  controllers: [RestaurantController],
   exports: [RestaurantService],
 })
 export class RestaurantModule {

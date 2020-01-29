@@ -1,21 +1,23 @@
-import { MongoModule, MongoService } from '@app/mongo';
-import { ResRefresh, ResSignIn, UtilModule } from '@app/util';
+import { ConfigModule, ConfigService } from '@app/config';
+import { User, UserModule, UserService } from '@app/user';
 import { Test, TestingModule } from '@nestjs/testing';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { createConnection, Repository } from 'typeorm';
+import { Restaurant } from './restaurant.entity';
+import { RestaurantModule } from './restaurant.module';
 import { RestaurantService } from './restaurant.service';
 
 describe('RestaurantService', () => {
   let service: RestaurantService;
-  let mongo: MongoService;
-  const testValue = {
+  let userService: UserService;
+  let configService: ConfigService;
+  const test_value = {
     image: 'image_url',
     name: 'test',
     phone: '01012345678',
     add_street: '경기 이천시 아리역로 25 남구빌딩',
     add_parcel: '경기도 이천시 증포동 404-9',
-    area: [
-      '증포동',
-      '창전동',
-    ],
+    area: '증포동, 창전동',
     category: '치킨',
     min_price: 17500,
     day_off: '주일날은 교회에 갑니다.',
@@ -27,51 +29,45 @@ describe('RestaurantService', () => {
     email: 'test@gmail.com',
     password: 'test',
   };
-  let accessToken: string;
-  let refreshToken: string;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [MongoModule, UtilModule],
-      providers: [RestaurantService],
+      imports: [
+        ConfigModule, UserModule, RestaurantModule,
+        TypeOrmModule.forRootAsync({
+          imports: [ConfigModule],
+          inject: [ConfigService],
+          useFactory(config: ConfigService) {
+            return {
+              ...config.ormConfig,
+              entities: [
+                Restaurant, User,
+              ],
+            };
+          },
+        })],
+      providers: [
+        { provide: RestaurantService, useValue: [new Repository<Restaurant>()] },
+        { provide: UserService, useValue: [new Repository<User>()] },
+      ],
     }).compile();
 
     service = module.get<RestaurantService>(RestaurantService);
-    mongo = module.get<MongoService>(MongoService);
+    configService = module.get<ConfigService>(ConfigService);
+    userService = module.get<UserService>(UserService);
   });
 
   afterAll(async () => {
-    await mongo.close();
+    const mysqlConnection = await createConnection({
+      ...configService.ormConfig,
+      entities: [
+        Restaurant, User,
+      ],
+    });
+    await mysqlConnection.close();
   });
 
-  it('404 sign_in()', async () => {
-    await expect(service.sign_in({ email: testValue.email, password: testValue.password })).rejects.toThrow();
-  });
-
-  it('200 check_email()', async () => {
-    await service.check_email({ email: testValue.email });
-  });
-
-  it('200 sign_up()', async () => {
-    await service.sign_up({ ...testValue });
-  });
-
-  it('409 check_email()', async () => {
-    await expect(service.check_email({ email: testValue.email })).rejects.toThrow();
-  });
-
-  it('200 sign_in()', async () => {
-    const result: ResSignIn = await service.sign_in({ email: testValue.email, password: testValue.password });
-    accessToken = result.accessToken;
-    refreshToken = result.refreshToken;
-  });
-
-  it('200 refresh()', async () => {
-    const result: ResRefresh = await service.refresh(refreshToken);
-    accessToken = result.accessToken;
-  });
-
-  it('200 leave()', async () => {
-    await service.leave(accessToken);
+  it('200 check_email', () => {
+    service.check_email({ email: test_value.email });
   });
 });
