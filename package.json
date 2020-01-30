@@ -1,9 +1,12 @@
 {
-  "name": "lunatic-princess",
+  "name": "thikira-back-end",
   "version": "0.0.1",
-  "description": "Cooktak Backend",
+  "description": "thikira back_end",
   "author": "JepangLee <ljsung0805@gmail.com>",
   "license": "MIT",
+  "engines": {
+    "yarn": "1.x"
+  },
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
@@ -25,17 +28,20 @@
     "@nestjs/jwt": "^6.1.1",
     "@nestjs/platform-express": "^6.7.2",
     "@nestjs/swagger": "^4.0.9",
+    "@nestjs/typeorm": "^6.2.0",
     "@types/passport-jwt": "^3.0.3",
     "class-transformer": "^0.2.3",
     "class-validator": "^0.11.0",
+    "crypto": "^1.0.1",
     "dotenv": "^8.2.0",
     "fastify-swagger": "^2.5.0",
-    "mongodb": "^3.4.1",
+    "mysql": "^2.17.1",
     "passport-jwt": "^4.0.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.0",
     "rxjs": "^6.5.3",
-    "swagger-ui-express": "^4.1.2"
+    "swagger-ui-express": "^4.1.2",
+    "typeorm": "^0.2.22"
   },
   "devDependencies": {
     "@nestjs/cli": "^6.9.0",
@@ -77,12 +83,12 @@
     "moduleNameMapper": {
       "@app/config/(.*)": "<rootDir>/libs/config/src/$1",
       "@app/config": "<rootDir>/libs/config/src",
-      "@app/mongo/(.*)": "<rootDir>/libs/mongo/src/$1",
-      "@app/mongo": "<rootDir>/libs/mongo/src",
+      "@app/util/(.*)": "<rootDir>/libs/util/src/$1",
+      "@app/util": "<rootDir>/libs/util/src",
+      "@app/restaurant/(.*)": "<rootDir>/libs/restaurant/src/$1",
+      "@app/restaurant": "<rootDir>/libs/restaurant/src",
       "@app/user/(.*)": "<rootDir>/libs/user/src/$1",
-      "@app/user": "<rootDir>/libs/user/src",
-      "@app/token/(.*)": "<rootDir>/libs/token/src/$1",
-      "@app/token": "<rootDir>/libs/token/src"
+      "@app/user": "<rootDir>/libs/user/src"
     }
   }
 }

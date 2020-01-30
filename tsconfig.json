@@ -14,14 +14,14 @@
       "@app/config": [
         "libs/config/src"
       ],
-      "@app/mongo": [
-        "libs/mongo/src"
+      "@app/util": [
+        "libs/util/src"
+      ],
+      "@app/restaurant": [
+        "libs/restaurant/src"
       ],
       "@app/user": [
         "libs/user/src"
-      ],
-      "@app/token": [
-        "libs/token/src"
       ]
     }
   },
