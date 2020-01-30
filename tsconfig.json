@@ -14,9 +14,6 @@
       "@app/config": [
         "libs/config/src"
       ],
-      "@app/mongo": [
-        "libs/mongo/src"
-      ],
       "@app/util": [
         "libs/util/src"
       ],

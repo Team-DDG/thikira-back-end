@@ -11,15 +11,6 @@
         "tsConfigPath": "libs/config/tsconfig.lib.json"
       }
     },
-    "mongo": {
-      "type": "library",
-      "root": "libs/mongo",
-      "entryFile": "index",
-      "sourceRoot": "libs/mongo/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/mongo/tsconfig.lib.json"
-      }
-    },
     "util": {
       "type": "library",
       "root": "libs/util",
