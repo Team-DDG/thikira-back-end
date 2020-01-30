@@ -1,5 +1,4 @@
 import { ConfigModule, ConfigService } from '@app/config';
-import { Restaurant, RestaurantModule, RestaurantService } from '@app/restaurant';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -11,49 +10,44 @@ import { UserService } from './user.service';
 describe('UserService', () => {
   let app: INestApplication;
   let service: UserService;
-  let restaurantService: RestaurantService;
   const test_value = {
-    email: 'test@gmail.com',
+    image: 'image_url',
+    nickname: 'test',
     phone: '01012345678',
     add_street: '경기 이천시 아리역로 25 남구빌딩',
     add_parcel: '경기도 이천시 증포동 404-9',
+    email: 'test@gmail.com',
     password: 'test',
-    nickname: 'test',
-    create_time: new Date().toISOString(),
   };
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        ConfigModule, RestaurantModule, UserModule,
+        UserModule,
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
           inject: [ConfigService],
           useFactory(config: ConfigService) {
             return {
               ...config.ormConfig,
-              entities: [
-                Restaurant, User,
-              ],
+              entities: [User],
             };
           },
         })],
       providers: [
         { provide: UserService, useValue: [new Repository<User>()] },
-        { provide: RestaurantService, useValue: [new Repository<Restaurant>()] },
       ],
     }).compile();
 
     app = module.createNestApplication();
     service = module.get<UserService>(UserService);
-    restaurantService = module.get<RestaurantService>(RestaurantService);
   });
 
   afterAll(async () => {
     await app.close();
   });
 
-  it('200 check_email', () => {
-    service.check_email({ email: test_value.email });
+  it('200 check_email', async () => {
+    await service.check_user({ email: test_value.email });
   });
 });

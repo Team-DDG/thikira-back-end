@@ -17,9 +17,9 @@ export class UtilService {
     return createHash(this.config.ENCIPHERMENT).update(content).digest('base64');
   }
 
-  public async createToken(username: string, type: TokenTypeEnum): Promise<string> {
+  public async createToken(email: string, type: TokenTypeEnum): Promise<string> {
     const expiresIn = type.match(TokenTypeEnum.access) ? '30 min' : '14 days';
-    return sign({ id: username }, this.secret, { expiresIn });
+    return sign({ id: email }, this.secret, { expiresIn });
   }
 
   public getTokenBody(token: string): string {

@@ -17,7 +17,7 @@ import { AppGuard } from './app.guard';
         return {
           ...config.ormConfig,
           entities: [
-            Restaurant, User
+            Restaurant, User,
           ],
         };
       },
