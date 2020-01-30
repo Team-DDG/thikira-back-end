@@ -1,57 +1,57 @@
-import { MongoService } from '@app/mongo';
-import { ResRefresh, ResSignIn, TokenTypeEnum, UtilService } from '@app/util';
+import { CheckEmailDto, CheckPasswordDto, ResRefresh, ResSignIn, TokenTypeEnum, UtilService } from '@app/util';
 import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { Collection, ObjectId } from 'mongodb';
-import { delay } from 'rxjs/operators';
-import { CheckEmailDto, CheckPasswordDto, SignInDto, SignUpDto } from './dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { SignInDto, SignUpDto } from './dto';
 import { Restaurant } from './restaurant.entity';
 
 @Injectable()
 export class RestaurantService {
-  private readonly restaurants: Collection<Restaurant>;
-
-  constructor(mongo: MongoService,
-              private readonly util: UtilService) {
-    this.restaurants = mongo.collection('restaurants');
+  constructor(@InjectRepository(Restaurant)
+              private readonly restaurants: Repository<Restaurant>,
+              private readonly util: UtilService,
+  ) {
   }
 
-  private async find_restaurant(param: string | ObjectId): Promise<Restaurant> {
-    if (typeof param === 'string') {
-      return new Restaurant(await this.restaurants.findOne({ email: { $eq: param } }));
-    } else if (param instanceof ObjectId) {
-      return new Restaurant(await this.restaurants.findOne(param));
-    }
+  private async find_restaurant_by_id(id: number): Promise<Restaurant> {
+    return new Restaurant(await this.restaurants.findOne(id));
+  }
+
+  private async find_restaurant_by_email(email: string): Promise<Restaurant> {
+    return new Restaurant(await this.restaurants.findOne({ email }));
   }
 
   private async delete_restaurant(email: string): Promise<void> {
-    await this.restaurants.deleteOne({ email: { $eq: email } });
+    await this.restaurants.delete({ email });
   }
 
   private async update_restaurant(email: string, payload): Promise<void> {
-    await delay(1000);
     if (payload.password) {
       payload.password = await this.util.encode(payload.password);
     }
-    await this.restaurants.updateOne({ email: { $eq: email } }, { $set: payload });
+    await this.restaurants.update({ email }, payload);
+  }
+
+  private async insert_restaurant(restaurant: Restaurant) {
+    await this.restaurants.insert(restaurant);
   }
 
   public async sign_up(payload: SignUpDto): Promise<void> {
-    const restaurant: Restaurant = new Restaurant({
+    await this.insert_restaurant(new Restaurant({
       ...payload,
       password: await this.util.encode(payload.password),
-    });
-    await this.restaurants.insertOne(restaurant);
+    }));
   }
 
   public async check_email(payload: CheckEmailDto): Promise<void> {
-    const found_restaurant: Restaurant = await this.find_restaurant(payload.email);
+    const found_restaurant: Restaurant = await this.find_restaurant_by_email(payload.email);
     if (!found_restaurant.isEmpty()) {
       throw new ConflictException();
     }
   }
 
   public async sign_in(payload: SignInDto): Promise<ResSignIn> {
-    const found_restaurant: Restaurant = await this.find_restaurant(payload.email);
+    const found_restaurant: Restaurant = await this.find_restaurant_by_email(payload.email);
     if (found_restaurant.isEmpty() ||
       found_restaurant.password !== await this.util.encode(payload.password)) {
       throw new NotFoundException();
@@ -70,12 +70,12 @@ export class RestaurantService {
 
   public async leave(token: string): Promise<void> {
     const email: string = await this.util.getEmailByToken(token);
-    this.delete_restaurant(email);
+    await this.delete_restaurant(email);
   }
 
   public async check_password(token: string, payload: CheckPasswordDto): Promise<void> {
     const email: string = await this.util.getEmailByToken(token);
-    const found_restaurant: Restaurant = await this.find_restaurant(email);
+    const found_restaurant: Restaurant = await this.find_restaurant_by_email(email);
     if (await this.util.encode(payload.password) !== found_restaurant.password) {
       throw new UnauthorizedException();
     }
@@ -83,12 +83,12 @@ export class RestaurantService {
 
   public async edit(token: string, payload) {
     const email: string = await this.util.getEmailByToken(token);
-    this.update_restaurant(email, payload);
+    await this.update_restaurant(email, payload);
   }
 
   public async load(token: string): Promise<Restaurant> {
     const email: string = await this.util.getEmailByToken(token);
-    const found_restaurant: Restaurant = await this.find_restaurant(email);
+    const found_restaurant: Restaurant = await this.find_restaurant_by_email(email);
     return new Restaurant({ ...found_restaurant, _id: undefined, password: undefined, email: undefined });
   }
 }

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsBoolean, IsEmail, IsNumber, IsNumberString, IsString, IsUrl } from 'class-validator';
+import { IsBoolean, IsEmail, IsNumber, IsNumberString, IsString, IsUrl } from 'class-validator';
 
 export class SignUpDto {
   @ApiProperty({
@@ -41,8 +41,8 @@ export class SignUpDto {
     description: '배달 가능 지역',
     example: ['증포동', '창전동'],
   })
-  @IsArray()
-  public readonly area: string[];
+  @IsString()
+  public readonly area: string;
 
   @ApiProperty({
     description: '분류',

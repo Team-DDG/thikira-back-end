@@ -4,19 +4,18 @@ on: [push]
 
 env:
   CI: true
-  MONGODB_URI: mongodb://localhost:27017/test
   ENCIPHERMENT: sha512
+  MYSQL_DB: thikira
+  MYSQL_PORT: 3306
+  MYSQL_USER: ${{ secrets.MYSQL_USER }}
+  MYSQL_PASS: ${{ secrets.MYSQL_PASS }}
+  MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [12.x]
-    services:
-      mongo:
-        image: mongo
-        ports:
-          - 27017:27017
+        node-version: [10.x, 12.x]
     steps:
       - uses: actions/checkout@v1
       - name: Use Node.js ${{ matrix.node-version }}

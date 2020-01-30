@@ -1,12 +1,16 @@
-import { MongoModule, MongoService } from '@app/mongo';
-import { ResRefresh, ResSignIn, UtilModule } from '@app/util';
-import { InternalServerErrorException } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@app/config';
+import { ResRefresh, ResSignIn } from '@app/util';
+import { INestApplication, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Restaurant } from './restaurant.entity';
+import { RestaurantModule } from './restaurant.module';
 import { RestaurantService } from './restaurant.service';
 
 describe('RestaurantService', () => {
+  let app: INestApplication;
   let service: RestaurantService;
-  let mongo: MongoService;
   let access_token: string;
   let refresh_token: string;
   const test_value = {
@@ -15,7 +19,7 @@ describe('RestaurantService', () => {
     phone: '01012345678',
     add_street: '경기 이천시 아리역로 25 남구빌딩',
     add_parcel: '경기도 이천시 증포동 404-9',
-    area: ['증포동', '창전동'],
+    area: '증포동, 창전동',
     category: '치킨',
     min_price: 17500,
     day_off: '주일날은 교회에 갑니다.',
@@ -30,16 +34,29 @@ describe('RestaurantService', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [MongoModule, UtilModule],
-      providers: [RestaurantService],
+      imports: [
+        RestaurantModule,
+        TypeOrmModule.forRootAsync({
+          imports: [ConfigModule],
+          inject: [ConfigService],
+          useFactory(config: ConfigService) {
+            return {
+              ...config.ormConfig,
+              entities: [Restaurant],
+            };
+          },
+        })],
+      providers: [
+        { provide: RestaurantService, useValue: [new Repository<Restaurant>()] },
+      ],
     }).compile();
 
+    app = module.createNestApplication();
     service = module.get<RestaurantService>(RestaurantService);
-    mongo = module.get<MongoService>(MongoService);
   });
 
   afterAll(async () => {
-    await mongo.close();
+    await app.close();
   });
 
   it('404 sign_in()', async () => {
@@ -72,7 +89,7 @@ describe('RestaurantService', () => {
   it('200 edit_information()', async () => {
     const edit_data = {
       phone: '01012345679',
-      area: ['창전동'],
+      area: '창전동',
       min_price: 20000,
       day_off: '절에 다닙니다.',
       online_payment: false,
