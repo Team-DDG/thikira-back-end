@@ -1,8 +1,11 @@
-import { CheckEmailDto, CheckPasswordDto, ResRefresh, ResSignIn, TokenTypeEnum, UtilService } from '@app/util';
+import {
+  CheckEmailDto, CheckPasswordDto, ResRefresh,
+  ResSignIn, SignInDto, TokenTypeEnum, UtilService,
+} from '@app/util';
 import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { SignInDto, SignUpDto } from './dto';
+import { SignUpDto } from './dto';
 import { Restaurant } from './restaurant.entity';
 
 @Injectable()
