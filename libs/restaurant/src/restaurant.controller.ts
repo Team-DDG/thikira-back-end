@@ -95,7 +95,7 @@ export class RestaurantController {
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public auth(@Headers() headers) {
-    return true;
+    return null;
   }
 
   @Get('auth/password')
