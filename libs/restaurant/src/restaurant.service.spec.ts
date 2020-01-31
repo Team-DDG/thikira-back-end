@@ -1,6 +1,6 @@
 import { ConfigModule, ConfigService } from '@app/config';
 import { ResRefresh, ResSignIn } from '@app/util';
-import { INestApplication, InternalServerErrorException } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -102,14 +102,12 @@ describe('RestaurantService', () => {
     const found_restaurant = await service.load(access_token);
 
     Object.keys(edit_data).forEach((value) => {
-      if (value === 'area') {
-        if (JSON.stringify(found_restaurant[value]) !== JSON.stringify(edit_data[value])) {
-          throw new InternalServerErrorException();
-        }
-      } else if (found_restaurant[value] !== edit_data[value]) {
-        throw new InternalServerErrorException();
+      if (found_restaurant[value] !== edit_data[value]) {
+        console.log('didn\'t edited');
+        throw new Error();
       }
     });
+
   });
 
   it('200 check_password()', async () => {

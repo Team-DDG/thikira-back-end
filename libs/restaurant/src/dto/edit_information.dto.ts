@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsBoolean, IsNumber, IsNumberString, IsString, IsUrl } from 'class-validator';
+import { IsBoolean, IsNumber, IsNumberString, IsString, IsUrl } from 'class-validator';
 
 export class EditInformationDto {
   @ApiProperty({
@@ -27,7 +27,7 @@ export class EditInformationDto {
     description: '배달 가능 지역',
     example: ['증포동', '창전동'],
   })
-  @IsArray()
+  @IsString()
   public readonly area: string[];
 
   @ApiProperty({

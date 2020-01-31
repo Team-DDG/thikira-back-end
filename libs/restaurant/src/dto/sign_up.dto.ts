@@ -39,7 +39,7 @@ export class SignUpDto {
 
   @ApiProperty({
     description: '배달 가능 지역',
-    example: ['증포동', '창전동'],
+    example: '증포동, 창전동',
   })
   @IsString()
   public readonly area: string;
