@@ -1,6 +1,6 @@
 import {
-  CheckEmailDto, CheckPasswordDto, EditPasswordDto,
-  ResRefresh, ResSignIn, UtilService,
+  CheckEmailDto, CheckPasswordDto, EditAddressDto, EditPasswordDto,
+  ResRefresh, ResSignIn, SignInDto, UtilService,
 } from '@app/util';
 import {
   Body, Controller, Delete, Get, Headers, HttpCode,
@@ -12,7 +12,7 @@ import {
   ApiOkResponse, ApiOperation,
   ApiTags, ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { EditAddressDto, EditInformationDto, SignInDto, SignUpDto } from './dto';
+import { EditInformationDto, SignUpDto } from './dto';
 import { RestaurantService } from './restaurant.service';
 
 @ApiTags('Restaurant')
