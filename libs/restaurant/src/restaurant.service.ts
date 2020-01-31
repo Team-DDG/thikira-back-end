@@ -92,6 +92,6 @@ export class RestaurantService {
   public async load(token: string): Promise<Restaurant> {
     const email: string = await this.util.getEmailByToken(token);
     const found_restaurant: Restaurant = await this.find_restaurant_by_email(email);
-    return new Restaurant({ ...found_restaurant, _id: undefined, password: undefined, email: undefined });
+    return new Restaurant({ ...found_restaurant, id: undefined, password: undefined, email: undefined });
   }
 }
