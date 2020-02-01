@@ -3,6 +3,7 @@ import { ConflictException, Injectable, NotFoundException, UnauthorizedException
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SignUpDto } from './dto';
+import { ResLoad } from './res';
 import { User } from './user.entity';
 
 @Injectable()
@@ -86,7 +87,7 @@ export class UserService {
     await this.update_user(email, payload);
   }
 
-  public async load(token: string): Promise<User> {
+  public async load(token: string): Promise<ResLoad> {
     const email: string = await this.util.get_email_by_token(token);
     const found_user: User = await this.find_user_by_email(email);
     return new User({ ...found_user, id: undefined, password: undefined, email: undefined });

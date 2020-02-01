@@ -1,4 +1,4 @@
-import { EditInformationDto, SignUpDto, UserService } from '@app/user';
+import { EditInformationDto, ResLoad, SignUpDto, UserService } from '@app/user';
 import {
   CheckEmailDto, CheckPasswordDto, EditAddressDto,
   EditPasswordDto, ResRefresh, ResSignIn, SignInDto,
@@ -165,7 +165,7 @@ export class UserController {
   @HttpCode(200)
   @ApiOperation({ summary: '사용자 조회' })
   @ApiHeader({ name: 'Authorization' })
-  @ApiOkResponse({})
+  @ApiOkResponse({ type: ResLoad })
   @ApiNotFoundResponse()
   public async load(@Headers() header) {
     try {
