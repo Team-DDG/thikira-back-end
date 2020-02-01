@@ -8,6 +8,8 @@ export class Restaurant {
   @Column()
   public readonly image: string;
   @Column()
+  public readonly name: string;
+  @Column()
   public readonly phone: string;
   @Column()
   public readonly add_street: string;

@@ -4,6 +4,8 @@ export class ResLoad {
   @ApiProperty()
   public readonly image: string;
   @ApiProperty()
+  public readonly name: string;
+  @ApiProperty()
   public readonly phone: string;
   @ApiProperty()
   public readonly add_street: string;
