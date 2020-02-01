@@ -5,7 +5,7 @@ on: [push]
 env:
   CI: true
   ENCIPHERMENT: sha512
-  MYSQL_DB: thikira
+  MYSQL_DB: thikira_test
   MYSQL_PORT: 3306
   MYSQL_USER: ${{ secrets.MYSQL_USER }}
   MYSQL_PASS: ${{ secrets.MYSQL_PASS }}
