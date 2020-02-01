@@ -17,12 +17,12 @@ export class UtilService {
     return createHash(this.config.ENCIPHERMENT).update(content).digest('base64');
   }
 
-  public async createToken(email: string, type: TokenTypeEnum): Promise<string> {
+  public async create_token(email: string, type: TokenTypeEnum): Promise<string> {
     const expiresIn = type.match(TokenTypeEnum.access) ? '30 min' : '14 days';
     return sign({ id: email }, this.secret, { expiresIn });
   }
 
-  public getTokenBody(token: string): string {
+  public get_token_body(token: string): string {
     if (this.tokenRegExp.test(token)) {
       return token.split(' ', 2)[1];
     } else {
@@ -30,7 +30,7 @@ export class UtilService {
     }
   }
 
-  public async getEmailByToken(token: string): Promise<string> {
+  public async get_email_by_token(token: string): Promise<string> {
     try {
       const parsedToken = await verify(token, this.secret, {}) as undefined as { id: string };
       return parsedToken.id;

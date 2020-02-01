@@ -58,23 +58,23 @@ export class UserService {
     }
 
     return {
-      accessToken: await this.util.createToken(payload.email, TokenTypeEnum.access),
-      refreshToken: await this.util.createToken(payload.email, TokenTypeEnum.refresh),
+      accessToken: await this.util.create_token(payload.email, TokenTypeEnum.access),
+      refreshToken: await this.util.create_token(payload.email, TokenTypeEnum.refresh),
     };
   }
 
   public async refresh(token: string): Promise<ResRefresh> {
-    const email: string = await this.util.getEmailByToken(token);
-    return { accessToken: await this.util.createToken(email, TokenTypeEnum.access) };
+    const email: string = await this.util.get_email_by_token(token);
+    return { accessToken: await this.util.create_token(email, TokenTypeEnum.access) };
   }
 
   public async leave(token: string): Promise<void> {
-    const email: string = await this.util.getEmailByToken(token);
+    const email: string = await this.util.get_email_by_token(token);
     await this.delete_user(email);
   }
 
   public async check_password(token: string, payload: CheckPasswordDto): Promise<void> {
-    const email: string = await this.util.getEmailByToken(token);
+    const email: string = await this.util.get_email_by_token(token);
     const found_user: User = await this.find_user_by_email(email);
     if (await this.util.encode(payload.password) !== found_user.password) {
       throw new UnauthorizedException();
@@ -82,12 +82,12 @@ export class UserService {
   }
 
   public async edit(token: string, payload) {
-    const email: string = await this.util.getEmailByToken(token);
+    const email: string = await this.util.get_email_by_token(token);
     await this.update_user(email, payload);
   }
 
   public async load(token: string): Promise<User> {
-    const email: string = await this.util.getEmailByToken(token);
+    const email: string = await this.util.get_email_by_token(token);
     const found_user: User = await this.find_user_by_email(email);
     return new User({ ...found_user, id: undefined, password: undefined, email: undefined });
   }

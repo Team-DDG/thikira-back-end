@@ -70,7 +70,7 @@ export class UserController {
   @ApiForbiddenResponse()
   public async refresh(@Headers() header) {
     try {
-      return await this.service.refresh(this.util.getTokenBody(header['x-refresh-token']));
+      return await this.service.refresh(this.util.get_token_body(header['x-refresh-token']));
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -84,7 +84,7 @@ export class UserController {
   @ApiForbiddenResponse()
   public async leave(@Headers() header) {
     try {
-      return await this.service.leave(this.util.getTokenBody(header.authorization));
+      return await this.service.leave(this.util.get_token_body(header.authorization));
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -110,7 +110,7 @@ export class UserController {
   public async check_password(@Headers() header,
                               @Body() payload: CheckPasswordDto) {
     try {
-      return await this.service.check_password(this.util.getTokenBody(header.authorization), payload);
+      return await this.service.check_password(this.util.get_token_body(header.authorization), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -125,7 +125,7 @@ export class UserController {
   public async edit_password(@Headers() header,
                              @Body() payload: EditPasswordDto) {
     try {
-      return await this.service.edit(this.util.getTokenBody(header.authorization), payload);
+      return await this.service.edit(this.util.get_token_body(header.authorization), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -140,7 +140,7 @@ export class UserController {
   public async edit_information(@Headers() header,
                                 @Body() payload: EditInformationDto) {
     try {
-      return await this.service.edit(this.util.getTokenBody(header.authorization), payload);
+      return await this.service.edit(this.util.get_token_body(header.authorization), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -155,7 +155,7 @@ export class UserController {
   public async edit_address(@Headers() header,
                             @Body() payload: EditAddressDto) {
     try {
-      return await this.service.edit(this.util.getTokenBody(header.authorization), payload);
+      return await this.service.edit(this.util.get_token_body(header.authorization), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -169,7 +169,7 @@ export class UserController {
   @ApiNotFoundResponse()
   public async load(@Headers() header) {
     try {
-      return await this.service.load(this.util.getTokenBody(header.authorization));
+      return await this.service.load(this.util.get_token_body(header.authorization));
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }

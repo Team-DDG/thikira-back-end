@@ -61,23 +61,23 @@ export class RestaurantService {
     }
 
     return {
-      accessToken: await this.util.createToken(payload.email, TokenTypeEnum.access),
-      refreshToken: await this.util.createToken(payload.email, TokenTypeEnum.refresh),
+      accessToken: await this.util.create_token(payload.email, TokenTypeEnum.access),
+      refreshToken: await this.util.create_token(payload.email, TokenTypeEnum.refresh),
     };
   }
 
   public async refresh(token: string): Promise<ResRefresh> {
-    const email: string = await this.util.getEmailByToken(token);
-    return { accessToken: await this.util.createToken(email, TokenTypeEnum.access) };
+    const email: string = await this.util.get_email_by_token(token);
+    return { accessToken: await this.util.create_token(email, TokenTypeEnum.access) };
   }
 
   public async leave(token: string): Promise<void> {
-    const email: string = await this.util.getEmailByToken(token);
+    const email: string = await this.util.get_email_by_token(token);
     await this.delete_restaurant(email);
   }
 
   public async check_password(token: string, payload: CheckPasswordDto): Promise<void> {
-    const email: string = await this.util.getEmailByToken(token);
+    const email: string = await this.util.get_email_by_token(token);
     const found_restaurant: Restaurant = await this.find_restaurant_by_email(email);
     if (await this.util.encode(payload.password) !== found_restaurant.password) {
       throw new UnauthorizedException();
@@ -85,12 +85,12 @@ export class RestaurantService {
   }
 
   public async edit(token: string, payload) {
-    const email: string = await this.util.getEmailByToken(token);
+    const email: string = await this.util.get_email_by_token(token);
     await this.update_restaurant(email, payload);
   }
 
   public async load(token: string): Promise<Restaurant> {
-    const email: string = await this.util.getEmailByToken(token);
+    const email: string = await this.util.get_email_by_token(token);
     const found_restaurant: Restaurant = await this.find_restaurant_by_email(email);
     return new Restaurant({ ...found_restaurant, id: undefined, password: undefined, email: undefined });
   }

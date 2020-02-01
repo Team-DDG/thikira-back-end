@@ -12,8 +12,8 @@ export class AppGuard implements CanActivate {
       return true;
     }
 
-    const token = await this.util.getTokenBody(headers.token);
-    const email = await this.util.getEmailByToken(token);
+    const token = await this.util.get_token_body(headers.token);
+    const email = await this.util.get_email_by_token(token);
     return !!(token && email);
   }
 }
