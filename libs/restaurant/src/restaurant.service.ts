@@ -12,32 +12,32 @@ import { Restaurant } from './restaurant.entity';
 @Injectable()
 export class RestaurantService {
   constructor(@InjectRepository(Restaurant)
-              private readonly restaurants: Repository<Restaurant>,
+              private readonly restaurant_repo: Repository<Restaurant>,
               private readonly util: UtilService,
   ) {
   }
 
   private async find_restaurant_by_id(id: number): Promise<Restaurant> {
-    return new Restaurant(await this.restaurants.findOne(id));
+    return new Restaurant(await this.restaurant_repo.findOne(id));
   }
 
   private async find_restaurant_by_email(email: string): Promise<Restaurant> {
-    return new Restaurant(await this.restaurants.findOne({ email }));
+    return new Restaurant(await this.restaurant_repo.findOne({ email }));
   }
 
   private async delete_restaurant(email: string): Promise<void> {
-    await this.restaurants.delete({ email });
+    await this.restaurant_repo.delete({ email });
   }
 
   private async update_restaurant(email: string, payload): Promise<void> {
     if (payload.password) {
       payload.password = await this.util.encode(payload.password);
     }
-    await this.restaurants.update({ email }, payload);
+    await this.restaurant_repo.update({ email }, payload);
   }
 
   private async insert_restaurant(restaurant: Restaurant) {
-    await this.restaurants.insert(restaurant);
+    await this.restaurant_repo.insert(restaurant);
   }
 
   public async sign_up(payload: SignUpDto): Promise<void> {

@@ -9,32 +9,32 @@ import { User } from './user.entity';
 @Injectable()
 export class UserService {
   constructor(@InjectRepository(User)
-              private readonly users: Repository<User>,
+              private readonly user_repo: Repository<User>,
               private readonly util: UtilService,
   ) {
   }
 
   private async find_user_by_id(id: number) {
-    return this.users.findOne(id);
+    return this.user_repo.findOne(id);
   }
 
   private async find_user_by_email(email: string) {
-    return this.users.findOne({ email });
+    return this.user_repo.findOne({ email });
   }
 
   private async delete_user(email: string): Promise<void> {
-    await this.users.delete({ email });
+    await this.user_repo.delete({ email });
   }
 
   private async update_user(email: string, payload): Promise<void> {
     if (payload.password) {
       payload.password = await this.util.encode(payload.password);
     }
-    await this.users.update({ email }, payload);
+    await this.user_repo.update({ email }, payload);
   }
 
   private async insert_user(user: User) {
-    await this.users.insert(user);
+    await this.user_repo.insert(user);
   }
 
   public async check_email(payload: CheckEmailDto): Promise<void> {
