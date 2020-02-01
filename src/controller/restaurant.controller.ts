@@ -1,4 +1,4 @@
-import { EditInformationDto, RestaurantService, SignUpDto } from '@app/restaurant';
+import { EditInformationDto, ResLoad, RestaurantService, SignUpDto } from '@app/restaurant';
 import {
   CheckEmailDto, CheckPasswordDto, EditAddressDto,
   EditPasswordDto, ResRefresh, ResSignIn, SignInDto,
@@ -163,7 +163,7 @@ export class RestaurantController {
   @HttpCode(200)
   @ApiOperation({ summary: '업체 조회' })
   @ApiHeader({ name: 'Authorization' })
-  @ApiOkResponse({})
+  @ApiOkResponse({ type: ResLoad })
   @ApiNotFoundResponse()
   public async load(@Headers() header) {
     try {

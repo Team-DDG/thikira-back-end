@@ -6,6 +6,7 @@ import { ConflictException, Injectable, NotFoundException, UnauthorizedException
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SignUpDto } from './dto';
+import { ResLoad } from './res';
 import { Restaurant } from './restaurant.entity';
 
 @Injectable()
@@ -89,9 +90,9 @@ export class RestaurantService {
     await this.update_restaurant(email, payload);
   }
 
-  public async load(token: string): Promise<Restaurant> {
+  public async load(token: string): Promise<ResLoad> {
     const email: string = await this.util.get_email_by_token(token);
     const found_restaurant: Restaurant = await this.find_restaurant_by_email(email);
-    return new Restaurant({ ...found_restaurant, id: undefined, password: undefined, email: undefined });
+    return new Restaurant({ ...found_restaurant, menu_category: undefined, id: undefined, password: undefined, email: undefined });
   }
 }
