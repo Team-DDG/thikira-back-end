@@ -22,6 +22,9 @@
       ],
       "@app/user": [
         "libs/user/src"
+      ],
+      "@app/menu": [
+        "libs/menu/src"
       ]
     }
   },

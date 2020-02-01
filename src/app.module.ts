@@ -1,4 +1,5 @@
 import { ConfigModule, ConfigService } from '@app/config';
+import { Menu, MenuCategory, Option } from '@app/menu';
 import { Restaurant, RestaurantModule } from '@app/restaurant';
 import { User, UserModule } from '@app/user';
 import { UtilModule, UtilService } from '@app/util';
@@ -17,7 +18,7 @@ import { AppGuard } from './app.guard';
         return {
           ...config.ormConfig,
           entities: [
-            Restaurant, User,
+            Restaurant, User, Menu, MenuCategory, Option,
           ],
         };
       },

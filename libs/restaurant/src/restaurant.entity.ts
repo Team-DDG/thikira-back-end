@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { MenuCategory } from '@app/menu';
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Restaurant {
@@ -36,6 +37,11 @@ export class Restaurant {
   public readonly password: string;
   @CreateDateColumn()
   public readonly create_time: Date;
+  @OneToMany(
+    (type) => MenuCategory,
+    (menu_category: MenuCategory) => menu_category.restaurant,
+  )
+  public readonly menu_category: MenuCategory[];
 
   constructor(restaurant) {
     Object.assign(this, restaurant);

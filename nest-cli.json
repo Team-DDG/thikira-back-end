@@ -37,6 +37,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/user/tsconfig.lib.json"
       }
+    },
+    "menu": {
+      "type": "library",
+      "root": "libs/menu",
+      "entryFile": "index",
+      "sourceRoot": "libs/menu/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/menu/tsconfig.lib.json"
+      }
     }
   },
   "compilerOptions": {

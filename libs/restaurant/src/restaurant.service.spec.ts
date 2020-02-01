@@ -1,4 +1,5 @@
 import { ConfigModule, ConfigService } from '@app/config';
+import { Menu, MenuCategory, Option } from '@app/menu';
 import { ResRefresh, ResSignIn } from '@app/util';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -42,7 +43,7 @@ describe('RestaurantService', () => {
           useFactory(config: ConfigService) {
             return {
               ...config.ormConfig,
-              entities: [Restaurant],
+              entities: [Restaurant, Menu, MenuCategory, Option],
             };
           },
         })],
