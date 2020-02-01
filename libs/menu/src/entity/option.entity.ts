@@ -12,8 +12,8 @@ export class Option {
   @ManyToOne((type) => Menu, (menu: Menu) => menu.option)
   public readonly menu: Menu;
 
-  constructor(restaurant) {
-    Object.assign(this, restaurant);
+  constructor(option) {
+    Object.assign(this, option);
   }
 
   public isEmpty(): boolean {

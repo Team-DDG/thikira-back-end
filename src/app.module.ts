@@ -1,5 +1,5 @@
 import { ConfigModule, ConfigService } from '@app/config';
-import { Menu, MenuCategory, Option } from '@app/menu';
+import { Menu, MenuCategory, MenuModule, Option } from '@app/menu';
 import { Restaurant, RestaurantModule } from '@app/restaurant';
 import { User, UserModule } from '@app/user';
 import { UtilModule, UtilService } from '@app/util';
@@ -11,7 +11,7 @@ import { RestaurantController, UserController } from './controller';
 
 @Module({
   imports: [
-    RestaurantModule, UserModule, UtilModule,
+    UtilModule, RestaurantModule, UserModule, MenuModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

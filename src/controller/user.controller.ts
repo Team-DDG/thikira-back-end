@@ -6,7 +6,7 @@ import {
 } from '@app/util';
 import {
   Body, Controller, Delete, Get, Headers, HttpCode,
-  InternalServerErrorException, Patch, Post, ValidationPipe,
+  InternalServerErrorException, Patch, Post,
 } from '@nestjs/common';
 import {
   ApiConflictResponse, ApiForbiddenResponse,
@@ -29,7 +29,7 @@ export class UserController {
   @ApiOperation({ summary: '이메일 확인' })
   @ApiOkResponse()
   @ApiConflictResponse()
-  public async check_email(@Body(new ValidationPipe()) payload: CheckEmailDto) {
+  public async check_email(@Body() payload: CheckEmailDto) {
     try {
       return await this.service.check_email(payload);
     } catch (e) {
@@ -41,7 +41,7 @@ export class UserController {
   @HttpCode(200)
   @ApiOperation({ summary: '회원가입' })
   @ApiOkResponse()
-  public async sign_up(@Body(new ValidationPipe()) payload: SignUpDto) {
+  public async sign_up(@Body() payload: SignUpDto) {
     try {
       return await this.service.sign_up(payload);
     } catch (e) {
@@ -54,7 +54,7 @@ export class UserController {
   @ApiOperation({ summary: '로그인' })
   @ApiOkResponse({ type: ResSignIn })
   @ApiNotFoundResponse()
-  public async sign_in(@Body(new ValidationPipe()) payload: SignInDto) {
+  public async sign_in(@Body() payload: SignInDto) {
     try {
       return await this.service.sign_in(payload);
     } catch (e) {

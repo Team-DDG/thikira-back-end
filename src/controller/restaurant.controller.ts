@@ -19,7 +19,8 @@ import {
 @Controller('api/restaurant')
 export class RestaurantController {
   constructor(private readonly service: RestaurantService,
-              private readonly util: UtilService) {
+              private readonly util: UtilService,
+  ) {
   }
 
   @Get('check_email')
@@ -27,7 +28,7 @@ export class RestaurantController {
   @ApiOperation({ summary: '이메일 확인' })
   @ApiOkResponse()
   @ApiConflictResponse()
-  public async check_email(@Body(new ValidationPipe()) payload: CheckEmailDto) {
+  public async check_email(@Body() payload: CheckEmailDto) {
     try {
       return await this.service.check_email(payload);
     } catch (e) {
@@ -39,7 +40,7 @@ export class RestaurantController {
   @HttpCode(200)
   @ApiOperation({ summary: '회원가입' })
   @ApiOkResponse()
-  public async sign_up(@Body(new ValidationPipe()) payload: SignUpDto) {
+  public async sign_up(@Body() payload: SignUpDto) {
     try {
       return await this.service.sign_up(payload);
     } catch (e) {
