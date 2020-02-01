@@ -1,6 +1,8 @@
+import { EditInformationDto, RestaurantService, SignUpDto } from '@app/restaurant';
 import {
-  CheckEmailDto, CheckPasswordDto, EditAddressDto, EditPasswordDto,
-  ResRefresh, ResSignIn, SignInDto, UtilService,
+  CheckEmailDto, CheckPasswordDto, EditAddressDto,
+  EditPasswordDto, ResRefresh, ResSignIn, SignInDto,
+  UtilService,
 } from '@app/util';
 import {
   Body, Controller, Delete, Get, Headers, HttpCode,
@@ -12,16 +14,12 @@ import {
   ApiOkResponse, ApiOperation,
   ApiTags, ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { EditInformationDto, SignUpDto } from './dto';
-import { UserService } from './user.service';
 
-@ApiTags('user')
-@Controller('api/user')
-export class UserController {
-  constructor(
-    private readonly service: UserService,
-    private readonly util: UtilService,
-  ) {
+@ApiTags('Restaurant')
+@Controller('api/restaurant')
+export class RestaurantController {
+  constructor(private readonly service: RestaurantService,
+              private readonly util: UtilService) {
   }
 
   @Get('check_email')
@@ -49,7 +47,7 @@ export class UserController {
     }
   }
 
-  @Post('auth/address')
+  @Post('auth/sign_in')
   @HttpCode(200)
   @ApiOperation({ summary: '로그인' })
   @ApiOkResponse({ type: ResSignIn })
@@ -163,7 +161,7 @@ export class UserController {
 
   @Get()
   @HttpCode(200)
-  @ApiOperation({ summary: '사용자 조회' })
+  @ApiOperation({ summary: '업체 조회' })
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse({})
   @ApiNotFoundResponse()
