@@ -5,9 +5,11 @@ import { Option } from './option.entity';
 @Entity()
 export class Group {
   @PrimaryGeneratedColumn()
-  public readonly id: Number;
+  public readonly id: number;
   @Column()
-  public readonly name: String;
+  public readonly name: string;
+  @Column()
+  public readonly max_num: number;
   @ManyToOne((type) => Menu, (menu: Menu) => menu.group)
   public readonly menu: Menu;
   @OneToMany((type) => Option, (option: Option) => option.group)
