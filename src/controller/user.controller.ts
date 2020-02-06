@@ -1,4 +1,4 @@
-import { EditInformationDto, ResLoad, SignUpDto, UserService } from '@app/user';
+import { EditProfileDto, ResLoad, SignUpDto, UserService } from '@app/user';
 import {
   CheckEmailDto, CheckPasswordDto, EditAddressDto,
   EditPasswordDto, ResRefresh, ResSignIn, SignInDto,
@@ -131,14 +131,14 @@ export class UserController {
     }
   }
 
-  @Patch('information')
+  @Patch('auth/profile')
   @HttpCode(200)
-  @ApiOperation({ summary: '정보 수정' })
+  @ApiOperation({ summary: '프로필 수정' })
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse()
   @ApiForbiddenResponse()
-  public async edit_information(@Headers() header,
-                                @Body() payload: EditInformationDto) {
+  public async edit_profile(@Headers() header,
+                            @Body() payload: EditProfileDto) {
     try {
       return await this.user_service.edit(this.util_service.get_token_body(header.authorization), payload);
     } catch (e) {
