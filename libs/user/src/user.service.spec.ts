@@ -58,7 +58,7 @@ describe('UserService', () => {
   });
 
   it('200 sign_up()', async () => {
-    await service.sign_up({ ...test_value });
+    await service.create_account({ ...test_value });
   });
 
   it('409 check_email()', async () => {

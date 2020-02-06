@@ -44,7 +44,7 @@ export class UserService {
     }
   }
 
-  public async sign_up(payload: DtoCreateAccount): Promise<void> {
+  public async create_account(payload: DtoCreateAccount): Promise<void> {
     await this.insert_user(new User({
       ...payload,
       password: await this.util_service.encode(payload.password),

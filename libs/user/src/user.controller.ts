@@ -39,13 +39,13 @@ export class UserController {
     }
   }
 
-  @Post('sign_up')
+  @Post('create_account')
   @HttpCode(200)
-  @ApiOperation({ summary: '회원가입' })
+  @ApiOperation({ summary: '계정생성' })
   @ApiOkResponse()
-  public async sign_up(@Body() payload: DtoCreateAccount) {
+  public async create_account(@Body() payload: DtoCreateAccount) {
     try {
-      return await this.user_service.sign_up(payload);
+      return await this.user_service.create_account(payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
