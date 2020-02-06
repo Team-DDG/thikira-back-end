@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsNumber, IsString, IsUrl } from 'class-validator';
 
-export class UploadMenuDto {
+export class DtoUploadMenu {
   @ApiProperty({
     description: '메뉴 이름',
     example: '스모크 치킨',
