@@ -59,14 +59,14 @@ export class UserService {
     }
 
     return {
-      accessToken: await this.util.create_token(payload.email, TokenTypeEnum.access),
-      refreshToken: await this.util.create_token(payload.email, TokenTypeEnum.refresh),
+      access_token: await this.util.create_token(payload.email, TokenTypeEnum.access),
+      refresh_token: await this.util.create_token(payload.email, TokenTypeEnum.refresh),
     };
   }
 
   public async refresh(token: string): Promise<ResRefresh> {
     const email: string = await this.util.get_email_by_token(token);
-    return { accessToken: await this.util.create_token(email, TokenTypeEnum.access) };
+    return { access_token: await this.util.create_token(email, TokenTypeEnum.access) };
   }
 
   public async leave(token: string): Promise<void> {

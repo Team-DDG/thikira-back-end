@@ -67,13 +67,13 @@ describe('UserService', () => {
 
   it('200 sign_in()', async () => {
     const result: ResSignIn = await service.sign_in({ email: test_value.email, password: test_value.password });
-    access_token = result.accessToken;
-    refresh_token = result.refreshToken;
+    access_token = result.access_token;
+    refresh_token = result.refresh_token;
   });
 
   it('200 refresh()', async () => {
     const result: ResRefresh = await service.refresh(refresh_token);
-    access_token = result.accessToken;
+    access_token = result.access_token;
   });
 
   it('200 edit_information()', async () => {

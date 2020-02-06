@@ -5,7 +5,7 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Menu, MenuCategory, Option } from './entity';
+import { Group, Menu, MenuCategory, Option } from './entity';
 import { MenuModule } from './menu.module';
 import { MenuService } from './menu.service';
 
@@ -23,7 +23,7 @@ describe('MenuService', () => {
           useFactory(config: ConfigService) {
             return {
               ...config.ormConfig,
-              entities: [Restaurant, Menu, MenuCategory, Option],
+              entities: [Restaurant, Menu, MenuCategory, Option, Group],
             };
           },
         })],

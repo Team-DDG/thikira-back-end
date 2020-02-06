@@ -1,5 +1,5 @@
 import { ConfigModule, ConfigService } from '@app/config';
-import { Menu, MenuCategory, Option } from '@app/menu';
+import { Group, Menu, MenuCategory, Option } from '@app/menu';
 import { ResRefresh, ResSignIn } from '@app/util';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -43,7 +43,7 @@ describe('RestaurantService', () => {
           useFactory(config: ConfigService) {
             return {
               ...config.ormConfig,
-              entities: [Restaurant, Menu, MenuCategory, Option],
+              entities: [Restaurant, Menu, MenuCategory, Option, Group],
             };
           },
         })],
@@ -78,13 +78,13 @@ describe('RestaurantService', () => {
 
   it('200 sign_in()', async () => {
     const result: ResSignIn = await service.sign_in({ email: test_value.email, password: test_value.password });
-    access_token = result.accessToken;
-    refresh_token = result.refreshToken;
+    access_token = result.access_token;
+    refresh_token = result.refresh_token;
   });
 
   it('200 refresh()', async () => {
     const result: ResRefresh = await service.refresh(refresh_token);
-    access_token = result.accessToken;
+    access_token = result.access_token;
   });
 
   it('200 edit_information()', async () => {
