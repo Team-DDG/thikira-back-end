@@ -5,15 +5,15 @@ import { MenuCategory } from './menu-category.entity';
 @Entity()
 export class Menu {
   @PrimaryGeneratedColumn()
-  public readonly id: Number;
+  public readonly id: number;
   @Column()
-  public readonly name: String;
+  public readonly name: string;
   @Column()
-  public readonly price: Number;
+  public readonly price: number;
   @Column()
-  public readonly description: String;
+  public readonly description: string;
   @Column()
-  public readonly image: String;
+  public readonly image: string;
   @OneToMany((type) => Group, (group: Group) => group.menu)
   public readonly group: Group[];
   @ManyToOne(
