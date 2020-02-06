@@ -46,6 +46,7 @@ export class DBService {
   }
 
 
+
   public async insert_user(user: User) {
     await this.user_repo.insert(user);
   }
@@ -68,6 +69,7 @@ export class DBService {
   public async delete_user(email: string): Promise<void> {
     await this.user_repo.delete({ email });
   }
+
 
 
   public async insert_menu_category(menu_category: MenuCategory) {
@@ -100,7 +102,8 @@ export class DBService {
   }
 
 
-  public async insert_menu(menu: Menu) {
+
+  public async insert_menu(menu: Menu | Menu[]) {
     await this.menu_repo.insert(menu);
   }
 
@@ -121,16 +124,17 @@ export class DBService {
   }
 
 
-  public async insert_group(group: Menu) {
+
+  public async insert_group(group: Group | Group[]) {
     await this.group_repo.insert(group);
   }
 
-  public async find_group_by_id(id: number): Promise<Menu> {
-    return new Menu(await this.group_repo.findOne(id));
+  public async find_group_by_id(id: number): Promise<Group> {
+    return new Group(await this.group_repo.findOne(id));
   }
 
-  public async find_group_by_name(name: string): Promise<Menu> {
-    return new Menu(await this.group_repo.findOne({ name }));
+  public async find_group_by_name(name: string): Promise<Group> {
+    return new Group(await this.group_repo.findOne({ name }));
   }
 
   public async update_group(id: number, payload): Promise<void> {
@@ -142,16 +146,17 @@ export class DBService {
   }
 
 
+
   public async insert_option(option: Option | Option[]) {
     await this.option_repo.insert(option);
   }
 
-  public async find_option_by_id(id: number): Promise<Menu> {
-    return new Menu(await this.option_repo.findOne(id));
+  public async find_option_by_id(id: number): Promise<Option> {
+    return new Option(await this.option_repo.findOne(id));
   }
 
-  public async find_option_by_name(name: string): Promise<Menu> {
-    return new Menu(await this.option_repo.findOne({ name }));
+  public async find_option_by_name(name: string): Promise<Option> {
+    return new Option(await this.option_repo.findOne({ name }));
   }
 
   public async update_option(id: number, payload): Promise<void> {
