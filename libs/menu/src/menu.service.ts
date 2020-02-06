@@ -1,7 +1,7 @@
 import { DBService, MenuCategory, Restaurant } from '@app/db';
 import { UtilService } from '@app/util';
 import { ConflictException, Injectable } from '@nestjs/common';
-import { DtoEditMenuCategory, DtoUploadMenuCategory } from './dto';
+import { DtoEditMenuCategory, DtoRemoveMenuCategory, DtoUploadMenuCategory } from './dto';
 import { ResGetMenuCategoryList } from './res';
 
 @Injectable()
@@ -41,5 +41,9 @@ export class MenuService {
       result.push({ id: value.id, name: value.name });
     }
     return result;
+  }
+
+  public async remove_menu_category(token: string, payload: DtoRemoveMenuCategory) {
+    await this.db_service.delete_menu_category(payload.id);
   }
 }

@@ -27,7 +27,7 @@ export class DtoUploadMenu {
   @IsUrl()
   public readonly image: string;
   @ApiProperty({
-    description: '메뉴 카테고리 (키값)',
+    description: '메뉴 카테고리 아이디',
     example: 10,
   })
   @IsNumber()
