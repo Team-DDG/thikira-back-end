@@ -61,7 +61,7 @@ export class UserService {
     await this.db_service.update_user(email, payload);
   }
 
-  public async load(token: string): Promise<ResLoad> {
+  public async get(token: string): Promise<ResLoad> {
     const email: string = await this.util_service.get_email_by_token(token);
     const found_user: User = await this.db_service.find_user_by_email(email);
     return new User({ ...found_user, id: undefined, password: undefined, email: undefined });

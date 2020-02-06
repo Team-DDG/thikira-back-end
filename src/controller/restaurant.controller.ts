@@ -1,3 +1,4 @@
+import { DtoEditInformation, DtoSignUp, ResLoad, RestaurantService } from '@app/restaurant';
 import {
   DtoCheckEmail, DtoCheckPassword, DtoEditAddress,
   DtoEditPassword, ResRefresh, ResSignIn, DtoSignIn,
@@ -13,9 +14,6 @@ import {
   ApiOkResponse, ApiOperation,
   ApiTags, ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { DtoEditInformation, DtoSignUp } from './dto';
-import { ResLoad } from './res';
-import { RestaurantService } from './restaurant.service';
 
 @ApiTags('Restaurant')
 @Controller('api/restaurant')

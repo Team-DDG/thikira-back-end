@@ -79,7 +79,7 @@ describe('UserService', () => {
       nickname: 'test_2',
     };
     await service.edit(access_token, edit_data);
-    const found_restaurant = await service.load(access_token);
+    const found_restaurant = await service.get(access_token);
 
     Object.keys(edit_data).forEach((value) => {
       if (found_restaurant[value] !== edit_data[value]) {

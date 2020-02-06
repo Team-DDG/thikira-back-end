@@ -1,3 +1,4 @@
+import { DtoCreateAccount, DtoEditProfile, ResLoad, UserService } from '@app/user';
 import {
   DtoCheckEmail, DtoCheckPassword, DtoEditAddress,
   DtoEditPassword, ResRefresh, ResSignIn, DtoSignIn,
@@ -13,9 +14,6 @@ import {
   ApiOkResponse, ApiOperation,
   ApiTags, ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { DtoEditProfile, DtoCreateAccount } from './dto';
-import { ResLoad } from './res';
-import { UserService } from './user.service';
 
 @ApiTags('user')
 @Controller('api/user')
@@ -165,13 +163,13 @@ export class UserController {
 
   @Get()
   @HttpCode(200)
-  @ApiOperation({ summary: '사용자 조회' })
+  @ApiOperation({ summary: '사용자 정보 가져오기' })
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse({ type: ResLoad })
   @ApiNotFoundResponse()
-  public async load(@Headers() header) {
+  public async get(@Headers() header) {
     try {
-      return await this.user_service.load(this.util_service.get_token_body(header.authorization));
+      return await this.user_service.get(this.util_service.get_token_body(header.authorization));
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
