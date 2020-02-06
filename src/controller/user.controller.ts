@@ -116,7 +116,7 @@ export class UserController {
     }
   }
 
-  @Patch('auth/password')
+  @Patch('password')
   @HttpCode(200)
   @ApiOperation({ summary: '비밀번호 수정' })
   @ApiHeader({ name: 'Authorization' })
@@ -131,7 +131,7 @@ export class UserController {
     }
   }
 
-  @Patch('auth/information')
+  @Patch('information')
   @HttpCode(200)
   @ApiOperation({ summary: '정보 수정' })
   @ApiHeader({ name: 'Authorization' })
@@ -146,9 +146,9 @@ export class UserController {
     }
   }
 
-  @Patch('auth/address')
+  @Patch('address')
   @HttpCode(200)
-  @ApiOperation({ summary: '비밀번호 확인' })
+  @ApiOperation({ summary: '정보 수정' })
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse()
   @ApiForbiddenResponse()
