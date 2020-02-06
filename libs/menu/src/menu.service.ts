@@ -14,7 +14,7 @@ export class MenuService {
               private readonly option_repo: Repository<Option>,
               @InjectRepository(Group)
               private readonly group_repo: Repository<Group>,
-              private readonly util: UtilService,
+              private readonly util_service: UtilService,
   ) {
   }
 

@@ -10,7 +10,7 @@ import { User } from './user.entity';
 export class UserService {
   constructor(@InjectRepository(User)
               private readonly user_repo: Repository<User>,
-              private readonly util: UtilService,
+              private readonly util_service: UtilService,
   ) {
   }
 
@@ -28,7 +28,7 @@ export class UserService {
 
   public async update_user(email: string, payload): Promise<void> {
     if (payload.password) {
-      payload.password = await this.util.encode(payload.password);
+      payload.password = await this.util_service.encode(payload.password);
     }
     await this.user_repo.update({ email }, payload);
   }
@@ -47,48 +47,48 @@ export class UserService {
   public async sign_up(payload: SignUpDto): Promise<void> {
     await this.insert_user(new User({
       ...payload,
-      password: await this.util.encode(payload.password),
+      password: await this.util_service.encode(payload.password),
     }));
   }
 
   public async sign_in(payload: SignInDto): Promise<ResSignIn> {
     const found_user: User = await this.find_user_by_email(payload.email);
     if (found_user.isEmpty() ||
-      found_user.password !== await this.util.encode(payload.password)) {
+      found_user.password !== await this.util_service.encode(payload.password)) {
       throw new NotFoundException();
     }
 
     return {
-      access_token: await this.util.create_token(payload.email, TokenTypeEnum.access),
-      refresh_token: await this.util.create_token(payload.email, TokenTypeEnum.refresh),
+      access_token: await this.util_service.create_token(payload.email, TokenTypeEnum.access),
+      refresh_token: await this.util_service.create_token(payload.email, TokenTypeEnum.refresh),
     };
   }
 
   public async refresh(token: string): Promise<ResRefresh> {
-    const email: string = await this.util.get_email_by_token(token);
-    return { access_token: await this.util.create_token(email, TokenTypeEnum.access) };
+    const email: string = await this.util_service.get_email_by_token(token);
+    return { access_token: await this.util_service.create_token(email, TokenTypeEnum.access) };
   }
 
   public async leave(token: string): Promise<void> {
-    const email: string = await this.util.get_email_by_token(token);
+    const email: string = await this.util_service.get_email_by_token(token);
     await this.delete_user(email);
   }
 
   public async check_password(token: string, payload: CheckPasswordDto): Promise<void> {
-    const email: string = await this.util.get_email_by_token(token);
+    const email: string = await this.util_service.get_email_by_token(token);
     const found_user: User = await this.find_user_by_email(email);
-    if (await this.util.encode(payload.password) !== found_user.password) {
+    if (await this.util_service.encode(payload.password) !== found_user.password) {
       throw new UnauthorizedException();
     }
   }
 
   public async edit(token: string, payload) {
-    const email: string = await this.util.get_email_by_token(token);
+    const email: string = await this.util_service.get_email_by_token(token);
     await this.update_user(email, payload);
   }
 
   public async load(token: string): Promise<ResLoad> {
-    const email: string = await this.util.get_email_by_token(token);
+    const email: string = await this.util_service.get_email_by_token(token);
     const found_user: User = await this.find_user_by_email(email);
     return new User({ ...found_user, id: undefined, password: undefined, email: undefined });
   }

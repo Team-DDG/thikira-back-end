@@ -13,7 +13,7 @@ import { Restaurant } from './restaurant.entity';
 export class RestaurantService {
   constructor(@InjectRepository(Restaurant)
               private readonly restaurant_repo: Repository<Restaurant>,
-              private readonly util: UtilService,
+              private readonly util_service: UtilService,
   ) {
   }
 
@@ -31,7 +31,7 @@ export class RestaurantService {
 
   public async update_restaurant(email: string, payload): Promise<void> {
     if (payload.password) {
-      payload.password = await this.util.encode(payload.password);
+      payload.password = await this.util_service.encode(payload.password);
     }
     await this.restaurant_repo.update({ email }, payload);
   }
@@ -43,7 +43,7 @@ export class RestaurantService {
   public async sign_up(payload: SignUpDto): Promise<void> {
     await this.insert_restaurant(new Restaurant({
       ...payload,
-      password: await this.util.encode(payload.password),
+      password: await this.util_service.encode(payload.password),
     }));
   }
 
@@ -57,41 +57,41 @@ export class RestaurantService {
   public async sign_in(payload: SignInDto): Promise<ResSignIn> {
     const found_restaurant: Restaurant = await this.find_restaurant_by_email(payload.email);
     if (found_restaurant.isEmpty() ||
-      found_restaurant.password !== await this.util.encode(payload.password)) {
+      found_restaurant.password !== await this.util_service.encode(payload.password)) {
       throw new NotFoundException();
     }
 
     return {
-      access_token: await this.util.create_token(payload.email, TokenTypeEnum.access),
-      refresh_token: await this.util.create_token(payload.email, TokenTypeEnum.refresh),
+      access_token: await this.util_service.create_token(payload.email, TokenTypeEnum.access),
+      refresh_token: await this.util_service.create_token(payload.email, TokenTypeEnum.refresh),
     };
   }
 
   public async refresh(token: string): Promise<ResRefresh> {
-    const email: string = await this.util.get_email_by_token(token);
-    return { access_token: await this.util.create_token(email, TokenTypeEnum.access) };
+    const email: string = await this.util_service.get_email_by_token(token);
+    return { access_token: await this.util_service.create_token(email, TokenTypeEnum.access) };
   }
 
   public async leave(token: string): Promise<void> {
-    const email: string = await this.util.get_email_by_token(token);
+    const email: string = await this.util_service.get_email_by_token(token);
     await this.delete_restaurant(email);
   }
 
   public async check_password(token: string, payload: CheckPasswordDto): Promise<void> {
-    const email: string = await this.util.get_email_by_token(token);
+    const email: string = await this.util_service.get_email_by_token(token);
     const found_restaurant: Restaurant = await this.find_restaurant_by_email(email);
-    if (await this.util.encode(payload.password) !== found_restaurant.password) {
+    if (await this.util_service.encode(payload.password) !== found_restaurant.password) {
       throw new UnauthorizedException();
     }
   }
 
   public async edit(token: string, payload) {
-    const email: string = await this.util.get_email_by_token(token);
+    const email: string = await this.util_service.get_email_by_token(token);
     await this.update_restaurant(email, payload);
   }
 
   public async load(token: string): Promise<ResLoad> {
-    const email: string = await this.util.get_email_by_token(token);
+    const email: string = await this.util_service.get_email_by_token(token);
     const found_restaurant: Restaurant = await this.find_restaurant_by_email(email);
     return new Restaurant({ ...found_restaurant, menu_category: undefined, id: undefined, password: undefined, email: undefined });
   }

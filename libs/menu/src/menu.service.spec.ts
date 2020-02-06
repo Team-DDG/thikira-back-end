@@ -22,7 +22,7 @@ describe('MenuService', () => {
           inject: [ConfigService],
           useFactory(config: ConfigService) {
             return {
-              ...config.ormConfig,
+              ...config.orm_config,
               entities: [Restaurant, Menu, MenuCategory, Option, Group],
             };
           },

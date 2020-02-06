@@ -17,7 +17,7 @@ import { RestaurantController, UserController } from './controller';
       inject: [ConfigService],
       useFactory(config: ConfigService) {
         return {
-          ...config.ormConfig,
+          ...config.orm_config,
           entities: [
             Restaurant, User, Menu, MenuCategory, Option, Group,
           ],

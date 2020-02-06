@@ -9,12 +9,12 @@ export class UtilService {
   private readonly secret: Buffer;
   private readonly tokenRegExp = /^Bearer .+$/;
 
-  constructor(private readonly config: ConfigService) {
-    this.secret = config.JWT_SECRET ? Buffer.from(config.JWT_SECRET) : randomBytes(16);
+  constructor(private readonly config_service: ConfigService) {
+    this.secret = config_service.JWT_SECRET ? Buffer.from(config_service.JWT_SECRET) : randomBytes(16);
   }
 
   public async encode(content: string): Promise<string> {
-    return createHash(this.config.ENCIPHERMENT).update(content).digest('base64');
+    return createHash(this.config_service.ENCIPHERMENT).update(content).digest('base64');
   }
 
   public async create_token(email: string, type: TokenTypeEnum): Promise<string> {

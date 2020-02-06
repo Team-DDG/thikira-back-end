@@ -43,16 +43,16 @@ export class ConfigService {
   @IsString()
   public readonly ENCIPHERMENT: string;
 
-  public readonly ormConfig;
+  public readonly orm_config;
 
-  constructor(filePath?: string, customConfig?: Config) {
+  constructor(file_path?: string, custom_config?: Config) {
     Object.assign(this, {
       ...{
         NODE_ENV: NodeEnv.development,
       },
       ...process.env,
-      ...filePath && fileExistsSync(filePath) && parse(readFileSync(filePath)),
-      ...customConfig,
+      ...file_path && fileExistsSync(file_path) && parse(readFileSync(file_path)),
+      ...custom_config,
     });
 
     const errors = validateSync(this);
@@ -60,7 +60,7 @@ export class ConfigService {
       throw new Error(errors[0].toString());
     }
 
-    this.ormConfig = {
+    this.orm_config = {
       database: this.MYSQL_DB,
       host: this.MYSQL_HOST,
       password: this.MYSQL_PASS,
