@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Group } from './group.entity';
 import { MenuCategory } from './menu-category.entity';
-import { Option } from './option.entity';
 
 @Entity()
 export class Menu {
@@ -14,8 +14,8 @@ export class Menu {
   public readonly description: String;
   @Column()
   public readonly image: String;
-  @OneToMany((type) => Option, (option: Option) => option.menu)
-  public readonly option: Option[];
+  @OneToMany((type) => Group, (group: Group) => group.menu)
+  public readonly group: Group[];
   @ManyToOne(
     (type) => MenuCategory,
     (menu_category: MenuCategory) => menu_category.menu,
@@ -23,8 +23,8 @@ export class Menu {
   )
   public readonly menu_category: MenuCategory;
 
-  constructor(restaurant) {
-    Object.assign(this, restaurant);
+  constructor(menu) {
+    Object.assign(this, menu);
   }
 
   public isEmpty(): boolean {
