@@ -17,26 +17,26 @@ export class RestaurantService {
   ) {
   }
 
-  private async find_restaurant_by_id(id: number): Promise<Restaurant> {
+  public async find_restaurant_by_id(id: number): Promise<Restaurant> {
     return new Restaurant(await this.restaurant_repo.findOne(id));
   }
 
-  private async find_restaurant_by_email(email: string): Promise<Restaurant> {
+  public async find_restaurant_by_email(email: string): Promise<Restaurant> {
     return new Restaurant(await this.restaurant_repo.findOne({ email }));
   }
 
-  private async delete_restaurant(email: string): Promise<void> {
+  public async delete_restaurant(email: string): Promise<void> {
     await this.restaurant_repo.delete({ email });
   }
 
-  private async update_restaurant(email: string, payload): Promise<void> {
+  public async update_restaurant(email: string, payload): Promise<void> {
     if (payload.password) {
       payload.password = await this.util.encode(payload.password);
     }
     await this.restaurant_repo.update({ email }, payload);
   }
 
-  private async insert_restaurant(restaurant: Restaurant) {
+  public async insert_restaurant(restaurant: Restaurant) {
     await this.restaurant_repo.insert(restaurant);
   }
 
