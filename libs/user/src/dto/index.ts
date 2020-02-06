@@ -1,2 +1,2 @@
-export * from './edit_information.dto';
+export * from './edit_profile.dto';
 export * from './sign_up.dto';
