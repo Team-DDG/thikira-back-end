@@ -19,8 +19,8 @@ import {
 @Controller('api/user')
 export class UserController {
   constructor(
-    private readonly user: UserService,
-    private readonly util: UtilService,
+    private readonly user_service: UserService,
+    private readonly util_service: UtilService,
   ) {
   }
 
@@ -31,7 +31,7 @@ export class UserController {
   @ApiConflictResponse()
   public async check_email(@Body() payload: CheckEmailDto) {
     try {
-      return await this.user.check_email(payload);
+      return await this.user_service.check_email(payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -43,7 +43,7 @@ export class UserController {
   @ApiOkResponse()
   public async sign_up(@Body() payload: SignUpDto) {
     try {
-      return await this.user.sign_up(payload);
+      return await this.user_service.sign_up(payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -56,7 +56,7 @@ export class UserController {
   @ApiNotFoundResponse()
   public async sign_in(@Body() payload: SignInDto) {
     try {
-      return await this.user.sign_in(payload);
+      return await this.user_service.sign_in(payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -70,7 +70,7 @@ export class UserController {
   @ApiForbiddenResponse()
   public async refresh(@Headers() header) {
     try {
-      return await this.user.refresh(this.util.get_token_body(header['x-refresh-token']));
+      return await this.user_service.refresh(this.util_service.get_token_body(header['x-refresh-token']));
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -84,7 +84,7 @@ export class UserController {
   @ApiForbiddenResponse()
   public async leave(@Headers() header) {
     try {
-      return await this.user.leave(this.util.get_token_body(header.authorization));
+      return await this.user_service.leave(this.util_service.get_token_body(header.authorization));
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -110,7 +110,7 @@ export class UserController {
   public async check_password(@Headers() header,
                               @Body() payload: CheckPasswordDto) {
     try {
-      return await this.user.check_password(this.util.get_token_body(header.authorization), payload);
+      return await this.user_service.check_password(this.util_service.get_token_body(header.authorization), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -125,7 +125,7 @@ export class UserController {
   public async edit_password(@Headers() header,
                              @Body() payload: EditPasswordDto) {
     try {
-      return await this.user.edit(this.util.get_token_body(header.authorization), payload);
+      return await this.user_service.edit(this.util_service.get_token_body(header.authorization), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -140,7 +140,7 @@ export class UserController {
   public async edit_information(@Headers() header,
                                 @Body() payload: EditInformationDto) {
     try {
-      return await this.user.edit(this.util.get_token_body(header.authorization), payload);
+      return await this.user_service.edit(this.util_service.get_token_body(header.authorization), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -155,7 +155,7 @@ export class UserController {
   public async edit_address(@Headers() header,
                             @Body() payload: EditAddressDto) {
     try {
-      return await this.user.edit(this.util.get_token_body(header.authorization), payload);
+      return await this.user_service.edit(this.util_service.get_token_body(header.authorization), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -169,7 +169,7 @@ export class UserController {
   @ApiNotFoundResponse()
   public async load(@Headers() header) {
     try {
-      return await this.user.load(this.util.get_token_body(header.authorization));
+      return await this.user_service.load(this.util_service.get_token_body(header.authorization));
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
