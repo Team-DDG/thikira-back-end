@@ -12,8 +12,8 @@ export class Option {
   @ManyToOne((type) => Group, (group: Group) => group.option)
   public readonly group: Group;
 
-  constructor(restaurant) {
-    Object.assign(this, restaurant);
+  constructor(option) {
+    Object.assign(this, option);
   }
 
   public isEmpty(): boolean {

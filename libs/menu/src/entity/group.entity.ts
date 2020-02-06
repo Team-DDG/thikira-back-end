@@ -13,8 +13,8 @@ export class Group {
   @OneToMany((type) => Option, (option: Option) => option.group)
   public readonly option: Option[];
 
-  constructor(restaurant) {
-    Object.assign(this, restaurant);
+  constructor(group) {
+    Object.assign(this, group);
   }
 
   public isEmpty(): boolean {

@@ -23,8 +23,8 @@ export class Menu {
   )
   public readonly menu_category: MenuCategory;
 
-  constructor(restaurant) {
-    Object.assign(this, restaurant);
+  constructor(menu) {
+    Object.assign(this, menu);
   }
 
   public isEmpty(): boolean {

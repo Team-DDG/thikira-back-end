@@ -13,8 +13,8 @@ export class MenuCategory {
   @ManyToOne((type) => Restaurant, (restaurant: Restaurant) => restaurant.menu_category)
   public readonly restaurant: Restaurant;
 
-  constructor(restaurant) {
-    Object.assign(this, restaurant);
+  constructor(menu_category) {
+    Object.assign(this, menu_category);
   }
 
   public isEmpty(): boolean {
