@@ -1,17 +1,17 @@
-import { Restaurant } from '@app/restaurant';
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Menu } from './menu.entity';
+import { Option } from './option.entity';
 
 @Entity()
-export class MenuCategory {
+export class Group {
   @PrimaryGeneratedColumn()
   public readonly id: Number;
   @Column()
   public readonly name: String;
-  @OneToMany((type) => Menu, (menu: Menu) => menu.menu_category)
-  public readonly menu: Menu[];
-  @ManyToOne((type) => Restaurant, (restaurant: Restaurant) => restaurant.menu_category)
-  public readonly restaurant: Restaurant;
+  @ManyToOne((type) => Menu, (menu: Menu) => menu.group)
+  public readonly menu: Menu;
+  @OneToMany((type) => Option, (option: Option) => option.group)
+  public readonly option: Option[];
 
   constructor(restaurant) {
     Object.assign(this, restaurant);

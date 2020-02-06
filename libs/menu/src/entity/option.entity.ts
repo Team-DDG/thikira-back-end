@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Menu } from './menu.entity';
+import { Group } from './group.entity';
 
 @Entity()
 export class Option {
@@ -9,11 +9,11 @@ export class Option {
   public readonly name: String;
   @Column()
   public readonly price: Number;
-  @ManyToOne((type) => Menu, (menu: Menu) => menu.option)
-  public readonly menu: Menu;
+  @ManyToOne((type) => Group, (group: Group) => group.option)
+  public readonly group: Group;
 
-  constructor(option) {
-    Object.assign(this, option);
+  constructor(restaurant) {
+    Object.assign(this, restaurant);
   }
 
   public isEmpty(): boolean {
