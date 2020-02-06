@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Menu, MenuCategory, Option } from './entity';
+import { Group, Menu, MenuCategory, Option } from './entity';
 
 @Injectable()
 export class MenuService {
@@ -11,6 +11,8 @@ export class MenuService {
               public readonly menu_category_repo: Repository<MenuCategory>,
               @InjectRepository(Option)
               public readonly option_repo: Repository<Option>,
+              @InjectRepository(Group)
+              public readonly group_repo: Repository<Group>,
   ) {
   }
 

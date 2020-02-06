@@ -31,6 +31,7 @@ describe('MenuService', () => {
         { provide: MenuService, useValue: [new Repository<Menu>()] },
         { provide: MenuService, useValue: [new Repository<MenuCategory>()] },
         { provide: MenuService, useValue: [new Repository<Option>()] },
+        { provide: MenuService, useValue: [new Repository<Group>()] },
       ],
     }).compile();
 
