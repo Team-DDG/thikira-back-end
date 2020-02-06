@@ -49,7 +49,7 @@ export class UserController {
     }
   }
 
-  @Post('auth/address')
+  @Post('auth/sign_in')
   @HttpCode(200)
   @ApiOperation({ summary: '로그인' })
   @ApiOkResponse({ type: ResSignIn })
@@ -131,7 +131,7 @@ export class UserController {
     }
   }
 
-  @Patch('auth/profile')
+  @Patch('profile')
   @HttpCode(200)
   @ApiOperation({ summary: '프로필 수정' })
   @ApiHeader({ name: 'Authorization' })
@@ -148,7 +148,7 @@ export class UserController {
 
   @Patch('address')
   @HttpCode(200)
-  @ApiOperation({ summary: '정보 수정' })
+  @ApiOperation({ summary: '주소 수정' })
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse()
   @ApiForbiddenResponse()
