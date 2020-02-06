@@ -24,7 +24,7 @@ export class UserController {
   ) {
   }
 
-  @Get('check_email')
+  @Get('auth/email')
   @HttpCode(200)
   @ApiOperation({ summary: '이메일 확인' })
   @ApiOkResponse()

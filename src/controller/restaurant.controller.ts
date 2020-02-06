@@ -18,7 +18,7 @@ import {
 @ApiTags('Restaurant')
 @Controller('api/restaurant')
 export class RestaurantController {
-  @Get('check_email')
+  @Get('auth/email')
   @HttpCode(200)
   @ApiOperation({ summary: '이메일 확인' })
   @ApiOkResponse()
