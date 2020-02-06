@@ -5,9 +5,9 @@ import { Menu } from './menu.entity';
 @Entity()
 export class MenuCategory {
   @PrimaryGeneratedColumn()
-  public readonly id: Number;
+  public readonly id: number;
   @Column()
-  public readonly name: String;
+  public readonly name: string;
   @OneToMany((type) => Menu, (menu: Menu) => menu.menu_category)
   public readonly menu: Menu[];
   @ManyToOne((type) => Restaurant, (restaurant: Restaurant) => restaurant.menu_category)
