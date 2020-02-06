@@ -1,7 +1,6 @@
-import { EditProfileDto, ResLoad, SignUpDto, UserService } from '@app/user';
 import {
-  CheckEmailDto, CheckPasswordDto, EditAddressDto,
-  EditPasswordDto, ResRefresh, ResSignIn, SignInDto,
+  DtoCheckEmail, DtoCheckPassword, DtoEditAddress,
+  DtoEditPassword, ResRefresh, ResSignIn, DtoSignIn,
   UtilService,
 } from '@app/util';
 import {
@@ -14,6 +13,9 @@ import {
   ApiOkResponse, ApiOperation,
   ApiTags, ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { DtoEditProfile, DtoCreateAccount } from './dto';
+import { ResLoad } from './res';
+import { UserService } from './user.service';
 
 @ApiTags('user')
 @Controller('api/user')
@@ -29,7 +31,7 @@ export class UserController {
   @ApiOperation({ summary: '이메일 확인' })
   @ApiOkResponse()
   @ApiConflictResponse()
-  public async check_email(@Body() payload: CheckEmailDto) {
+  public async check_email(@Body() payload: DtoCheckEmail) {
     try {
       return await this.user_service.check_email(payload);
     } catch (e) {
@@ -41,7 +43,7 @@ export class UserController {
   @HttpCode(200)
   @ApiOperation({ summary: '회원가입' })
   @ApiOkResponse()
-  public async sign_up(@Body() payload: SignUpDto) {
+  public async sign_up(@Body() payload: DtoCreateAccount) {
     try {
       return await this.user_service.sign_up(payload);
     } catch (e) {
@@ -54,7 +56,7 @@ export class UserController {
   @ApiOperation({ summary: '로그인' })
   @ApiOkResponse({ type: ResSignIn })
   @ApiNotFoundResponse()
-  public async sign_in(@Body() payload: SignInDto) {
+  public async sign_in(@Body() payload: DtoSignIn) {
     try {
       return await this.user_service.sign_in(payload);
     } catch (e) {
@@ -108,7 +110,7 @@ export class UserController {
   @ApiForbiddenResponse()
   @ApiUnauthorizedResponse()
   public async check_password(@Headers() header,
-                              @Body() payload: CheckPasswordDto) {
+                              @Body() payload: DtoCheckPassword) {
     try {
       return await this.user_service.check_password(this.util_service.get_token_body(header.authorization), payload);
     } catch (e) {
@@ -123,7 +125,7 @@ export class UserController {
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_password(@Headers() header,
-                             @Body() payload: EditPasswordDto) {
+                             @Body() payload: DtoEditPassword) {
     try {
       return await this.user_service.edit(this.util_service.get_token_body(header.authorization), payload);
     } catch (e) {
@@ -138,7 +140,7 @@ export class UserController {
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_profile(@Headers() header,
-                            @Body() payload: EditProfileDto) {
+                            @Body() payload: DtoEditProfile) {
     try {
       return await this.user_service.edit(this.util_service.get_token_body(header.authorization), payload);
     } catch (e) {
@@ -153,7 +155,7 @@ export class UserController {
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_address(@Headers() header,
-                            @Body() payload: EditAddressDto) {
+                            @Body() payload: DtoEditAddress) {
     try {
       return await this.user_service.edit(this.util_service.get_token_body(header.authorization), payload);
     } catch (e) {

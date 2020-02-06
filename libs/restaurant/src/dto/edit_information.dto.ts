@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsNumber, IsNumberString, IsString, IsUrl } from 'class-validator';
 
-export class EditInformationDto {
+export class DtoEditInformation {
   @ApiProperty({
     description: '업체 사진',
     example: 'asdf@gmail.com',

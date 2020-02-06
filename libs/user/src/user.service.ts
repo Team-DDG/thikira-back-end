@@ -1,8 +1,8 @@
-import { CheckEmailDto, CheckPasswordDto, ResRefresh, ResSignIn, SignInDto, TokenTypeEnum, UtilService } from '@app/util';
+import { DtoCheckEmail, DtoCheckPassword, ResRefresh, ResSignIn, DtoSignIn, TokenTypeEnum, UtilService } from '@app/util';
 import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { SignUpDto } from './dto';
+import { DtoCreateAccount } from './dto';
 import { ResLoad } from './res';
 import { User } from './user.entity';
 
@@ -37,21 +37,21 @@ export class UserService {
     await this.user_repo.insert(user);
   }
 
-  public async check_email(payload: CheckEmailDto): Promise<void> {
+  public async check_email(payload: DtoCheckEmail): Promise<void> {
     const foundUser = await this.find_user_by_email(payload.email);
     if (foundUser) {
       throw new ConflictException();
     }
   }
 
-  public async sign_up(payload: SignUpDto): Promise<void> {
+  public async sign_up(payload: DtoCreateAccount): Promise<void> {
     await this.insert_user(new User({
       ...payload,
       password: await this.util_service.encode(payload.password),
     }));
   }
 
-  public async sign_in(payload: SignInDto): Promise<ResSignIn> {
+  public async sign_in(payload: DtoSignIn): Promise<ResSignIn> {
     const found_user: User = await this.find_user_by_email(payload.email);
     if (found_user.isEmpty() ||
       found_user.password !== await this.util_service.encode(payload.password)) {
@@ -74,7 +74,7 @@ export class UserService {
     await this.delete_user(email);
   }
 
-  public async check_password(token: string, payload: CheckPasswordDto): Promise<void> {
+  public async check_password(token: string, payload: DtoCheckPassword): Promise<void> {
     const email: string = await this.util_service.get_email_by_token(token);
     const found_user: User = await this.find_user_by_email(email);
     if (await this.util_service.encode(payload.password) !== found_user.password) {

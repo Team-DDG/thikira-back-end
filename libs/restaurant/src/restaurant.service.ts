@@ -1,11 +1,11 @@
 import {
-  CheckEmailDto, CheckPasswordDto, ResRefresh,
-  ResSignIn, SignInDto, TokenTypeEnum, UtilService,
+  DtoCheckEmail, DtoCheckPassword, ResRefresh,
+  ResSignIn, DtoSignIn, TokenTypeEnum, UtilService,
 } from '@app/util';
 import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { SignUpDto } from './dto';
+import { DtoSignUp } from './dto';
 import { ResLoad } from './res';
 import { Restaurant } from './restaurant.entity';
 
@@ -40,21 +40,21 @@ export class RestaurantService {
     await this.restaurant_repo.insert(restaurant);
   }
 
-  public async sign_up(payload: SignUpDto): Promise<void> {
+  public async sign_up(payload: DtoSignUp): Promise<void> {
     await this.insert_restaurant(new Restaurant({
       ...payload,
       password: await this.util_service.encode(payload.password),
     }));
   }
 
-  public async check_email(payload: CheckEmailDto): Promise<void> {
+  public async check_email(payload: DtoCheckEmail): Promise<void> {
     const found_restaurant: Restaurant = await this.find_restaurant_by_email(payload.email);
     if (!found_restaurant.isEmpty()) {
       throw new ConflictException();
     }
   }
 
-  public async sign_in(payload: SignInDto): Promise<ResSignIn> {
+  public async sign_in(payload: DtoSignIn): Promise<ResSignIn> {
     const found_restaurant: Restaurant = await this.find_restaurant_by_email(payload.email);
     if (found_restaurant.isEmpty() ||
       found_restaurant.password !== await this.util_service.encode(payload.password)) {
@@ -77,7 +77,7 @@ export class RestaurantService {
     await this.delete_restaurant(email);
   }
 
-  public async check_password(token: string, payload: CheckPasswordDto): Promise<void> {
+  public async check_password(token: string, payload: DtoCheckPassword): Promise<void> {
     const email: string = await this.util_service.get_email_by_token(token);
     const found_restaurant: Restaurant = await this.find_restaurant_by_email(email);
     if (await this.util_service.encode(payload.password) !== found_restaurant.password) {

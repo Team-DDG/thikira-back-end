@@ -1,7 +1,6 @@
-import { EditInformationDto, ResLoad, RestaurantService, SignUpDto } from '@app/restaurant';
 import {
-  CheckEmailDto, CheckPasswordDto, EditAddressDto,
-  EditPasswordDto, ResRefresh, ResSignIn, SignInDto,
+  DtoCheckEmail, DtoCheckPassword, DtoEditAddress,
+  DtoEditPassword, ResRefresh, ResSignIn, DtoSignIn,
   UtilService,
 } from '@app/util';
 import {
@@ -14,6 +13,9 @@ import {
   ApiOkResponse, ApiOperation,
   ApiTags, ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { DtoEditInformation, DtoSignUp } from './dto';
+import { ResLoad } from './res';
+import { RestaurantService } from './restaurant.service';
 
 @ApiTags('Restaurant')
 @Controller('api/restaurant')
@@ -23,7 +25,7 @@ export class RestaurantController {
   @ApiOperation({ summary: '이메일 확인' })
   @ApiOkResponse()
   @ApiConflictResponse()
-  public async check_email(@Body() payload: CheckEmailDto) {
+  public async check_email(@Body() payload: DtoCheckEmail) {
     try {
       return await this.restaurant_service.check_email(payload);
     } catch (e) {
@@ -40,7 +42,7 @@ export class RestaurantController {
   @HttpCode(200)
   @ApiOperation({ summary: '회원가입' })
   @ApiOkResponse()
-  public async sign_up(@Body() payload: SignUpDto) {
+  public async sign_up(@Body() payload: DtoSignUp) {
     try {
       return await this.restaurant_service.sign_up(payload);
     } catch (e) {
@@ -53,7 +55,7 @@ export class RestaurantController {
   @ApiOperation({ summary: '로그인' })
   @ApiOkResponse({ type: ResSignIn })
   @ApiNotFoundResponse()
-  public async sign_in(@Body(new ValidationPipe()) payload: SignInDto) {
+  public async sign_in(@Body(new ValidationPipe()) payload: DtoSignIn) {
     try {
       return await this.restaurant_service.sign_in(payload);
     } catch (e) {
@@ -107,7 +109,7 @@ export class RestaurantController {
   @ApiForbiddenResponse()
   @ApiUnauthorizedResponse()
   public async check_password(@Headers() header,
-                              @Body() payload: CheckPasswordDto) {
+                              @Body() payload: DtoCheckPassword) {
     try {
       return await this.restaurant_service.check_password(this.util_service.get_token_body(header.authorization), payload);
     } catch (e) {
@@ -122,7 +124,7 @@ export class RestaurantController {
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_password(@Headers() header,
-                             @Body() payload: EditPasswordDto) {
+                             @Body() payload: DtoEditPassword) {
     try {
       return await this.restaurant_service.edit(this.util_service.get_token_body(header.authorization), payload);
     } catch (e) {
@@ -137,7 +139,7 @@ export class RestaurantController {
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_information(@Headers() header,
-                                @Body() payload: EditInformationDto) {
+                                @Body() payload: DtoEditInformation) {
     try {
       return await this.restaurant_service.edit(this.util_service.get_token_body(header.authorization), payload);
     } catch (e) {
@@ -152,7 +154,7 @@ export class RestaurantController {
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_address(@Headers() header,
-                            @Body() payload: EditAddressDto) {
+                            @Body() payload: DtoEditAddress) {
     try {
       return await this.restaurant_service.edit(this.util_service.get_token_body(header.authorization), payload);
     } catch (e) {

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsEmail, IsNumber, IsNumberString, IsString, IsUrl } from 'class-validator';
 
-export class SignUpDto {
+export class DtoSignUp {
   @ApiProperty({
     description: '업체 사진',
     example: 'asdf@gmail.com',
