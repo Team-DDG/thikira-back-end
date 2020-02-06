@@ -90,7 +90,9 @@
       "@app/user/(.*)": "<rootDir>/libs/user/src/$1",
       "@app/user": "<rootDir>/libs/user/src",
       "@app/menu/(.*)": "<rootDir>/libs/menu/src/$1",
-      "@app/menu": "<rootDir>/libs/menu/src"
+      "@app/menu": "<rootDir>/libs/menu/src",
+      "@app/db/(.*)": "<rootDir>/libs/db/src/$1",
+      "@app/db": "<rootDir>/libs/db/src"
     }
   }
 }

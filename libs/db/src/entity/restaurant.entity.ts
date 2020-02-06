@@ -1,5 +1,5 @@
-import { MenuCategory } from '@app/menu';
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { MenuCategory } from './menu-category.entity';
 
 @Entity()
 export class Restaurant {

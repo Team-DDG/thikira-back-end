@@ -1,12 +1,9 @@
 import { ConfigModule, ConfigService } from '@app/config';
-import { Group, Menu, MenuCategory, Option } from '@app/menu';
-import { User } from '@app/user';
-import { ResRefresh, ResSignIn } from '@app/util';
+import { DBModule, Group, Menu, MenuCategory, Option, Restaurant, User } from '@app/db';
+import { ResRefresh, ResSignIn, UtilModule } from '@app/util';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Restaurant } from './restaurant.entity';
 import { RestaurantModule } from './restaurant.module';
 import { RestaurantService } from './restaurant.service';
 
@@ -37,7 +34,7 @@ describe('RestaurantService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        RestaurantModule,
+        RestaurantModule, DBModule, UtilModule,
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
           inject: [ConfigService],
@@ -48,9 +45,7 @@ describe('RestaurantService', () => {
             };
           },
         })],
-      providers: [
-        { provide: RestaurantService, useValue: [new Repository<Restaurant>()] },
-      ],
+      providers: [RestaurantService],
     }).compile();
 
     app = module.createNestApplication();

@@ -1,6 +1,6 @@
-import { Restaurant } from '@app/restaurant';
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Menu } from './menu.entity';
+import { Restaurant } from './restaurant.entity';
 
 @Entity()
 export class MenuCategory {

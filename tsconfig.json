@@ -25,6 +25,9 @@
       ],
       "@app/menu": [
         "libs/menu/src"
+      ],
+      "@app/db": [
+        "libs/db/src"
       ]
     }
   },

@@ -1,10 +1,9 @@
 import { ConfigModule, ConfigService } from '@app/config';
-import { ResRefresh, ResSignIn } from '@app/util';
+import { DBModule, Group, Menu, MenuCategory, Option, Restaurant, User } from '@app/db';
+import { ResRefresh, ResSignIn, UtilModule } from '@app/util';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from './user.entity';
 import { UserModule } from './user.module';
 import { UserService } from './user.service';
 
@@ -25,20 +24,18 @@ describe('UserService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        UserModule,
+        UserModule, DBModule, UtilModule,
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
           inject: [ConfigService],
           useFactory(config: ConfigService) {
             return {
               ...config.orm_config,
-              entities: [User],
+              entities: [Restaurant, Menu, MenuCategory, Option, Group, User],
             };
           },
         })],
-      providers: [
-        { provide: UserService, useValue: [new Repository<User>()] },
-      ],
+      providers: [UserService],
     }).compile();
 
     app = module.createNestApplication();
