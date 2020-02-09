@@ -1,13 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString } from 'class-validator';
 
-export class ResGetMenuCategoryList {
+export class ResGetMenuCategory {
   @ApiProperty({
     description: '메뉴 카테고리 아이디',
     example: 0,
   })
   @IsNumber()
-  public readonly id: number;
+  public readonly menu_category_id: number;
 
   @ApiProperty({
     description: '메뉴 카테고리 이름',
@@ -15,4 +15,8 @@ export class ResGetMenuCategoryList {
   })
   @IsString()
   public readonly name: string;
+
+  constructor(payload) {
+    Object.assign(this, payload);
+  }
 }

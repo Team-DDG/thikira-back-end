@@ -1,4 +1,4 @@
-import { DtoEditMenuCategory, DtoRemoveMenuCategory, DtoUploadMenuCategory, MenuService, ResGetMenuCategoryList } from '@app/menu';
+import { MenuService } from '@app/menu';
 import { DtoEditInformation, DtoSignUp, ResLoad, RestaurantService } from '@app/restaurant';
 import {
   DtoCheckEmail, DtoCheckPassword, DtoEditAddress,
@@ -171,68 +171,6 @@ export class RestaurantController {
   public async load(@Headers() header) {
     try {
       return await this.restaurant_service.load(this.util_service.get_token_body(header.authorization));
-    } catch (e) {
-      throw new InternalServerErrorException(e.message);
-    }
-  }
-
-  @Post('menu/category')
-  @HttpCode(200)
-  @ApiOperation({ summary: '메뉴 카테고리 업로드' })
-  @ApiHeader({ name: 'Authorization' })
-  @ApiOkResponse()
-  @ApiForbiddenResponse()
-  @ApiConflictResponse()
-  public async upload_menu_category(@Headers() header,
-                                    @Body() payload: DtoUploadMenuCategory) {
-    try {
-      return await this.menu_service.upload_menu_category(this.util_service.get_token_body(header.authorization), payload);
-    } catch (e) {
-      throw new InternalServerErrorException(e.message);
-    }
-  }
-
-  @Patch('menu/category')
-  @HttpCode(200)
-  @ApiOperation({ summary: '메뉴 카테고리 수정' })
-  @ApiHeader({ name: 'Authorization' })
-  @ApiOkResponse()
-  @ApiForbiddenResponse()
-  @ApiConflictResponse()
-  public async edit_menu_category(@Headers() header,
-                                  @Body() payload: DtoEditMenuCategory) {
-    try {
-      return await this.menu_service.edit_menu_category(this.util_service.get_token_body(header.authorization), payload);
-    } catch (e) {
-      throw new InternalServerErrorException(e.message);
-    }
-  }
-
-  @Get('menu/category')
-  @HttpCode(200)
-  @ApiOperation({ summary: '메뉴 카테고리 리스트 불러오기' })
-  @ApiHeader({ name: 'Authorization' })
-  @ApiOkResponse({ type: [ResGetMenuCategoryList] })
-  @ApiForbiddenResponse()
-  @ApiConflictResponse()
-  public async get_menu_category_list(@Headers() header) {
-    try {
-      return await this.menu_service.get_menu_category_list(this.util_service.get_token_body(header.authorization));
-    } catch (e) {
-      throw new InternalServerErrorException(e.message);
-    }
-  }
-
-  @Delete('menu/category')
-  @HttpCode(200)
-  @ApiOperation({ summary: '메뉴 카테고리 삭제' })
-  @ApiHeader({ name: 'Authorization' })
-  @ApiOkResponse()
-  @ApiForbiddenResponse()
-  public async remove_menu_category(@Headers() header,
-                                    @Body() payload: DtoRemoveMenuCategory) {
-    try {
-      return await this.menu_service.remove_menu_category(this.util_service.get_token_body(header.authorization), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }

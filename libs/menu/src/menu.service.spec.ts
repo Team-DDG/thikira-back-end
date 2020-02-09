@@ -1,6 +1,6 @@
 import { ConfigModule, ConfigService } from '@app/config';
 import { DBModule, Group, Menu, MenuCategory, Option, Restaurant, User } from '@app/db';
-import { MenuModule, MenuService, ResGetMenuCategoryList } from '@app/menu';
+import { MenuModule, MenuService, ResGetMenuCategory } from '@app/menu';
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
 import { UserModule, UserService } from '@app/user';
 import { UtilModule } from '@app/util';
@@ -22,7 +22,7 @@ describe('MenuService', () => {
       name: '치킨',
     },
   };
-  let menu_category_list: ResGetMenuCategoryList[];
+  let menu_category_list: ResGetMenuCategory[];
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -67,11 +67,13 @@ describe('MenuService', () => {
     test_value.category.name = '피자';
     await service.edit_menu_category(
       restaurant_access_token,
-      { id: menu_category_list[0].id, name: test_value.category.name },
+      { menu_category_id: menu_category_list[0].menu_category_id, name: test_value.category.name },
     );
   });
 
   it('200 remove_menu_category()', async () => {
-    await service.remove_menu_category(restaurant_access_token, menu_category_list[0]);
+    for(const loop_menu_category of menu_category_list) {
+      await service.remove_menu_category(loop_menu_category);
+    }
   });
 });

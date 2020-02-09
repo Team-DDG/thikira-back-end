@@ -1,59 +1,61 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsNumber, IsOptional, IsString, IsUrl } from 'class-validator';
-import { GroupData } from '../class';
 
-export class DtoUploadMenu {
+export class DtoEditMenu {
   @ApiProperty({
-    description: '메뉴 카테고리 아이디',
+    description: '메뉴 아이디',
     example: 10,
   })
   @IsNumber()
-  public readonly menu_category_id: number;
+  public readonly menu_id: number;
   @ApiProperty({
     description: '메뉴 이름',
     example: '스모크 치킨',
   })
   @IsString()
-  public readonly name: string;
+  @IsOptional()
+  public readonly name?: string;
   @ApiProperty({
     description: '가격',
     example: 17000,
   })
   @IsNumber()
-  public readonly price: number;
+  @IsOptional()
+  public readonly price?: number;
   @ApiProperty({
     description: '설명',
     example: '물참나무 향 솔솔~ 담백한 엉치살 구이',
   })
   @IsString()
-  public readonly description: string;
+  @IsOptional()
+  public readonly description?: string;
   @ApiProperty({
     description: '사진',
     example: 'image.url',
   })
   @IsUrl()
-  public readonly image: string;
+  @IsOptional()
+  public readonly image?: string;
   @ApiProperty({
     description: '옵션',
     example: [{
-      name: '치킨 유형',
-      max_count: 1,
-      option: [
-        { name: '순살', price: 1000 },
-        { name: '뼈', price: 0 }],
+      name: '순살',
+      price: 1000,
     }, {
-      name: '소스',
-      max_count: 0,
-      option: [
-        { name: '갈릭소스', price: 500 },
-        { name: '양념 소스', price: 500 }],
+      name: '매운맛',
+      price: 0,
     }],
   })
   @IsArray()
   @IsOptional()
-  public readonly group?: GroupData[];
-
-  constructor(payload) {
-    Object.assign(this, payload);
-  }
+  public readonly group?: Array<{
+    group_id: number,
+    name: string,
+    max_count: number,
+    option: Array<{
+      option_id: number,
+      name: string,
+      price: number,
+    }>,
+  }>;
 }

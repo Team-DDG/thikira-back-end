@@ -8,7 +8,7 @@ import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppGuard } from './app.guard';
-import { RestaurantController, UserController } from './controller';
+import { RestaurantController, RestaurantMenuController, UserController } from './controller';
 
 @Module({
   imports: [
@@ -28,7 +28,7 @@ import { RestaurantController, UserController } from './controller';
     provide: APP_GUARD,
     useClass: AppGuard,
   }],
-  controllers: [RestaurantController, UserController],
+  controllers: [RestaurantController, UserController, RestaurantMenuController],
 })
 export class AppModule {
 }

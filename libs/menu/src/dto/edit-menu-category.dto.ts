@@ -7,7 +7,7 @@ export class DtoEditMenuCategory {
     example: 0,
   })
   @IsNumber()
-  public readonly id: number;
+  public readonly menu_category_id: number;
 
   @ApiProperty({
     description: '메뉴 카테고리 이름',

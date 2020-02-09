@@ -8,4 +8,8 @@ export class DtoUploadMenuCategory {
   })
   @IsString()
   public readonly name: string;
+
+  constructor(payload) {
+    Object.assign(this, payload);
+  }
 }

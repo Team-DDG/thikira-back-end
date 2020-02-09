@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber } from 'class-validator';
 
-export class DtoRemoveMenuCategory {
+export class DtoGetMenuList {
   @ApiProperty({
-    name: '메뉴 카데고리 아이디',
-    example: 1
+    description: '메뉴 카테고리 아이디',
+    example: 10,
   })
   @IsNumber()
   public readonly menu_category_id: number;
