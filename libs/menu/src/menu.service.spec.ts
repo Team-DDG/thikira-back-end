@@ -1,28 +1,116 @@
 import { ConfigModule, ConfigService } from '@app/config';
 import { DBModule, Group, Menu, MenuCategory, Option, Restaurant, User } from '@app/db';
-import { MenuModule, MenuService, ResGetMenuCategory } from '@app/menu';
+import {
+  DtoUploadGroup, DtoUploadMenu, DtoUploadMenuCategory, DtoUploadOption,
+  MenuModule, MenuService,
+  ResGetGroup, ResGetMenuCategory, ResGetMenu, ResGetOption,
+} from '@app/menu';
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
 import { UserModule, UserService } from '@app/user';
-import { UtilModule } from '@app/util';
+import { UtilModule, UtilService } from '@app/util';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { errorObject } from 'rxjs/internal-compatibility';
 
 describe('MenuService', () => {
   let app: INestApplication;
   let service: MenuService;
   let user_access_token: string;
   let restaurant_access_token: string;
-  let test_value = {
-    account: {
-      email: 'test_fixed@gmail.com',
-      password: 'test_fixed',
-    },
-    category: {
-      name: '치킨',
-    },
+  let test_account = {
+    email: 'test_fixed@gmail.com',
+    password: 'test_fixed',
   };
-  let menu_category_list: ResGetMenuCategory[];
+  let test_req: {
+    menu_category: DtoUploadMenuCategory[],
+    menu: DtoUploadMenu[]
+    group: DtoUploadGroup[]
+    option: DtoUploadOption[]
+  } = {
+    menu_category: [
+      { name: 'special chicken' },
+      { name: '바베큐 치킨' },
+    ],
+    menu: [
+      {
+        menu_category_id: null, name: '신호등 치킨', price: 17000,
+        description: '딸기 바나나 멜론맛!', image: 'image.url',
+        group: [{
+          name: 'sauce', max_count: 0,
+          option: [
+            { name: '갈릭 소스', price: 500 },
+            { name: '양념 소스', price: 500 },
+          ],
+        }, {
+          name: '매운 정도', max_count: 0,
+          option: [
+            { name: '매운맛', price: 0 },
+            { name: '순한맛', price: 0 },
+          ],
+        }],
+      },
+      {
+        menu_category_id: null, name: '쁘링클 치킨', price: 17000,
+        description: '치즈향 가득~', image: 'image.url',
+        group: [{
+          name: '소스', max_count: 0,
+          option: [
+            { name: '갈릭 소스', price: 500 },
+            { name: '양념 소스', price: 500 },
+          ],
+        }, {
+          name: '매운 정도', max_count: 0,
+          option: [
+            { name: '매운맛', price: 0 },
+            { name: '순한맛', price: 0 }],
+        }],
+      },
+      {
+        menu_category_id: null, name: '신호등 치킨', price: 17000,
+        description: '딸기 바나나 멜론맛!', image: 'image.url',
+      },
+      {
+        menu_category_id: null, name: '쁘링클 치킨', price: 17000,
+        description: '치즈향 가득~', image: 'image.url',
+      },
+    ],
+    group: [
+      {
+        menu_id: null, name: '소스',
+        max_count: 0, option: [
+          { name: '갈릭소스', price: 500 },
+          { name: '양념 소스', price: 500 },
+        ],
+      },
+      {
+        menu_id: null, name: '매운 정도',
+        max_count: 0, option: [
+          { name: '매운맛', price: 0 },
+          { name: '순한맛', price: 0 },
+        ],
+      },
+      { menu_id: null, name: '소스', max_count: 0 },
+      { menu_id: null, name: '매운 정도', max_count: 0 },
+    ],
+    option: [
+      { group_id: null, name: '갈릭 소스', price: 500 },
+      { group_id: null, name: '양념 소스', price: 500 },
+      { group_id: null, name: '매운맛', price: 0 },
+      { group_id: null, name: '순한맛', price: 0 },
+    ],
+  };
+  let test_res: {
+    menu_category: ResGetMenuCategory[],
+    menu: ResGetMenu[],
+    group: ResGetGroup[],
+    option: ResGetOption[]
+  } = {
+    menu_category: new Array<ResGetMenuCategory>(),
+    menu: new Array<ResGetMenu>(),
+    group: new Array<ResGetGroup>(),
+    option: new Array<ResGetOption>(),
+  };
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -45,10 +133,10 @@ describe('MenuService', () => {
     service = module.get<MenuService>(MenuService);
 
     const restaurant_service = module.get<RestaurantService>(RestaurantService);
-    restaurant_access_token = (await restaurant_service.sign_in(test_value.account)).access_token;
+    restaurant_access_token = (await restaurant_service.sign_in(test_account)).access_token;
 
     const user_service = module.get<UserService>(UserService);
-    user_access_token = (await user_service.sign_in(test_value.account)).access_token;
+    user_access_token = (await user_service.sign_in(test_account)).access_token;
   });
 
   afterAll(async () => {
@@ -56,24 +144,178 @@ describe('MenuService', () => {
   });
 
   it('200 upload_menu_category()', async () => {
-    await service.upload_menu_category(restaurant_access_token, test_value.category);
-  });
-
-  it('200 get_menu_category_list()', async () => {
-    menu_category_list = await service.get_menu_category_list(restaurant_access_token);
+    for (const loop_menu_category of test_req.menu_category) {
+      await service.upload_menu_category(restaurant_access_token, loop_menu_category);
+    }
+    test_res.menu_category = await service.get_menu_category_list(restaurant_access_token);
+    for (const index of UtilService.range(test_res.menu_category.length)) {
+      if (test_req.menu_category[index].name !== test_res.menu_category[index].name) {
+        throw new errorObject();
+      }
+    }
+    for (const index of UtilService.range(test_req.menu.length)) {
+      if (index < 2) {
+        test_req.menu[index] = { ...test_req.menu[index], menu_category_id: test_res.menu_category[0].menu_category_id };
+      } else {
+        test_req.menu[index] = { ...test_req.menu[index], menu_category_id: test_res.menu_category[1].menu_category_id };
+      }
+    }
   });
 
   it('200 edit_menu_category()', async () => {
-    test_value.category.name = '피자';
-    await service.edit_menu_category(
-      restaurant_access_token,
-      { menu_category_id: menu_category_list[0].menu_category_id, name: test_value.category.name },
-    );
+    const edit_data = { name: '스페셜 치킨' };
+    test_req.menu_category[0] = { ...test_req.menu_category[0], ...edit_data };
+    await service.edit_menu_category(restaurant_access_token, {
+      menu_category_id: test_res.menu_category[0].menu_category_id,
+      ...edit_data,
+    });
+    test_res.menu_category[0] = await service.get_menu_category(test_res.menu_category[0].menu_category_id);
+    if (test_req.menu_category[0].name !== test_res.menu_category[0].name) {
+      throw new errorObject();
+    }
+  });
+
+  it('200 upload_menu()', async () => {
+    for (const loop_menu of test_req.menu) {
+      await service.upload_menu(loop_menu);
+    }
+    for (const loop_menu_category of test_res.menu_category) {
+      test_res.menu = test_res.menu.concat(await service.get_menu_list({ menu_category_id: loop_menu_category.menu_category_id }));
+      test_res.menu.forEach((loop_menu, index) => {
+        if (loop_menu.name !== test_req.menu[index].name ||
+          loop_menu.description !== test_req.menu[index].description ||
+          loop_menu.image !== test_req.menu[index].image ||
+          loop_menu.price !== test_req.menu[index].price) {
+          throw new errorObject();
+        }
+        loop_menu.group.forEach((loop_group, index_2) => {
+          if (loop_group.name !== test_req.menu[index].group[index_2].name ||
+            loop_group.max_count !== test_req.menu[index].group[index_2].max_count) {
+            throw new errorObject();
+          }
+          loop_group.option.forEach((loop_option, index_3) => {
+            if (loop_option.name !== test_req.menu[index].group[index_2].option[index_3].name ||
+              loop_option.price !== test_req.menu[index].group[index_2].option[index_3].price) {
+              throw new errorObject();
+            }
+          });
+        });
+      });
+    }
+    for (const index of UtilService.range(test_req.group.length)) {
+      if (index < 2) {
+        test_req.group[index] = { ...test_req.group[index], menu_id: test_res.menu[2].menu_id };
+      } else {
+        test_req.group[index] = { ...test_req.group[index], menu_id: test_res.menu[3].menu_id };
+      }
+    }
+  });
+
+  it('200 edit_menu()', async () => {
+    const edit_data = { name: '스모크 치킨', price: 18000, description: '물참나무 향 솔솔~ 담백한 엉치살 구이' };
+    test_req.menu[0] = { ...test_req.menu[0], ...edit_data };
+    await service.edit_menu({ menu_id: test_res.menu[0].menu_id, ...edit_data });
+    test_res.menu[0] = await service.get_menu(test_res.menu[0].menu_id);
+    if (test_res.menu[0].name !== test_req.menu[0].name ||
+      test_res.menu[0].description !== test_req.menu[0].description ||
+      test_res.menu[0].image !== test_req.menu[0].image ||
+      test_res.menu[0].price !== test_req.menu[0].price) {
+      throw new errorObject();
+    }
+  });
+
+  it('200 upload_group()', async () => {
+    for (const loop_group of test_req.group) {
+      await service.upload_group(loop_group);
+    }
+    for (const index of UtilService.range_start_end(2, 3)) {
+      test_res.group = test_res.group.concat(await service.get_group_list({ menu_id: test_res.menu[index].menu_id }));
+      test_res.group.forEach((loop_group, index_2) => {
+        if (loop_group.name !== test_req.group[index_2].name ||
+          loop_group.max_count !== test_req.group[index_2].max_count) {
+          throw new errorObject();
+        }
+      });
+    }
+    for (const index of UtilService.range(test_req.option.length)) {
+      if (index < 2) {
+        test_req.option[index] = { ...test_req.option[index], group_id: test_res.group[2].group_id };
+      } else {
+        test_req.option[index] = { ...test_req.option[index], group_id: test_res.group[3].group_id };
+      }
+    }
+  });
+
+  it('200 edit_group()', async () => {
+    const edit_data = { name: '소스', max_count: 0 };
+    test_req.group[0] = { ...test_req.group[0], ...edit_data };
+    await service.edit_group({ group_id: test_res.group[0].group_id, ...edit_data });
+    test_res.group[0] = await service.get_group(test_res.group[0].group_id);
+    if (test_res.group[0].name !== test_req.group[0].name ||
+      test_res.group[0].max_count !== test_req.group[0].max_count) {
+      throw new errorObject();
+    }
+  });
+
+  it('200 upload_option()', async () => {
+    for (const loop_option of test_req.option) {
+      await service.upload_option(loop_option);
+    }
+    for (const index of UtilService.range_start_end(2, 3)) {
+      test_res.option = test_res.option.concat(await service.get_option_list({ group_id: test_res.group[index].group_id }));
+      test_res.option.forEach((loop_option, index_2) => {
+        if (loop_option.name !== test_req.option[index_2].name ||
+          loop_option.price !== test_req.option[index_2].price) {
+          throw new errorObject();
+        }
+      });
+    }
+  });
+
+  it('200 edit_option()', async () => {
+    const edit_data = { name: '어니언 소스', price: 400 };
+    test_req.option[0] = { ...test_req.option[0], ...edit_data };
+    await service.edit_option({ option_id: test_res.option[0].option_id, ...edit_data });
+    test_res.option[0] = await service.get_option(test_res.option[0].option_id);
+    if (test_res.option[0].name !== test_req.option[0].name ||
+      test_res.option[0].price !== test_req.option[0].price) {
+      throw new errorObject();
+    }
+  });
+
+  it('200 remove_option()', async () => {
+    for (const index of UtilService.range(test_req.option.length)) {
+      await service.remove_option({ option_id: test_res.option[index].option_id });
+      if ((await service.get_option(test_res.option[index].option_id)).option_id !== undefined) {
+        throw new errorObject();
+      }
+    }
+  });
+
+  it('200 remove_group()', async () => {
+    for (const index of UtilService.range(test_req.group.length)) {
+      await service.remove_group({ group_id: test_res.group[index].group_id });
+      if ((await service.get_group(test_res.group[index].group_id)).group_id !== undefined) {
+        throw new errorObject();
+      }
+    }
+  });
+
+  it('200 remove_menu()', async () => {
+    for (const index of UtilService.range(test_req.menu.length)) {
+      await service.remove_menu({ menu_id: test_res.menu[index].menu_id });
+      if ((await service.get_menu(test_res.menu[index].menu_id)).menu_id !== undefined) {
+        throw new errorObject();
+      }
+    }
   });
 
   it('200 remove_menu_category()', async () => {
-    for(const loop_menu_category of menu_category_list) {
-      await service.remove_menu_category(loop_menu_category);
+    for (const index of UtilService.range(test_req.menu_category.length)) {
+      await service.remove_menu_category({ menu_category_id: test_res.menu_category[index].menu_category_id });
+      if ((await service.get_menu_category(test_res.menu_category[index].menu_category_id)).menu_category_id !== undefined) {
+        throw new errorObject();
+      }
     }
   });
 });
