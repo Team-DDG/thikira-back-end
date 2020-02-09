@@ -26,10 +26,6 @@ export class DBService {
     await this.restaurant_repo.insert(restaurant);
   }
 
-  public async find_restaurant_by_id(id: number): Promise<Restaurant> {
-    return new Restaurant(await this.restaurant_repo.findOne(id));
-  }
-
   public async find_restaurant_by_email(email: string): Promise<Restaurant> {
     return new Restaurant(await this.restaurant_repo.findOne({ email }));
   }
@@ -51,12 +47,8 @@ export class DBService {
     await this.user_repo.insert(user);
   }
 
-  public async find_user_by_id(id: number) {
-    return this.user_repo.findOne(id);
-  }
-
   public async find_user_by_email(email: string) {
-    return this.user_repo.findOne({ email });
+    return new User(await this.user_repo.findOne({ email }));
   }
 
   public async update_user(email: string, payload): Promise<void> {
@@ -80,8 +72,8 @@ export class DBService {
     return new MenuCategory(await this.menu_category_repo.findOne(id));
   }
 
-  public async find_menu_category_by_name(name: string): Promise<MenuCategory> {
-    return new MenuCategory(await this.menu_category_repo.findOne({ name }));
+  public async find_menu_category_by_name(name: string, restaurant: Restaurant): Promise<MenuCategory> {
+    return new MenuCategory(await this.menu_category_repo.findOne({ name, restaurant }));
   }
 
   public async find_menu_categories_by_restaurant(restaurant: Restaurant): Promise<MenuCategory[]> {
@@ -93,8 +85,8 @@ export class DBService {
     return result;
   }
 
-  public async update_menu_category(id: number, payload): Promise<void> {
-    await this.menu_category_repo.update(id, payload);
+  public async update_menu_category(menu_category: MenuCategory): Promise<void> {
+    await this.menu_category_repo.update(menu_category.id, menu_category);
   }
 
   public async delete_menu_category(id: number): Promise<void> {
@@ -111,12 +103,21 @@ export class DBService {
     return new Menu(await this.menu_repo.findOne(id));
   }
 
-  public async find_menu_by_name(name: string): Promise<Menu> {
-    return new Menu(await this.menu_repo.findOne({ name }));
+  public async find_menu_by_name(name: string, menu_category): Promise<Menu> {
+    return new Menu(await this.menu_repo.findOne({ name, menu_category }));
   }
 
-  public async update_menu(id: number, payload): Promise<void> {
-    await this.menu_repo.update(id, payload);
+  public async find_menus_by_menu_category(menu_category: MenuCategory): Promise<Menu[]> {
+    const menus: Menu[] = await this.menu_repo.find({ menu_category });
+    const result: Menu[] = new Array<Menu>();
+    for (let value of menus) {
+      result.push(new Menu({ ...value, group: new Array<Group>() }));
+    }
+    return result;
+  }
+
+  public async update_menu(menu: Menu): Promise<void> {
+    await this.menu_repo.update(menu.id, menu);
   }
 
   public async delete_menu(id: number): Promise<void> {
@@ -133,12 +134,21 @@ export class DBService {
     return new Group(await this.group_repo.findOne(id));
   }
 
-  public async find_group_by_name(name: string): Promise<Group> {
-    return new Group(await this.group_repo.findOne({ name }));
+  public async find_group_by_name(name: string, menu: Menu): Promise<Group> {
+    return new Group(await this.group_repo.findOne({ name, menu }));
   }
 
-  public async update_group(id: number, payload): Promise<void> {
-    await this.group_repo.update(id, payload);
+  public async find_groups_by_menu(menu: Menu): Promise<Group[]> {
+    const groups: Group[] = await this.group_repo.find({ where: { menu } });
+    const result: Group[] = new Array<Group>();
+    for (let value of groups) {
+      result.push(new Group({ ...value, option: new Array<Option>() }));
+    }
+    return result;
+  }
+
+  public async update_group(group: Group): Promise<void> {
+    await this.group_repo.update(group.id, group);
   }
 
   public async delete_group(id: number): Promise<void> {
@@ -155,12 +165,21 @@ export class DBService {
     return new Option(await this.option_repo.findOne(id));
   }
 
-  public async find_option_by_name(name: string): Promise<Option> {
-    return new Option(await this.option_repo.findOne({ name }));
+  public async find_option_by_name(name: string, group: Group): Promise<Option> {
+    return new Option(await this.option_repo.findOne({ name, group }));
   }
 
-  public async update_option(id: number, payload): Promise<void> {
-    await this.option_repo.update(id, payload);
+  public async find_options_by_group(group: Group): Promise<Option[]> {
+    const options: Option[] = await this.option_repo.find({ where: { group } });
+    const result: Option[] = new Array<Option>();
+    for (let value of options) {
+      result.push(new Option(value));
+    }
+    return result;
+  }
+
+  public async update_option(option: Option): Promise<void> {
+    await this.option_repo.update(option.id, option);
   }
 
   public async delete_option(id: number): Promise<void> {
