@@ -11,11 +11,37 @@ env:
   MYSQL_PASS: ${{ secrets.MYSQL_PASS }}
   MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
 jobs:
-  build:
+  build_10.x:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [10.x, 12.x]
+        node-version: [10.x]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Cache node modules
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ matrix.node-version }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-test-${{ matrix.node-version }}-${{ env.cache-name }}-
+            ${{ runner.OS }}-test-${{ matrix.node-version }}-
+            ${{ runner.OS }}-test-
+            ${{ runner.OS }}-
+      - name: yarn install
+        run: yarn
+      - name: Test
+        run: yarn test
+  build_12.x:
+    runs-on: ubuntu-latest
+    needs: build_10.x
+    strategy:
+      matrix:
+        node-version: [12.x]
     steps:
       - uses: actions/checkout@v1
       - name: Use Node.js ${{ matrix.node-version }}
