@@ -12,7 +12,7 @@ describe('RestaurantService', () => {
   let service: RestaurantService;
   let access_token: string;
   let refresh_token: string;
-  const test_value = {
+  const test_req = {
     image: 'image_url',
     name: 'test',
     phone: '01012345678',
@@ -57,23 +57,23 @@ describe('RestaurantService', () => {
   });
 
   it('404 sign_in()', async () => {
-    await expect(service.sign_in({ email: test_value.email, password: test_value.password })).rejects.toThrow();
+    await expect(service.sign_in({ email: test_req.email, password: test_req.password })).rejects.toThrow();
   });
 
   it('200 check_email()', async () => {
-    await service.check_email({ email: test_value.email });
+    await service.check_email({ email: test_req.email });
   });
 
   it('200 sign_up()', async () => {
-    await service.sign_up({ ...test_value });
+    await service.sign_up({ ...test_req });
   });
 
   it('409 check_email()', async () => {
-    await expect(service.check_email({ email: test_value.email })).rejects.toThrow();
+    await expect(service.check_email({ email: test_req.email })).rejects.toThrow();
   });
 
   it('200 sign_in()', async () => {
-    const result: ResSignIn = await service.sign_in({ email: test_value.email, password: test_value.password });
+    const result: ResSignIn = await service.sign_in({ email: test_req.email, password: test_req.password });
     access_token = result.access_token;
     refresh_token = result.refresh_token;
   });
@@ -108,17 +108,17 @@ describe('RestaurantService', () => {
   });
 
   it('200 check_password()', async () => {
-    await service.check_password(access_token, { password: test_value.password });
+    await service.check_password(access_token, { password: test_req.password });
   });
 
   it('401 check_password()', async () => {
-    await expect(service.check_password(access_token, { password: `${test_value.password}1` })).rejects.toThrow();
+    await expect(service.check_password(access_token, { password: `${test_req.password}1` })).rejects.toThrow();
   });
 
   it('200 edit_password()', async () => {
-    test_value.password = `${test_value.email}1`;
-    await service.edit(access_token, { password: test_value.password });
-    await service.sign_in({ email: test_value.email, password: test_value.password });
+    test_req.password = `${test_req.email}1`;
+    await service.edit(access_token, { password: test_req.password });
+    await service.sign_in({ email: test_req.email, password: test_req.password });
   });
 
   it('200 leave()', async () => {

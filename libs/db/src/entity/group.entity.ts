@@ -9,7 +9,7 @@ export class Group {
   @Column()
   public readonly name: string;
   @Column()
-  public readonly max_num: number;
+  public readonly max_count: number;
   @ManyToOne((type) => Menu, (menu: Menu) => menu.group)
   public readonly menu: Menu;
   @OneToMany((type) => Option, (option: Option) => option.group)

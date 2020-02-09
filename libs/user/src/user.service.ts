@@ -12,8 +12,8 @@ export class UserService {
   }
 
   public async check_email(payload: DtoCheckEmail): Promise<void> {
-    const foundUser = await this.db_service.find_user_by_email(payload.email);
-    if (foundUser) {
+    const found_user = await this.db_service.find_user_by_email(payload.email);
+    if (!found_user.isEmpty()) {
       throw new ConflictException();
     }
   }
