@@ -38,7 +38,7 @@ jobs:
         run: yarn test
   test_node_12:
     runs-on: ubuntu-latest
-    needs: build_10.x
+    needs: test_node_10
     strategy:
       matrix:
         node-version: [12.x]
