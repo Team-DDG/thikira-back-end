@@ -40,7 +40,6 @@ export class RestaurantMenuController {
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse({ type: [ResGetMenuCategory] })
   @ApiForbiddenResponse()
-  @ApiConflictResponse()
   public async get_menu_category_list(@Headers() header) {
     try {
       return await this.menu_service.get_menu_category_list(this.util_service.get_token_body(header.authorization));
@@ -102,7 +101,6 @@ export class RestaurantMenuController {
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse({ type: [ResGetMenu] })
   @ApiForbiddenResponse()
-  @ApiConflictResponse()
   public async get_menu_list(@Headers() header,
                              @Body() payload: DtoGetMenuList) {
     try {
@@ -164,7 +162,6 @@ export class RestaurantMenuController {
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse({ type: [ResGetGroup] })
   @ApiForbiddenResponse()
-  @ApiConflictResponse()
   public async get_group_list(@Headers() header,
                               @Body() payload: DtoGetGroupList) {
     try {
@@ -226,7 +223,6 @@ export class RestaurantMenuController {
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse({ type: [ResGetOption] })
   @ApiForbiddenResponse()
-  @ApiConflictResponse()
   public async get_option_list(@Headers() header,
                                @Body() payload: DtoGetOptionList) {
     try {
