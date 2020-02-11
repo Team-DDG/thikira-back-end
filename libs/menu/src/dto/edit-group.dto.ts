@@ -7,7 +7,7 @@ export class DtoEditGroup {
     example: 0,
   })
   @IsNumber()
-  public readonly group_id: number;
+  public readonly g_id: number;
 
   @ApiProperty({
     description: '최대 선택 개수 (0은 무제한)',

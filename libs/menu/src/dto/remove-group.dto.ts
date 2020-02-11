@@ -7,5 +7,5 @@ export class DtoRemoveGroup {
     example: 0,
   })
   @IsNumber()
-  public readonly group_id: number;
+  public readonly g_id: number;
 }

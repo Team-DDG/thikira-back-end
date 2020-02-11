@@ -6,7 +6,7 @@ export class ResGetGroup {
     description: '그룹 아이디',
     example: 0,
   })
-  public readonly group_id: number;
+  public readonly g_id: number;
   @ApiProperty({
     description: '그룹 이름',
     example: '치킨 유형',
@@ -20,15 +20,15 @@ export class ResGetGroup {
   @ApiProperty({
     description: '옵션',
     example: [
-      { option_id: 0, name: '순살', price: 1000 },
-      { option_id: 1, name: '뼈', price: 0 },
+      { o_id: 0, name: '순살', price: 1000 },
+      { o_id: 1, name: '뼈', price: 0 },
     ],
   })
   public readonly option: ResGetOption[];
 
   constructor(payload?) {
     if (payload !== undefined) {
-      const group_data = { group_id: payload.id, ...payload, id: undefined };
+      const group_data = { g_id: payload.id, ...payload, id: undefined };
       delete group_data.id;
       Object.assign(this, group_data);
       this.option = new Array<ResGetOption>();

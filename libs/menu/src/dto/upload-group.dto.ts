@@ -8,7 +8,7 @@ export class DtoUploadGroup {
     example: 0,
   })
   @IsNumber()
-  public readonly menu_id: number;
+  public readonly m_id: number;
   @ApiProperty({
     description: '최대 선택 개수 (0은 무제한)',
     example: 0,

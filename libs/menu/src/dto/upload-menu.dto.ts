@@ -8,7 +8,7 @@ export class DtoUploadMenu {
     example: 10,
   })
   @IsNumber()
-  public readonly menu_category_id: number;
+  public readonly mc_id: number;
   @ApiProperty({
     description: '메뉴 이름',
     example: '스모크 치킨',

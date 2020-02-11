@@ -7,7 +7,7 @@ export class DtoEditOption {
     example: 0,
   })
   @IsNumber()
-  public readonly option_id: number;
+  public readonly o_id: number;
 
   @ApiProperty({
     description: '가격',

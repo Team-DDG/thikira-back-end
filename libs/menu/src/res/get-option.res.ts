@@ -5,7 +5,7 @@ export class ResGetOption {
     description: '옵션 아이디',
     example: 0,
   })
-  public readonly option_id: number;
+  public readonly o_id: number;
   @ApiProperty({
     description: '옵션 이름',
     example: '순살',
@@ -19,7 +19,7 @@ export class ResGetOption {
 
   constructor(payload?) {
     if (payload !== undefined) {
-      const option_data = { option_id: payload.id, ...payload, id: undefined };
+      const option_data = { o_id: payload.id, ...payload, id: undefined };
       delete option_data.id;
       Object.assign(this, option_data);
     }

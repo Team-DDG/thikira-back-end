@@ -6,7 +6,7 @@ export class ResGetMenu {
     description: '메뉴 아이디',
     example: 0,
   })
-  public readonly menu_id: number;
+  public readonly m_id: number;
   @ApiProperty({
     description: '이름',
     example: '스모크 치킨',
@@ -30,16 +30,16 @@ export class ResGetMenu {
   @ApiProperty({
     description: '그룹',
     example: [{
-      group_id: 1, name: '치킨 유형',
+      g_id: 1, name: '치킨 유형',
       max_count: 2, option: [
-        { option_id: 1, name: '순살', price: 1000 },
-        { option_id: 2, name: '뼈', price: 0 },
+        { o_id: 1, name: '순살', price: 1000 },
+        { o_id: 2, name: '뼈', price: 0 },
       ],
     }, {
-      group_id: 2, name: '소스',
+      g_id: 2, name: '소스',
       max_count: 0, option: [
-        { option_id: 3, name: '갈릭 소스', price: 500 },
-        { option_id: 4, name: '양념 소스', price: 500 },
+        { o_id: 3, name: '갈릭 소스', price: 500 },
+        { o_id: 4, name: '양념 소스', price: 500 },
       ],
     }],
   })
@@ -47,7 +47,7 @@ export class ResGetMenu {
 
   constructor(payload?) {
     if (payload !== undefined) {
-      const menu_data = { menu_id: payload.id, ...payload, id: undefined };
+      const menu_data = { m_id: payload.id, ...payload, id: undefined };
       delete menu_data.id;
       Object.assign(this, menu_data);
       this.group = new Array<ResGetGroup>();

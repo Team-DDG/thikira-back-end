@@ -7,7 +7,7 @@ export class DtoEditMenu {
     example: 10,
   })
   @IsNumber()
-  public readonly menu_id: number;
+  public readonly m_id: number;
   @ApiProperty({
     description: '메뉴 이름',
     example: '스모크 치킨',

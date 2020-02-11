@@ -7,7 +7,7 @@ export class ResGetMenuCategory {
     example: 0,
   })
   @IsNumber()
-  public readonly menu_category_id: number;
+  public readonly mc_id: number;
 
   @ApiProperty({
     description: '메뉴 카테고리 이름',

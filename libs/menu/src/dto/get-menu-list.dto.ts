@@ -7,5 +7,5 @@ export class DtoGetMenuList {
     example: 10,
   })
   @IsNumber()
-  public readonly menu_category_id: number;
+  public readonly mc_id: number;
 }

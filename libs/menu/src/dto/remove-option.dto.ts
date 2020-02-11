@@ -7,5 +7,5 @@ export class DtoRemoveOption {
     example: 0,
   })
   @IsNumber()
-  public readonly option_id: number;
+  public readonly o_id: number;
 }

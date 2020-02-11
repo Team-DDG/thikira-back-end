@@ -7,5 +7,5 @@ export class DtoGetGroupList {
     example: 10,
   })
   @IsNumber()
-  public readonly menu_id: number;
+  public readonly m_id: number;
 }

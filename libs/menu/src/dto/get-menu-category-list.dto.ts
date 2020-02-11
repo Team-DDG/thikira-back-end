@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber } from 'class-validator';
 
-export class DtoGetOptionList {
+export class DtoGetMenuList {
   @ApiProperty({
-    description: '그룹 아이디',
-    example: 0,
+    description: '레스토랑 아이디',
+    example: 10,
   })
   @IsNumber()
-  public readonly g_id: number;
+  public readonly r_id: number;
 }
