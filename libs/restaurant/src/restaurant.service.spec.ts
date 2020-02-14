@@ -1,9 +1,11 @@
 import { ConfigModule, ConfigService } from '@app/config';
 import { DBModule, Group, Menu, MenuCategory, Option, Restaurant, User } from '@app/db';
-import { ResRefresh, ResSignIn, UtilModule } from '@app/util';
+import { ResRefresh, ResSignIn } from '@app/res';
+import { UtilModule } from '@app/util';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { stringify } from 'querystring';
 import { RestaurantModule } from './restaurant.module';
 import { RestaurantService } from './restaurant.service';
 
@@ -65,7 +67,7 @@ describe('RestaurantService', () => {
   });
 
   it('200 sign_up()', async () => {
-    await service.sign_up({ ...test_req });
+    await service.create_restaurant(test_req);
   });
 
   it('409 check_email()', async () => {
@@ -83,8 +85,10 @@ describe('RestaurantService', () => {
     access_token = result.access_token;
   });
 
-  it('200 edit_information()', async () => {
+  it('200 edit_info()', async () => {
     const edit_data = {
+      image: 'url.image',
+      name: '업체',
       phone: '01012345679',
       area: '창전동',
       min_price: 20000,
@@ -95,16 +99,24 @@ describe('RestaurantService', () => {
       close_time: '00:00',
       description: '증포동 bbq 입니다.',
     };
-    await service.edit(access_token, edit_data);
-    const found_restaurant = await service.load(access_token);
+    await service.edit_info(access_token, edit_data);
+    const found_restaurant = await service.get(access_token);
+    if (stringify(edit_data) !== found_restaurant.get_info()) {
+      throw new Error();
+    }
 
-    Object.keys(edit_data).forEach((value) => {
-      if (found_restaurant[value] !== edit_data[value]) {
-        console.log('didn\'t edited');
-        throw new Error();
-      }
-    });
+  });
 
+  it('200 edit_address()', async () => {
+    const edit_data = {
+      add_street: '경기도 어딘가',
+      add_parcel: '경기도 어딘가',
+    };
+    await service.edit_address(access_token, edit_data);
+    const found_restaurant = await service.get(access_token);
+    if (stringify(edit_data) !== found_restaurant.get_address()) {
+      throw new Error();
+    }
   });
 
   it('200 check_password()', async () => {
@@ -116,9 +128,8 @@ describe('RestaurantService', () => {
   });
 
   it('200 edit_password()', async () => {
-    test_req.password = `${test_req.email}1`;
-    await service.edit(access_token, { password: test_req.password });
-    await service.sign_in({ email: test_req.email, password: test_req.password });
+    await service.edit_password(access_token, { password: `${test_req.email}1` });
+    await service.sign_in({ email: test_req.email, password: `${test_req.email}1` });
   });
 
   it('200 leave()', async () => {

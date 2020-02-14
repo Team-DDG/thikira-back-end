@@ -1,29 +1,54 @@
+import { DtoCreateUser } from '@app/dto';
+import { stringify } from 'querystring';
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  public readonly id: number;
+  public readonly u_id: number;
   @Column()
-  public readonly email: string;
+  public readonly u_email: string;
   @Column()
-  public readonly phone: string;
+  public readonly u_phone: string;
+  @Column({ nullable: true })
+  public readonly u_add_street?: string = null;
+  @Column({ nullable: true })
+  public readonly u_add_parcel?: string = null;
   @Column()
-  public readonly add_street: string;
+  public readonly u_password: string;
   @Column()
-  public readonly add_parcel: string;
-  @Column()
-  public readonly password: string;
-  @Column()
-  public readonly nickname: string;
+  public readonly u_nickname: string;
   @CreateDateColumn()
-  public readonly create_time: Date;
+  public readonly u_create_time: Date;
 
-  constructor(restaurant) {
-    Object.assign(this, restaurant);
+  public is_empty(): boolean {
+    return !this.u_email;
   }
 
-  public isEmpty(): boolean {
-    return !this.email;
+  constructor(user: User | DtoCreateUser) {
+    if (user !== undefined) {
+      if (user instanceof User) {
+        Object.assign(this, user);
+      } else {
+        this.u_email = user.email;
+        this.u_phone = user.phone;
+        this.u_password = user.password;
+        this.u_nickname = user.nickname;
+      }
+    }
+  }
+
+  public get_info(): string {
+    return stringify({
+      phone: this.u_phone,
+      nickname: this.u_nickname,
+    });
+  }
+
+  public get_address(): string {
+    return stringify({
+      add_street: this.u_add_street,
+      add_parcel: this.u_add_parcel,
+    });
   }
 }

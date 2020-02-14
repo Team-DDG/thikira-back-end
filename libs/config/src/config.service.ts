@@ -14,19 +14,22 @@ export class ConfigService {
   public readonly NODE_ENV: NodeEnv;
 
   @IsString()
-  public readonly MYSQL_HOST: string;
+  public readonly DB: string;
+
+  @IsString()
+  public readonly DB_HOST: string;
 
   @IsNumberString()
-  public readonly MYSQL_PORT: string;
+  public readonly DB_PORT: string;
 
   @IsString()
-  public readonly MYSQL_USER: string;
+  public readonly DB_USER: string;
 
   @IsString()
-  public readonly MYSQL_PASS: string;
+  public readonly DB_PASS: string;
 
   @IsString()
-  public readonly MYSQL_DB: string;
+  public readonly DB_SCHEMA: string;
 
   @IsOptional()
   @IsNumberString()
@@ -61,13 +64,13 @@ export class ConfigService {
     }
 
     this.orm_config = {
-      database: this.MYSQL_DB,
-      host: this.MYSQL_HOST,
-      password: this.MYSQL_PASS,
-      port: parseInt(this.MYSQL_PORT, 10),
+      database: this.DB_SCHEMA,
+      host: this.DB_HOST,
+      password: this.DB_PASS,
+      port: parseInt(this.DB_PORT, 10),
       synchronize: true,
-      type: 'mysql',
-      username: this.MYSQL_USER,
+      type: this.DB,
+      username: this.DB_USER,
     };
   }
 }

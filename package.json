@@ -92,7 +92,11 @@
       "@app/menu/(.*)": "<rootDir>/libs/menu/src/$1",
       "@app/menu": "<rootDir>/libs/menu/src",
       "@app/db/(.*)": "<rootDir>/libs/db/src/$1",
-      "@app/db": "<rootDir>/libs/db/src"
+      "@app/db": "<rootDir>/libs/db/src",
+      "@app/dto/(.*)": "<rootDir>/libs/dto/src/$1",
+      "@app/dto": "<rootDir>/libs/dto/src",
+      "@app/res/(.*)": "<rootDir>/libs/res/src/$1",
+      "@app/res": "<rootDir>/libs/res/src"
     }
   }
 }

@@ -13,12 +13,8 @@ export class UtilService {
     this.secret = config_service.JWT_SECRET ? Buffer.from(config_service.JWT_SECRET) : randomBytes(16);
   }
 
-  public static range(length: number): number[] {
-    return Array.from({ length }, ((value, key) => key));
-  }
-
-  public static range_start_end(start: number, end: number): number[] {
-    return Array.from({ length: end - start + 1 }, ((value, key) => key + start));
+  public static range(array: {}[]): number[] {
+    return Array.from({ length: array.length }, ((value, key) => key));
   }
 
   public async encode(content: string): Promise<string> {

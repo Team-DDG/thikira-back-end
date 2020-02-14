@@ -1,8 +1,8 @@
 import { DBService, User } from '@app/db';
-import { DtoCheckEmail, DtoCheckPassword, ResRefresh, ResSignIn, DtoSignIn, TokenTypeEnum, UtilService } from '@app/util';
+import { DtoCheckEmail, DtoCheckPassword, DtoCreateUser, DtoEditAddress, DtoEditPassword, DtoEditUserInfo, DtoSignIn } from '@app/dto';
+import { ResLoadUser, ResRefresh, ResSignIn } from '@app/res';
+import { TokenTypeEnum, UtilService } from '@app/util';
 import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { DtoCreateAccount } from './dto';
-import { ResLoad } from './res';
 
 @Injectable()
 export class UserService {
@@ -13,22 +13,21 @@ export class UserService {
 
   public async check_email(payload: DtoCheckEmail): Promise<void> {
     const found_user = await this.db_service.find_user_by_email(payload.email);
-    if (!found_user.isEmpty()) {
+    if (!found_user.is_empty()) {
       throw new ConflictException();
     }
   }
 
-  public async create_account(payload: DtoCreateAccount): Promise<void> {
+  public async create_user(payload: DtoCreateUser): Promise<void> {
     await this.db_service.insert_user(new User({
-      ...payload,
-      password: await this.util_service.encode(payload.password),
+      ...payload, password: await this.util_service.encode(payload.password),
     }));
   }
 
   public async sign_in(payload: DtoSignIn): Promise<ResSignIn> {
     const found_user: User = await this.db_service.find_user_by_email(payload.email);
-    if (found_user.isEmpty() ||
-      found_user.password !== await this.util_service.encode(payload.password)) {
+    if (found_user.is_empty() ||
+      found_user.u_password !== await this.util_service.encode(payload.password)) {
       throw new NotFoundException();
     }
 
@@ -51,19 +50,38 @@ export class UserService {
   public async check_password(token: string, payload: DtoCheckPassword): Promise<void> {
     const email: string = await this.util_service.get_email_by_token(token);
     const found_user: User = await this.db_service.find_user_by_email(email);
-    if (await this.util_service.encode(payload.password) !== found_user.password) {
+    if (await this.util_service.encode(payload.password) !== found_user.u_password) {
       throw new UnauthorizedException();
     }
   }
 
-  public async edit(token: string, payload) {
+  public async edit_password(token: string, payload: DtoEditPassword) {
     const email: string = await this.util_service.get_email_by_token(token);
-    await this.db_service.update_user(email, payload);
+    await this.db_service.update_user(email, { u_password: payload.password });
   }
 
-  public async get(token: string): Promise<ResLoad> {
+  public async edit_info(token: string, payload: DtoEditUserInfo) {
+    const email: string = await this.util_service.get_email_by_token(token);
+    const edit_data = { u_phone: payload.phone, u_nickname: payload.nickname };
+    Object.keys(edit_data).forEach((key) => {
+      if (edit_data[key] === undefined || edit_data[key] === null) {
+        delete edit_data[key];
+      }
+    });
+    await this.db_service.update_user(email, edit_data);
+  }
+
+  public async edit_address(token: string, payload: DtoEditAddress) {
+    const email: string = await this.util_service.get_email_by_token(token);
+    await this.db_service.update_user(email, {
+      u_add_street: payload.add_street,
+      u_add_parcel: payload.add_parcel,
+    });
+  }
+
+  public async get(token: string): Promise<ResLoadUser> {
     const email: string = await this.util_service.get_email_by_token(token);
     const found_user: User = await this.db_service.find_user_by_email(email);
-    return new User({ ...found_user, id: undefined, password: undefined, email: undefined });
+    return new ResLoadUser(found_user);
   }
 }

@@ -1,11 +1,16 @@
 import { DBService, Restaurant } from '@app/db';
-import {
-  DtoCheckEmail, DtoCheckPassword, ResRefresh,
-  ResSignIn, DtoSignIn, TokenTypeEnum, UtilService,
-} from '@app/util';
+import { ResLoadRestaurant, ResRefresh, ResSignIn } from '@app/res';
+import { TokenTypeEnum, UtilService } from '@app/util';
 import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { DtoSignUp } from './dto';
-import { ResLoad } from './res';
+import {
+  DtoCheckEmail,
+  DtoCheckPassword,
+  DtoCreateRestaurant,
+  DtoEditAddress,
+  DtoEditPassword,
+  DtoEditRestaurantInfo,
+  DtoSignIn,
+} from '@app/dto';
 
 @Injectable()
 export class RestaurantService {
@@ -14,24 +19,23 @@ export class RestaurantService {
   ) {
   }
 
-  public async sign_up(payload: DtoSignUp): Promise<void> {
-    await this.db_service.insert_restaurant(new Restaurant({
-      ...payload,
-      password: await this.util_service.encode(payload.password),
-    }));
-  }
-
   public async check_email(payload: DtoCheckEmail): Promise<void> {
     const found_restaurant: Restaurant = await this.db_service.find_restaurant_by_email(payload.email);
-    if (!found_restaurant.isEmpty()) {
+    if (!found_restaurant.is_empty()) {
       throw new ConflictException();
     }
   }
 
+  public async create_restaurant(payload: DtoCreateRestaurant): Promise<void> {
+    await this.db_service.insert_restaurant(new Restaurant({
+      ...payload, password: await this.util_service.encode(payload.password),
+    }));
+  }
+
   public async sign_in(payload: DtoSignIn): Promise<ResSignIn> {
     const found_restaurant: Restaurant = await this.db_service.find_restaurant_by_email(payload.email);
-    if (found_restaurant.isEmpty() ||
-      found_restaurant.password !== await this.util_service.encode(payload.password)) {
+    if (found_restaurant.is_empty() ||
+      found_restaurant.r_password !== await this.util_service.encode(payload.password)) {
       throw new NotFoundException();
     }
 
@@ -54,19 +58,48 @@ export class RestaurantService {
   public async check_password(token: string, payload: DtoCheckPassword): Promise<void> {
     const email: string = await this.util_service.get_email_by_token(token);
     const found_restaurant: Restaurant = await this.db_service.find_restaurant_by_email(email);
-    if (await this.util_service.encode(payload.password) !== found_restaurant.password) {
+    if (await this.util_service.encode(payload.password) !== found_restaurant.r_password) {
       throw new UnauthorizedException();
     }
   }
 
-  public async edit(token: string, payload) {
+  public async edit_password(token: string, payload: DtoEditPassword) {
     const email: string = await this.util_service.get_email_by_token(token);
-    await this.db_service.update_restaurant(email, payload);
+    await this.db_service.update_restaurant(email, { r_password: payload.password });
   }
 
-  public async load(token: string): Promise<ResLoad> {
+  public async edit_info(token: string, payload: DtoEditRestaurantInfo) {
+    const email: string = await this.util_service.get_email_by_token(token);
+    const edit_data = {
+      r_image: payload.image, r_name: payload.name,
+      r_phone: payload.phone, r_area: payload.area,
+      r_min_price: payload.min_price,
+      r_day_off: payload.day_off,
+      r_online_payment: payload.online_payment,
+      r_offline_payment: payload.offline_payment,
+      r_open_time: payload.open_time,
+      r_close_time: payload.close_time,
+      r_description: payload.description,
+    };
+    Object.keys(edit_data).forEach((key) => {
+      if(edit_data[key] === undefined || edit_data[key] === null) {
+        delete edit_data[key];
+      }
+    });
+    await this.db_service.update_restaurant(email, edit_data);
+  }
+
+  public async edit_address(token: string, payload: DtoEditAddress) {
+    const email: string = await this.util_service.get_email_by_token(token);
+    await this.db_service.update_restaurant(email, {
+      r_add_street: payload.add_street,
+      r_add_parcel: payload.add_parcel,
+    });
+  }
+
+  public async get(token: string): Promise<ResLoadRestaurant> {
     const email: string = await this.util_service.get_email_by_token(token);
     const found_restaurant: Restaurant = await this.db_service.find_restaurant_by_email(email);
-    return new Restaurant({ ...found_restaurant, menu_category: undefined, id: undefined, password: undefined, email: undefined });
+    return new ResLoadRestaurant(found_restaurant);
   }
 }

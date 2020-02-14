@@ -1,10 +1,8 @@
+import { DtoCheckEmail, DtoCheckPassword, DtoCreateRestaurant, DtoEditAddress, DtoEditPassword, DtoEditRestaurantInfo, DtoSignIn } from '@app/dto';
 import { MenuService } from '@app/menu';
-import { DtoEditInformation, DtoSignUp, ResLoad, RestaurantService } from '@app/restaurant';
-import {
-  DtoCheckEmail, DtoCheckPassword, DtoEditAddress,
-  DtoEditPassword, ResRefresh, ResSignIn, DtoSignIn,
-  UtilService,
-} from '@app/util';
+import { ResLoadRestaurant, ResRefresh, ResSignIn } from '@app/res';
+import { RestaurantService } from '@app/restaurant';
+import { UtilService } from '@app/util';
 import {
   Body, Controller, Delete, Get, Headers, HttpCode,
   InternalServerErrorException, Patch, Post, ValidationPipe,
@@ -38,13 +36,13 @@ export class RestaurantController {
     }
   }
 
-  @Post('sign_up')
+  @Post('create')
   @HttpCode(200)
   @ApiOperation({ summary: '회원가입' })
   @ApiOkResponse()
-  public async sign_up(@Body() payload: DtoSignUp) {
+  public async create_restaurant(@Body() payload: DtoCreateRestaurant) {
     try {
-      return await this.restaurant_service.sign_up(payload);
+      return await this.restaurant_service.create_restaurant(payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -126,22 +124,22 @@ export class RestaurantController {
   public async edit_password(@Headers() header,
                              @Body() payload: DtoEditPassword) {
     try {
-      return await this.restaurant_service.edit(this.util_service.get_token_body(header.authorization), payload);
+      return await this.restaurant_service.edit_password(this.util_service.get_token_body(header.authorization), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
   }
 
-  @Patch('information')
+  @Patch('info')
   @HttpCode(200)
   @ApiOperation({ summary: '정보 수정' })
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse()
   @ApiForbiddenResponse()
-  public async edit_information(@Headers() header,
-                                @Body() payload: DtoEditInformation) {
+  public async edit_info(@Headers() header,
+                         @Body() payload: DtoEditRestaurantInfo) {
     try {
-      return await this.restaurant_service.edit(this.util_service.get_token_body(header.authorization), payload);
+      return await this.restaurant_service.edit_info(this.util_service.get_token_body(header.authorization), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -156,7 +154,7 @@ export class RestaurantController {
   public async edit_address(@Headers() header,
                             @Body() payload: DtoEditAddress) {
     try {
-      return await this.restaurant_service.edit(this.util_service.get_token_body(header.authorization), payload);
+      return await this.restaurant_service.edit_address(this.util_service.get_token_body(header.authorization), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -166,11 +164,11 @@ export class RestaurantController {
   @HttpCode(200)
   @ApiOperation({ summary: '업체 조회' })
   @ApiHeader({ name: 'Authorization' })
-  @ApiOkResponse({ type: ResLoad })
+  @ApiOkResponse({ type: ResLoadRestaurant })
   @ApiNotFoundResponse()
-  public async load(@Headers() header) {
+  public async get_restaurant(@Headers() header) {
     try {
-      return await this.restaurant_service.load(this.util_service.get_token_body(header.authorization));
+      return await this.restaurant_service.get(this.util_service.get_token_body(header.authorization));
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }

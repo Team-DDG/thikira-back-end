@@ -28,6 +28,12 @@
       ],
       "@app/db": [
         "libs/db/src"
+      ],
+      "@app/dto": [
+        "libs/dto/src"
+      ],
+      "@app/res": [
+        "libs/res/src"
       ]
     }
   },

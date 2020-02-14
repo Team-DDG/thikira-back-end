@@ -1,11 +1,11 @@
 import {
-  DtoGetGroupList, DtoGetMenuList, DtoGetOptionList,
   DtoEditGroup, DtoEditMenu, DtoEditMenuCategory, DtoEditOption,
+  DtoGetGroupList, DtoGetMenuList, DtoGetOptionList,
   DtoRemoveGroup, DtoRemoveMenu, DtoRemoveMenuCategory, DtoRemoveOption,
   DtoUploadGroup, DtoUploadMenu, DtoUploadMenuCategory, DtoUploadOption,
-  MenuService,
-  ResGetGroup, ResGetMenuCategory, ResGetMenu, ResGetOption,
-} from '@app/menu';
+} from '@app/dto';
+import { MenuService } from '@app/menu';
+import { ResGetGroup, ResGetMenu, ResGetMenuCategory, ResGetOption } from '@app/res';
 import { UtilService } from '@app/util';
 import { Body, Controller, Delete, Get, Headers, HttpCode, InternalServerErrorException, Patch, Post } from '@nestjs/common';
 import { ApiConflictResponse, ApiForbiddenResponse, ApiHeader, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -58,7 +58,7 @@ export class RestaurantMenuController {
   public async edit_menu_category(@Headers() header,
                                   @Body() payload: DtoEditMenuCategory) {
     try {
-      return await this.menu_service.edit_menu_category(this.util_service.get_token_body(header.authorization), payload);
+      return await this.menu_service.edit_menu_category(payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }

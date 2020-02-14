@@ -1,9 +1,7 @@
-import { DtoCreateAccount, DtoEditProfile, ResLoad, UserService } from '@app/user';
-import {
-  DtoCheckEmail, DtoCheckPassword, DtoEditAddress,
-  DtoEditPassword, ResRefresh, ResSignIn, DtoSignIn,
-  UtilService,
-} from '@app/util';
+import { DtoCheckEmail, DtoCheckPassword, DtoCreateUser, DtoEditAddress, DtoEditPassword, DtoEditUserInfo, DtoSignIn } from '@app/dto';
+import { ResLoadUser, ResRefresh, ResSignIn } from '@app/res';
+import { UserService } from '@app/user';
+import { UtilService } from '@app/util';
 import {
   Body, Controller, Delete, Get, Headers, HttpCode,
   InternalServerErrorException, Patch, Post,
@@ -37,13 +35,13 @@ export class UserController {
     }
   }
 
-  @Post('create_account')
+  @Post('create')
   @HttpCode(200)
   @ApiOperation({ summary: '계정생성' })
   @ApiOkResponse()
-  public async create_account(@Body() payload: DtoCreateAccount) {
+  public async create(@Body() payload: DtoCreateUser) {
     try {
-      return await this.user_service.create_account(payload);
+      return await this.user_service.create_user(payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -125,7 +123,7 @@ export class UserController {
   public async edit_password(@Headers() header,
                              @Body() payload: DtoEditPassword) {
     try {
-      return await this.user_service.edit(this.util_service.get_token_body(header.authorization), payload);
+      return await this.user_service.edit_password(this.util_service.get_token_body(header.authorization), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -138,9 +136,9 @@ export class UserController {
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_profile(@Headers() header,
-                            @Body() payload: DtoEditProfile) {
+                            @Body() payload: DtoEditUserInfo) {
     try {
-      return await this.user_service.edit(this.util_service.get_token_body(header.authorization), payload);
+      return await this.user_service.edit_info(this.util_service.get_token_body(header.authorization), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -155,7 +153,7 @@ export class UserController {
   public async edit_address(@Headers() header,
                             @Body() payload: DtoEditAddress) {
     try {
-      return await this.user_service.edit(this.util_service.get_token_body(header.authorization), payload);
+      return await this.user_service.edit_address(this.util_service.get_token_body(header.authorization), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -165,9 +163,9 @@ export class UserController {
   @HttpCode(200)
   @ApiOperation({ summary: '사용자 정보 가져오기' })
   @ApiHeader({ name: 'Authorization' })
-  @ApiOkResponse({ type: ResLoad })
+  @ApiOkResponse({ type: ResLoadUser })
   @ApiNotFoundResponse()
-  public async get(@Headers() header) {
+  public async get_user(@Headers() header) {
     try {
       return await this.user_service.get(this.util_service.get_token_body(header.authorization));
     } catch (e) {
