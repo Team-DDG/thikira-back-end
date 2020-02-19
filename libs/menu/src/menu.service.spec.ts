@@ -25,22 +25,22 @@ describe('MenuService', () => {
     phone: '01012345678',
   };
   const test_restaurant: DtoCreateRestaurant = {
+    email: 'menu_test@gmail.com',
+    password: 'menu_test',
+    name: 'menu_test',
+    phone: '01012345678',
     add_parcel: 'a',
     add_street: 'b',
     area: 'c',
     category: 'd',
-    close_time: 'e',
-    day_off: 'f',
-    description: 'g',
-    image: 'image.url',
     min_price: 10000,
-    name: 'h',
+    day_off: 'f',
     offline_payment: false,
     online_payment: false,
     open_time: 'i',
-    phone: 'j',
-    email: 'test_fixed@gmail.com',
-    password: 'test_fixed',
+    close_time: 'e',
+    description: 'g',
+    image: 'image.url',
   };
   let test_req: {
     menu_category: DtoUploadMenuCategory[],
@@ -57,13 +57,13 @@ describe('MenuService', () => {
         mc_id: null, name: '신호등 치킨', price: 17000,
         description: '딸기 바나나 멜론맛!', image: 'image.url',
         group: [{
-          name: 'sauce', max_count: 0,
+          name: '소스', max_count: 0,
           option: [
             { name: '갈릭 소스', price: 500 },
             { name: '양념 소스', price: 500 },
           ],
         }, {
-          name: '매운 정도', max_count: 0,
+          name: '매운 정도', max_count: 1,
           option: [
             { name: '매운맛', price: 0 },
             { name: '순한맛', price: 0 },
@@ -80,10 +80,11 @@ describe('MenuService', () => {
             { name: '양념 소스', price: 500 },
           ],
         }, {
-          name: '매운 정도', max_count: 0,
+          name: '매운 정도', max_count: 1,
           option: [
             { name: '매운맛', price: 0 },
-            { name: '순한맛', price: 0 }],
+            { name: '순한맛', price: 0 },
+          ],
         }],
       }),
       new DtoUploadMenu({
@@ -97,7 +98,7 @@ describe('MenuService', () => {
     ],
     group: [
       new DtoUploadGroup({
-        m_id: null, name: '소스',
+        m_id: null, name: 'sauce',
         max_count: 0, option: [
           { name: '갈릭소스', price: 500 },
           { name: '양념 소스', price: 500 },
@@ -105,13 +106,13 @@ describe('MenuService', () => {
       }),
       new DtoUploadGroup({
         m_id: null, name: '매운 정도',
-        max_count: 0, option: [
+        max_count: 1, option: [
           { name: '매운맛', price: 0 },
           { name: '순한맛', price: 0 },
         ],
       }),
       new DtoUploadGroup({ m_id: null, name: '소스', max_count: 0 }),
-      new DtoUploadGroup({ m_id: null, name: '매운 정도', max_count: 0 }),
+      new DtoUploadGroup({ m_id: null, name: '매운 정도', max_count: 1 }),
     ],
     option: [
       new DtoUploadOption({ g_id: null, name: '갈릭 소스', price: 500 }),
@@ -168,6 +169,8 @@ describe('MenuService', () => {
   });
 
   afterAll(async () => {
+    await restaurant_service.leave(restaurant_access_token);
+    await user_service.leave(user_access_token);
     await app.close();
   });
 
@@ -212,24 +215,22 @@ describe('MenuService', () => {
       await service.upload_menu(loop_menu);
     }
     for (const loop_menu_category of test_res.menu_category) {
-      const found_menus = await service.get_menu_list({ mc_id: loop_menu_category.mc_id });
+      const found_menus: ResGetMenu[] = await service.get_menu_list({ mc_id: loop_menu_category.mc_id });
       test_res.menu = test_res.menu.concat(found_menus);
     }
-    for (const loop_menu_category of test_res.menu_category) {
-      for (const index of UtilService.range(test_res.menu)) {
-        if (test_req.menu[index].get() !== test_res.menu[index].get()) {
+    for (const index of UtilService.range(test_res.menu)) {
+      if (test_req.menu[index].get() !== test_res.menu[index].get()) {
+        throw new Error();
+      }
+      for (const index_2 of UtilService.range(test_res.group)) {
+        if (test_req.menu[index].group[index_2].get()
+          !== test_res.menu[index].group[index_2].get()) {
           throw new Error();
         }
-        for (const index_2 of UtilService.range(test_res.group)) {
-          if (test_req.menu[index].group[index_2].get()
-            !== test_res.menu[index].group[index_2].get()) {
+        for (const index_3 of UtilService.range(test_res.option)) {
+          if (test_req.menu[index].group[index_2].option[index_3].get()
+            !== test_res.menu[index].group[index_2].option[index_3].get()) {
             throw new Error();
-          }
-          for (const index_3 of UtilService.range(test_res.option)) {
-            if (test_req.menu[index].group[index_2].option[index_3].get()
-              !== test_res.menu[index].group[index_2].option[index_3].get()) {
-              throw new Error();
-            }
           }
         }
       }
@@ -262,14 +263,12 @@ describe('MenuService', () => {
     }
 
     for (const index of [2, 3]) {
-      const found_groups = await service.get_group_list({ m_id: test_res.menu[index].m_id });
+      const found_groups: ResGetGroup[] = await service.get_group_list({ m_id: test_res.menu[index].m_id });
       test_res.group = test_res.group.concat(found_groups);
     }
-    for (const index of [2, 3]) {
-      for (const index_2 of UtilService.range(test_res.group)) {
-        if (test_req.group[index_2].get() !== test_res.group[index_2].get()) {
-          throw new Error();
-        }
+    for (const index_2 of UtilService.range(test_res.group)) {
+      if (test_req.group[index_2].get() !== test_res.group[index_2].get()) {
+        throw new Error();
       }
     }
 
@@ -296,11 +295,12 @@ describe('MenuService', () => {
       await service.upload_option(loop_option);
     }
     for (const index of [2, 3]) {
-      test_res.option = test_res.option.concat(await service.get_option_list({ g_id: test_res.group[index].g_id }));
-      for (const index_2 of UtilService.range(test_res.option)) {
-        if (test_req.option[index_2].get() !== test_req.option[index_2].get()) {
-          throw new Error();
-        }
+      const found_options: ResGetOption[] = await service.get_option_list({ g_id: test_res.group[index].g_id });
+      test_res.option = test_res.option.concat(found_options);
+    }
+    for (const index_2 of UtilService.range(test_res.option)) {
+      if (test_req.option[index_2].get() !== test_req.option[index_2].get()) {
+        throw new Error();
       }
     }
   });
@@ -317,8 +317,13 @@ describe('MenuService', () => {
   });
 
   it('200 remove_option()', async () => {
+    const o_ids: number[] = new Array<number>();
+    for(const loop_option of test_res.option) {
+      o_ids.push(loop_option.o_id);
+    }
+    await service.remove_option(o_ids);
+
     for (const index of UtilService.range(test_req.option)) {
-      await service.remove_option({ o_id: test_res.option[index].o_id });
       const found_option: ResGetOption = await service.get_option(test_res.option[index].o_id);
       if (!found_option.is_empty()) {
         throw new Error();
@@ -327,8 +332,12 @@ describe('MenuService', () => {
   });
 
   it('200 remove_group()', async () => {
+    const g_ids: number[] = new Array<number>();
+    for(const loop_group of test_res.group) {
+      g_ids.push(loop_group.g_id);
+    }
+    await service.remove_group(g_ids);
     for (const index of UtilService.range(test_req.group)) {
-      await service.remove_group({ g_id: test_res.group[index].g_id });
       const found_group: ResGetGroup = await service.get_group(test_res.group[index].g_id);
       if (!found_group.is_empty()) {
         throw new Error();
@@ -337,8 +346,12 @@ describe('MenuService', () => {
   });
 
   it('200 remove_menu()', async () => {
+    const m_ids: number[] = new Array<number>();
+    for(const loop_menu of test_res.menu) {
+      m_ids.push(loop_menu.m_id);
+    }
+    await service.remove_menu(m_ids);
     for (const index of UtilService.range(test_req.menu)) {
-      await service.remove_menu({ m_id: test_res.menu[index].m_id });
       const found_menu: ResGetMenu = await service.get_menu(test_res.menu[index].m_id);
       if (!found_menu.is_empty()) {
         throw new Error();
@@ -347,9 +360,13 @@ describe('MenuService', () => {
   });
 
   it('200 remove_menu_category()', async () => {
-    for (const index of UtilService.range(test_req.menu_category)) {
-      await service.remove_menu_category({ mc_id: test_res.menu_category[index].mc_id });
-      const found_menu_category: ResGetMenuCategory = await service.get_menu_category(test_res.menu_category[index].mc_id);
+    const mc_ids: number[] = new Array<number>();
+    for (const loop_menu_category of test_res.menu_category) {
+      mc_ids.push(loop_menu_category.mc_id);
+    }
+    await service.remove_menu_category(mc_ids);
+    for (const loop_menu_category of test_res.menu_category) {
+      const found_menu_category: ResGetMenuCategory = await service.get_menu_category(loop_menu_category.mc_id);
       if (!found_menu_category.is_empty()) {
         throw new Error();
       }

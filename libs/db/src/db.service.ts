@@ -1,3 +1,4 @@
+import { ResGetGroup, ResGetMenu, ResGetOption } from '@app/res';
 import { UtilService } from '@app/util';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -85,7 +86,7 @@ export class DBService {
     await this.menu_category_repo.update(id, payload);
   }
 
-  public async delete_menu_category(id: number): Promise<void> {
+  public async delete_menu_category(id: number[]): Promise<void> {
     await this.menu_category_repo.delete(id);
   }
 
@@ -97,7 +98,7 @@ export class DBService {
     return new Menu(await this.menu_repo.findOne(id));
   }
 
-  public async find_menu_by_name(name: string, menu_category): Promise<Menu> {
+  public async find_menu_by_name(name: string, menu_category: MenuCategory): Promise<Menu> {
     return new Menu(await this.menu_repo.findOne({ m_name: name, menu_category }));
   }
 
@@ -110,11 +111,52 @@ export class DBService {
     return result;
   }
 
+  public async find_menus_groups_options(menu_category: MenuCategory) {
+    const found_menus = await this.menu_repo.find({
+      where: { menu_category },
+      join: { alias: 'Menu', leftJoinAndSelect: { group: 'Menu.group' } },
+    });
+    const found_data = await this.option_repo.query(
+      `SELECT g.g_id, o.o_id, o.o_name, o.o_price, o.o_id
+      FROM thikira.menu AS m 
+      NATURAL JOIN thikira.group AS g
+      NATURAL JOIN thikira.option AS o
+      WHERE m.mc_id=${menu_category.mc_id}`,
+    );
+    const options = {};
+    for (const loop_data of found_data) {
+      if (options[loop_data.g_id] === undefined) {
+        options[loop_data.g_id] = new Array<ResGetOption>();
+      }
+      options[loop_data.g_id].push(new ResGetOption({
+        o_id: loop_data.o_id,
+        name: loop_data.o_name,
+        price: loop_data.o_price,
+      }));
+    }
+
+    const result: ResGetMenu[] = new Array<ResGetMenu>();
+    for (const loop_menu of found_menus) {
+      const menu: ResGetMenu = new ResGetMenu(loop_menu);
+      result.push(menu);
+      for (const loop_group of loop_menu.group) {
+        const group: ResGetGroup = new ResGetGroup(loop_group);
+        menu.group.push(group);
+        if (options[group.g_id] !== undefined) {
+          for (const loop_option of options[group.g_id]) {
+            group.option.push(loop_option);
+          }
+        }
+      }
+    }
+    return result;
+  }
+
   public async update_menu(id: number, payload): Promise<void> {
     await this.menu_repo.update(id, payload);
   }
 
-  public async delete_menu(id: number): Promise<void> {
+  public async delete_menu(id: number[]): Promise<void> {
     await this.menu_repo.delete(id);
   }
 
@@ -122,7 +164,7 @@ export class DBService {
     if (group instanceof Group) {
       await this.group_repo.insert(group);
     } else {
-      for(const loop_group of group) {
+      for (const loop_group of group) {
         await this.group_repo.insert(loop_group);
       }
     }
@@ -145,11 +187,18 @@ export class DBService {
     return result;
   }
 
+  public async find_groups_and_options(menu: Menu) {
+    return this.group_repo.find({
+      where: { menu },
+      join: { alias: 'Group', leftJoinAndSelect: { option: 'Group.option' } },
+    });
+  }
+
   public async update_group(id: number, payload): Promise<void> {
     await this.group_repo.update(id, payload);
   }
 
-  public async delete_group(id: number): Promise<void> {
+  public async delete_group(id: number[]): Promise<void> {
     await this.group_repo.delete(id);
   }
 
@@ -178,7 +227,7 @@ export class DBService {
     await this.option_repo.update(id, payload);
   }
 
-  public async delete_option(id: number): Promise<void> {
+  public async delete_option(id: number[]): Promise<void> {
     await this.option_repo.delete(id);
   }
 }

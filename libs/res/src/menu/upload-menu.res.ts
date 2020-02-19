@@ -1,11 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber } from 'class-validator';
 
-export class DtoRemoveMenu {
+export class ResUploadMenu {
   @ApiProperty({
     description: '메뉴 아이디',
-    example: 10,
+    example: 0,
   })
-  @IsNumber()
   public readonly m_id: number;
 }

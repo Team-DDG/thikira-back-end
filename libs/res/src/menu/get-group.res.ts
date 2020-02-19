@@ -28,7 +28,7 @@ export class ResGetGroup {
   })
   public readonly option: ResGetOption[];
 
-  constructor(payload?: Group | ResGetGroup) {
+  constructor(payload?) {
     if (payload !== undefined) {
       if (payload instanceof Group) {
         this.g_id = payload.g_id;

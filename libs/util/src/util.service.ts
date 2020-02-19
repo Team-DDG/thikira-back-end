@@ -17,6 +17,14 @@ export class UtilService {
     return Array.from({ length: array.length }, ((value, key) => key));
   }
 
+  public static parse_ids(ids: string): number[] {
+    const result: number[] = new Array<number>();
+    for(const loop_id of ids.split(',')) {
+      result.push(Number(loop_id));
+    }
+    return result;
+  }
+
   public async encode(content: string): Promise<string> {
     return createHash(this.config_service.ENCIPHERMENT).update(content).digest('base64');
   }

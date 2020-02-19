@@ -47,7 +47,7 @@ export class ResGetMenu {
   })
   public readonly group?: ResGetGroup[];
 
-  constructor(payload?: Menu | ResGetMenu) {
+  constructor(payload?) {
     if (payload !== undefined) {
       if (payload instanceof Menu) {
         this.m_id = payload.m_id;

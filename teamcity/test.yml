@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  nodejs:
+    image: nodejs
+    container_name: nodejs
+    environment:
+      - DB=$DB
+      - DB_USER=$DB_USER
+      - DB_PASS=$DB_PASS
+      - DB_HOST=$DB_HOST
+      - DB_PORT=$DB_PORT
+      - DB_SCHEMA=$DB_SCHEMA
+      - ENCIPHERMENT=$ENCIPHERMENT
+    volumes:
+      - .:/home/node/app
+    command: yarn && yarn test
