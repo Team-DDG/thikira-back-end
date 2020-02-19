@@ -1,16 +1,7 @@
 FROM node:12
 MAINTAINER ljsung0805 <ljsung0805@gmail.com>
 
-ENV DB_USER env.DB_USER
-ENV DB_PASS env.DB_PASS
-ENV DB_HOST env.DB_HOST
-ENV DB_PORT env.DB_PORT
-ENV DB_SCHEMA env.DB_SCHEMA
-ENV DB env.DB
-ENV ENCIPHERMENT env.ENCIPHERMENT
-
 ADD . /app
 WORKDIR /app
 
-RUN yarn install
-RUN yarn test
+RUN ls
