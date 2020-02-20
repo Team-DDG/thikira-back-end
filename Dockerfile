@@ -1,10 +1,9 @@
 FROM node:12
 MAINTAINER ljsung0805 <ljsung0805@gmail.com>
 
+ENV NODE_ENV production
+
 ADD . /app
 WORKDIR /app
 
-RUN yarn && yarn build
-
-ENV NODE_ENV production
-CMD yarn start:prod
+CMD node ./node_module/yarn/bin/yarn.js yarn start:prod
