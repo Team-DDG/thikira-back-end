@@ -8118,6 +8118,7 @@ resolve@1.1.7:
     tslint: ^5.20.0
     typeorm: ^0.2.22
     typescript: ^3.6.3
+    yarn: ^2.0.0-rc.27
   languageName: unknown
   linkType: soft
 
@@ -9074,6 +9075,16 @@ resolve@1.1.7:
     y18n: ^4.0.0
     yargs-parser: ^16.1.0
   checksum: 9638d140ce894d9469570187a733009082cf5e2f20e774b782270e0428749cfcc30ac4b9328cad9f410a7c2dc3593684cda5f8ae65fb799df665c463c7ebc91c
+  languageName: node
+  linkType: hard
+
+"yarn@npm:^2.0.0-rc.27":
+  version: 2.0.0-rc.27
+  resolution: "yarn@npm:2.0.0-rc.27"
+  bin:
+    yarn: ./bin/yarn.js
+    yarnpkg: ./bin/yarn.js
+  checksum: 3ae41f3f5209bea8c6f9d205ba4313a781bfbe6e3bda1abc7761e16f4170c1496b087013d954bb08802ce9a8f7097b55040bd439ee7db62344473c29741fc040
   languageName: node
   linkType: hard
 

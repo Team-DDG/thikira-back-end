@@ -20,7 +20,8 @@ export class ConfigService {
   public readonly DB_HOST: string;
 
   @IsNumberString()
-  public readonly DB_PORT: string;
+  @IsOptional()
+  public readonly DB_PORT: string = '3306';
 
   @IsString()
   public readonly DB_USER: string;
