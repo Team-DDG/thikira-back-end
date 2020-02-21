@@ -8,4 +8,5 @@ WORKDIR /app
 
 RUN npm i yarn@berry
 RUN node ./node_modules/yarn/bin/yarn.js install
+RUN node ./node_modules/yarn/bin/yarn.js build
 CMD node ./node_modules/yarn/bin/yarn.js start:prod
