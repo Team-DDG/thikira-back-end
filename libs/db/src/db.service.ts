@@ -1,29 +1,28 @@
-import { ConfigService } from '@app/config';
-import { UtilService } from '@app/util';
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { getManager, Repository } from 'typeorm';
 import { Group, Menu, MenuCategory, Option, Restaurant, User } from './entity';
+import { Inject, Injectable } from '@nestjs/common';
+import { Repository, getManager } from 'typeorm';
+import { ConfigService } from '@app/config';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UtilService } from '@app/util';
 
 @Injectable()
 export class DBService {
-  constructor(
-    @InjectRepository(Restaurant)
-    private readonly restaurant_repo: Repository<Restaurant>,
-    @InjectRepository(User)
-    private readonly user_repo: Repository<User>,
-    @InjectRepository(Menu)
-    private readonly menu_repo: Repository<Menu>,
-    @InjectRepository(MenuCategory)
-    private readonly menu_category_repo: Repository<MenuCategory>,
-    @InjectRepository(Option)
-    private readonly option_repo: Repository<Option>,
-    @InjectRepository(Group)
-    private readonly group_repo: Repository<Group>,
-    private readonly config_service: ConfigService,
-    private readonly util_service: UtilService,
-  ) {
-  }
+  @InjectRepository(Restaurant)
+  private readonly restaurant_repo: Repository<Restaurant>;
+  @InjectRepository(User)
+  private readonly user_repo: Repository<User>;
+  @InjectRepository(Menu)
+  private readonly menu_repo: Repository<Menu>;
+  @InjectRepository(MenuCategory)
+  private readonly menu_category_repo: Repository<MenuCategory>;
+  @InjectRepository(Option)
+  private readonly option_repo: Repository<Option>;
+  @InjectRepository(Group)
+  private readonly group_repo: Repository<Group>;
+  @Inject()
+  private readonly config_service: ConfigService;
+  @Inject()
+  private readonly util_service: UtilService;
 
   // restaurant
 
@@ -222,8 +221,8 @@ export class DBService {
   public async find_groups_by_menu(menu: Menu): Promise<Group[]> {
     const result: Group[] = new Array<Group>();
     const found_groups: Group[] = await this.group_repo.find({
-      where: { menu },
       join: { alias: 'Group', leftJoinAndSelect: { Option: 'Group.option' } },
+      where: { menu },
     });
 
     for (const loop_group of found_groups) {
@@ -257,7 +256,7 @@ export class DBService {
   }
 
   public async find_option_by_name(name: string, group: Group): Promise<Option> {
-    return new Option(await this.option_repo.findOne({ o_name: name, group }));
+    return new Option(await this.option_repo.findOne({ group, o_name: name }));
   }
 
   public async find_options_by_group(group: Group): Promise<Option[]> {

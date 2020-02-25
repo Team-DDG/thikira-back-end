@@ -1,116 +1,37 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsEmail, IsNumber, IsNumberString, IsString, IsUrl } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class DtoCreateRestaurant {
-  @ApiProperty({
-    description: '업체 사진',
-    example: 'asdf@gmail.com',
-  })
-  @IsUrl()
+  @ApiProperty() @IsUrl()
   public readonly image: string;
-
-  @ApiProperty({
-    description: '업체 이름',
-    example: '증포동 bbq',
-  })
-  @IsString()
+  @ApiProperty() @IsString()
   public readonly name: string;
-
-  @ApiProperty({
-    description: '전화번호',
-    example: '01012312312',
-  })
-  @IsNumberString()
+  @ApiProperty() @IsNumberString()
   public readonly phone: string;
-
-  @ApiProperty({
-    description: '도로명 주소',
-    example: '경기 이천시 아리역로 25 남구빌딩',
-  })
-  @IsString()
+  @ApiProperty() @IsString()
   public readonly add_street: string;
-
-  @ApiProperty({
-    description: '지번 주소',
-    example: '경기도 이천시 증포동 404-9',
-  })
-  @IsString()
+  @ApiProperty() @IsString()
   public readonly add_parcel: string;
-
-  @ApiProperty({
-    description: '배달 가능 지역',
-    example: '증포동, 창전동',
-  })
-  @IsString()
+  @ApiProperty() @IsString()
   public readonly area: string;
-
-  @ApiProperty({
-    description: '분류',
-    example: '치킨',
-  })
-  @IsString()
+  @ApiProperty() @IsString()
   public readonly category: string;
-
-  @ApiProperty({
-    description: '최소가격',
-    example: 17500,
-  })
-  @IsNumber()
+  @ApiProperty() @IsNumber()
   public readonly min_price: number;
-
-  @ApiProperty({
-    description: '휴무일',
-    example: '주일날은 교회에 갑니다.',
-  })
-  @IsString()
+  @ApiProperty() @IsString()
   public readonly day_off: string;
-
-  @ApiProperty({
-    description: '온라인 결제 여부',
-    example: true,
-  })
-  @IsBoolean()
+  @ApiProperty() @IsBoolean()
   public readonly online_payment: boolean;
-
-  @ApiProperty({
-    description: '오프라인 결제 여부',
-    example: false,
-  })
-  @IsBoolean()
+  @ApiProperty() @IsBoolean()
   public readonly offline_payment: boolean;
-
-  @ApiProperty({
-    description: '개시시간',
-    example: '15:00',
-  })
-  @IsString()
+  @ApiProperty() @IsString()
   public readonly open_time: string;
-
-  @ApiProperty({
-    description: '마감 시간',
-    example: '00:00',
-  })
-  @IsString()
+  @ApiProperty() @IsString()
   public readonly close_time: string;
-
-  @ApiProperty({
-    description: '설명',
-    example: '증포동 bbq 입니다.',
-  })
-  @IsString()
+  @ApiProperty() @IsString()
   public readonly description: string;
-
-  @ApiProperty({
-    description: '이메일',
-    example: 'asdf@gmail.com',
-  })
-  @IsEmail()
+  @ApiProperty() @IsEmail()
   public readonly email: string;
-
-  @ApiProperty({
-    description: '비밀번호',
-    example: 'adfasdf123',
-  })
-  @IsString()
+  @ApiProperty() @IsString()
   public readonly password: string;
 }

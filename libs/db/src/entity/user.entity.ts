@@ -1,6 +1,5 @@
-import { DtoCreateUser } from '@app/req';
-import { stringify } from 'querystring';
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { stringify } from 'querystring';
 
 @Entity()
 export class User {
@@ -25,7 +24,7 @@ export class User {
     return !this.u_email;
   }
 
-  constructor(user: User | DtoCreateUser) {
+  constructor(user?) {
     if (user !== undefined) {
       if (user instanceof User) {
         Object.assign(this, user);
@@ -40,15 +39,15 @@ export class User {
 
   public get_info(): string {
     return stringify({
-      phone: this.u_phone,
       nickname: this.u_nickname,
+      phone: this.u_phone,
     });
   }
 
   public get_address(): string {
     return stringify({
-      add_street: this.u_add_street,
       add_parcel: this.u_add_parcel,
+      add_street: this.u_add_street,
     });
   }
 }

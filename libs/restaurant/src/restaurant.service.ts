@@ -1,22 +1,18 @@
+import { ConflictException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { DBService, Restaurant } from '@app/db';
-import { ResLoadRestaurant, ResRefresh, ResSignIn } from '@app/res';
-import { TokenTypeEnum, UtilService } from '@app/util';
-import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import {
   DtoCheckPassword, DtoCreateRestaurant,
   DtoEditAddress, DtoEditPassword, DtoEditRestaurantInfo,
   DtoSignIn,
-  QueryGetRestaurantList, QueryCheckEmail,
+  QueryCheckEmail, QueryGetRestaurantList,
 } from '@app/req';
-import { ResGetRestaurantList } from '../../res/src/account/get-restaurant-list.res';
+import { ResGetRestaurantList, ResLoadRestaurant, ResRefresh, ResSignIn } from '@app/res';
+import { TokenTypeEnum, UtilService } from '@app/util';
 
 @Injectable()
 export class RestaurantService {
-  constructor(
-    private readonly db_service: DBService,
-    private readonly util_service: UtilService,
-  ) {
-  }
+  @Inject() private readonly db_service: DBService;
+  @Inject() private readonly util_service: UtilService;
 
   public async check_email(query: QueryCheckEmail): Promise<void> {
     const found_restaurant: Restaurant = await this.db_service.find_restaurant_by_email(query.email);
@@ -75,15 +71,17 @@ export class RestaurantService {
   public async edit_info(token: string, payload: DtoEditRestaurantInfo) {
     const email: string = await this.util_service.get_email_by_token(token);
     const edit_data = {
-      r_image: payload.image, r_name: payload.name,
-      r_phone: payload.phone, r_area: payload.area,
-      r_min_price: payload.min_price,
-      r_day_off: payload.day_off,
-      r_online_payment: payload.online_payment,
-      r_offline_payment: payload.offline_payment,
-      r_open_time: payload.open_time,
+      r_area: payload.area,
       r_close_time: payload.close_time,
+      r_day_off: payload.day_off,
       r_description: payload.description,
+      r_image: payload.image,
+      r_min_price: payload.min_price,
+      r_name: payload.name,
+      r_offline_payment: payload.offline_payment,
+      r_online_payment: payload.online_payment,
+      r_open_time: payload.open_time,
+      r_phone: payload.phone,
     };
     for (const key of Object.keys(edit_data)) {
       if (edit_data[key] === undefined || edit_data[key] === null) {
@@ -96,8 +94,8 @@ export class RestaurantService {
   public async edit_address(token: string, payload: DtoEditAddress) {
     const email: string = await this.util_service.get_email_by_token(token);
     await this.db_service.update_restaurant(email, {
-      r_add_street: payload.add_street,
       r_add_parcel: payload.add_parcel,
+      r_add_street: payload.add_street,
     });
   }
 

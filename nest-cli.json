@@ -1,81 +1,81 @@
 {
-  "collection": "@nestjs/schematics",
-  "sourceRoot": "src",
-  "projects": {
-    "config": {
-      "type": "library",
-      "root": "libs/config",
-      "entryFile": "index",
-      "sourceRoot": "libs/config/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/config/tsconfig.lib.json"
-      }
-    },
-    "util": {
-      "type": "library",
-      "root": "libs/util",
-      "entryFile": "index",
-      "sourceRoot": "libs/util/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/util/tsconfig.lib.json"
-      }
-    },
-    "restaurant": {
-      "type": "library",
-      "root": "libs/restaurant",
-      "entryFile": "index",
-      "sourceRoot": "libs/restaurant/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/restaurant/tsconfig.lib.json"
-      }
-    },
-    "user": {
-      "type": "library",
-      "root": "libs/user",
-      "entryFile": "index",
-      "sourceRoot": "libs/user/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/user/tsconfig.lib.json"
-      }
-    },
-    "menu": {
-      "type": "library",
-      "root": "libs/menu",
-      "entryFile": "index",
-      "sourceRoot": "libs/menu/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/menu/tsconfig.lib.json"
-      }
-    },
-    "db": {
-      "type": "library",
-      "root": "libs/db",
-      "entryFile": "index",
-      "sourceRoot": "libs/db/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/db/tsconfig.lib.json"
-      }
-    },
-    "req": {
-      "type": "library",
-      "root": "libs/req",
-      "entryFile": "index",
-      "sourceRoot": "libs/req/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/req/tsconfig.lib.json"
-      }
-    },
-    "res": {
-      "type": "library",
-      "root": "libs/res",
-      "entryFile": "index",
-      "sourceRoot": "libs/res/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/res/tsconfig.lib.json"
-      }
-    }
-  },
   "compilerOptions": {
     "webpack": true
-  }
+  },
+  "collection": "@nestjs/schematics",
+  "projects": {
+    "config": {
+      "compilerOptions": {
+        "tsConfigPath": "libs/config/tsconfig.lib.json"
+      },
+      "entryFile": "index",
+      "root": "libs/config",
+      "sourceRoot": "libs/config/src",
+      "type": "library"
+    },
+    "util": {
+      "compilerOptions": {
+        "tsConfigPath": "libs/util/tsconfig.lib.json"
+      },
+      "entryFile": "index",
+      "root": "libs/util",
+      "sourceRoot": "libs/util/src",
+      "type": "library"
+    },
+    "restaurant": {
+      "compilerOptions": {
+        "tsConfigPath": "libs/restaurant/tsconfig.lib.json"
+      },
+      "entryFile": "index",
+      "root": "libs/restaurant",
+      "sourceRoot": "libs/restaurant/src",
+      "type": "library"
+    },
+    "user": {
+      "compilerOptions": {
+        "tsConfigPath": "libs/user/tsconfig.lib.json"
+      },
+      "entryFile": "index",
+      "root": "libs/user",
+      "sourceRoot": "libs/user/src",
+      "type": "library"
+    },
+    "menu": {
+      "compilerOptions": {
+        "tsConfigPath": "libs/menu/tsconfig.lib.json"
+      },
+      "entryFile": "index",
+      "root": "libs/menu",
+      "sourceRoot": "libs/menu/src",
+      "type": "library"
+    },
+    "db": {
+      "compilerOptions": {
+        "tsConfigPath": "libs/db/tsconfig.lib.json"
+      },
+      "entryFile": "index",
+      "root": "libs/db",
+      "sourceRoot": "libs/db/src",
+      "type": "library"
+    },
+    "req": {
+      "compilerOptions": {
+        "tsConfigPath": "libs/req/tsconfig.lib.json"
+      },
+      "entryFile": "index",
+      "root": "libs/req",
+      "sourceRoot": "libs/req/src",
+      "type": "library"
+    },
+    "res": {
+      "compilerOptions": {
+        "tsConfigPath": "libs/res/tsconfig.lib.json"
+      },
+      "entryFile": "index",
+      "root": "libs/res",
+      "sourceRoot": "libs/res/src",
+      "type": "library"
+    }
+  },
+  "sourceRoot": "src"
 }

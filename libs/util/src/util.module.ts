@@ -3,8 +3,8 @@ import { Module } from '@nestjs/common';
 import { UtilService } from './util.service';
 
 @Module({
+  exports: [UtilService],
   imports: [ConfigModule],
   providers: [UtilService],
-  exports: [UtilService],
 })
 export class UtilModule {}

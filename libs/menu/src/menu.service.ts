@@ -1,3 +1,4 @@
+import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { DBService, Group, Menu, MenuCategory, Option, Restaurant } from '@app/db';
 import {
   DtoEditGroup, DtoEditMenu, DtoEditMenuCategory, DtoEditOption,
@@ -9,15 +10,13 @@ import {
   ResUploadGroup, ResUploadMenu, ResUploadMenuCategory, ResUploadOption,
 } from '@app/res';
 import { UtilService } from '@app/util';
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class MenuService {
-  constructor(
-    private readonly db_service: DBService,
-    private readonly util_service: UtilService,
-  ) {
-  }
+  @Inject()
+  private readonly db_service: DBService;
+  @Inject()
+  private readonly util_service: UtilService;
 
   // menu_category
 
@@ -131,10 +130,10 @@ export class MenuService {
 
   public async edit_menu(payload: DtoEditMenu): Promise<void> {
     const edit_data = {
-      m_name: payload.name,
-      m_price: payload.price,
       m_description: payload.description,
       m_image: payload.image,
+      m_name: payload.name,
+      m_price: payload.price,
     };
     for (const key of Object.keys(edit_data)) {
       if (edit_data[key] === undefined || edit_data[key] === null) {
@@ -193,8 +192,8 @@ export class MenuService {
 
   public async edit_group(payload: DtoEditGroup): Promise<void> {
     const edit_data = {
-      g_name: payload.name,
       g_max_count: payload.max_count,
+      g_name: payload.name,
     };
     for (const key of Object.keys(edit_data)) {
       if (edit_data[key] === undefined || edit_data[key] === null) {

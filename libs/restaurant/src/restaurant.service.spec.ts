@@ -1,42 +1,42 @@
 import { ConfigModule, ConfigService } from '@app/config';
 import { DBModule, Group, Menu, MenuCategory, Option, Restaurant, User } from '@app/db';
 import { ResRefresh, ResSignIn } from '@app/res';
-import { UtilModule } from '@app/util';
-import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { stringify } from 'querystring';
+import { INestApplication } from '@nestjs/common';
 import { RestaurantModule } from './restaurant.module';
 import { RestaurantService } from './restaurant.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UtilModule } from '@app/util';
+import { stringify } from 'querystring';
 
 describe('RestaurantService', () => {
-  let app: INestApplication;
-  let service: RestaurantService;
   let access_token: string;
+  let app: INestApplication;
   let refresh_token: string;
+  let service: RestaurantService;
   const test_req = {
-    image: 'image_url',
-    name: 'test',
-    phone: '01012345678',
-    add_street: '경기 이천시 아리역로 25 남구빌딩',
     add_parcel: '경기도 이천시 증포동 404-9',
+    add_street: '경기 이천시 아리역로 25 남구빌딩',
     area: '증포동, 창전동',
     category: '치킨',
-    min_price: 17500,
-    day_off: '주일날은 교회에 갑니다.',
-    online_payment: true,
-    offline_payment: false,
-    open_time: '15:00',
     close_time: '00:00',
+    day_off: '주일날은 교회에 갑니다.',
     description: '증포동 bbq 입니다.',
     email: 'test@gmail.com',
+    image: 'image_url',
+    min_price: 17500,
+    name: 'test',
+    offline_payment: false,
+    online_payment: true,
+    open_time: '15:00',
     password: 'test',
+    phone: '01012345678',
   };
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        RestaurantModule, DBModule, UtilModule,
+        DBModule, UtilModule,
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
           inject: [ConfigService],
@@ -46,7 +46,8 @@ describe('RestaurantService', () => {
               entities: [Restaurant, Menu, MenuCategory, Option, Group, User],
             };
           },
-        })],
+        }),
+        RestaurantModule],
       providers: [RestaurantService],
     }).compile();
 
@@ -91,17 +92,17 @@ describe('RestaurantService', () => {
 
   it('200 edit_info()', async () => {
     const edit_data = {
-      image: 'url.image',
-      name: '업체',
-      phone: '01012345679',
       area: '창전동',
-      min_price: 20000,
-      day_off: '절에 다닙니다.',
-      online_payment: false,
-      offline_payment: true,
-      open_time: '15:00',
       close_time: '00:00',
+      day_off: '절에 다닙니다.',
       description: '증포동 bbq 입니다.',
+      image: 'url.image',
+      min_price: 20000,
+      name: '업체',
+      offline_payment: true,
+      online_payment: false,
+      open_time: '15:00',
+      phone: '01012345679',
     };
     await service.edit_info(access_token, edit_data);
     const found_restaurant = await service.get(access_token);
@@ -113,8 +114,8 @@ describe('RestaurantService', () => {
 
   it('200 edit_address()', async () => {
     const edit_data = {
-      add_street: '경기도 어딘가',
       add_parcel: '경기도 어딘가',
+      add_street: '경기도 어딘가',
     };
     await service.edit_address(access_token, edit_data);
     const found_restaurant = await service.get(access_token);

@@ -1,24 +1,5 @@
 {
-  "name": "thikira-back-end",
-  "version": "0.0.1",
-  "description": "thikira back_end",
   "author": "JepangLee <ljsung0805@gmail.com>",
-  "license": "MIT",
-  "scripts": {
-    "prebuild": "rimraf dist",
-    "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"libs/**/*.ts\"",
-    "start": "nest start",
-    "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
-    "lint": "tslint -p tsconfig.json -c tslint.json",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
-  },
   "dependencies": {
     "@nestjs/common": "^6.7.2",
     "@nestjs/core": "^6.7.2",
@@ -27,10 +8,15 @@
     "@nestjs/swagger": "^4.0.9",
     "@nestjs/typeorm": "^6.2.0",
     "@types/passport-jwt": "^3.0.3",
+    "@typescript-eslint/eslint-plugin": "^2.21.0",
+    "@typescript-eslint/parser": "^2.21.0",
     "class-transformer": "^0.2.3",
     "class-validator": "^0.11.0",
     "crypto": "^1.0.1",
     "dotenv": "^8.2.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-import": "^2.20.1",
     "fastify-swagger": "^2.5.0",
     "mysql": "^2.17.1",
     "passport-jwt": "^4.0.0",
@@ -41,6 +27,7 @@
     "typeorm": "^0.2.22",
     "yarn": "^2.0.0-rc.27"
   },
+  "description": "thikira back_end",
   "devDependencies": {
     "@nestjs/cli": "^6.9.0",
     "@nestjs/schematics": "^6.7.0",
@@ -58,43 +45,59 @@
     "ts-loader": "^6.1.1",
     "ts-node": "^8.4.1",
     "tsconfig-paths": "^3.9.0",
-    "tslint": "^5.20.0",
     "typescript": "^3.6.3"
   },
   "jest": {
+    "coverageDirectory": "./coverage",
     "moduleFileExtensions": [
       "js",
       "json",
       "ts"
     ],
-    "rootDir": ".",
-    "testRegex": ".spec.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
+    "moduleNameMapper": {
+      "@app/config/(.*)": "<rootDir>/libs/config/src/$1",
+      "@app/config": "<rootDir>/libs/config/src",
+      "@app/db/(.*)": "<rootDir>/libs/db/src/$1",
+      "@app/db": "<rootDir>/libs/db/src",
+      "@app/menu/(.*)": "<rootDir>/libs/menu/src/$1",
+      "@app/menu": "<rootDir>/libs/menu/src",
+      "@app/req/(.*)": "<rootDir>/libs/req/src/$1",
+      "@app/req": "<rootDir>/libs/req/src",
+      "@app/restaurant": "<rootDir>/libs/restaurant/src",
+      "@app/restaurant/(.*)": "<rootDir>/libs/restaurant/src/$1",
+      "@app/res/(.*)": "<rootDir>/libs/res/src/$1",
+      "@app/res": "<rootDir>/libs/res/src",
+      "@app/user/(.*)": "<rootDir>/libs/user/src/$1",
+      "@app/user": "<rootDir>/libs/user/src",
+      "@app/util/(.*)": "<rootDir>/libs/util/src/$1",
+      "@app/util": "<rootDir>/libs/util/src"
     },
-    "coverageDirectory": "./coverage",
-    "testEnvironment": "node",
+    "rootDir": ".",
     "roots": [
       "<rootDir>/src/",
       "<rootDir>/libs/"
     ],
-    "moduleNameMapper": {
-      "@app/config/(.*)": "<rootDir>/libs/config/src/$1",
-      "@app/config": "<rootDir>/libs/config/src",
-      "@app/util/(.*)": "<rootDir>/libs/util/src/$1",
-      "@app/util": "<rootDir>/libs/util/src",
-      "@app/restaurant/(.*)": "<rootDir>/libs/restaurant/src/$1",
-      "@app/restaurant": "<rootDir>/libs/restaurant/src",
-      "@app/user/(.*)": "<rootDir>/libs/user/src/$1",
-      "@app/user": "<rootDir>/libs/user/src",
-      "@app/menu/(.*)": "<rootDir>/libs/menu/src/$1",
-      "@app/menu": "<rootDir>/libs/menu/src",
-      "@app/db/(.*)": "<rootDir>/libs/db/src/$1",
-      "@app/db": "<rootDir>/libs/db/src",
-      "@app/req/(.*)": "<rootDir>/libs/req/src/$1",
-      "@app/req": "<rootDir>/libs/req/src",
-      "@app/res/(.*)": "<rootDir>/libs/res/src/$1",
-      "@app/res": "<rootDir>/libs/res/src"
+    "testEnvironment": "node",
+    "testRegex": ".spec.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
     }
-  }
+  },
+  "license": "MIT",
+  "name": "thikira-back-end",
+  "scripts": {
+    "build": "nest build",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"libs/**/*.ts\"",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "start:debug": "nest start --debug --watch",
+    "start:prod": "node dist/main",
+    "test": "jest",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:watch": "jest --watch"
+  },
+  "version": "0.0.1"
 }

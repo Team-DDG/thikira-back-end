@@ -1,12 +1,13 @@
-import { ConfigService } from '@app/config';
-import { Injectable } from '@nestjs/common';
 import { createHash, randomBytes } from 'crypto';
 import { sign, verify } from 'jsonwebtoken';
+import { ConfigService } from '@app/config';
+import { Injectable } from '@nestjs/common';
 import { TokenTypeEnum } from './token-type.enum';
 
 @Injectable()
 export class UtilService {
   private readonly secret: Buffer;
+
   private readonly tokenRegExp = /^Bearer .+$/;
 
   constructor(private readonly config_service: ConfigService) {

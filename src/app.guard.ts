@@ -1,5 +1,5 @@
-import { Header, UtilService } from '@app/util';
 import { CanActivate, ExecutionContext, Inject, Injectable } from '@nestjs/common';
+import { Header, UtilService } from '@app/util';
 
 @Injectable()
 export class AppGuard implements CanActivate {

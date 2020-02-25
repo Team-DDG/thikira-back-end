@@ -1,3 +1,4 @@
+import { ConflictException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { DBService, User } from '@app/db';
 import {
   DtoCheckPassword, DtoCreateUser, DtoEditAddress,
@@ -6,15 +7,11 @@ import {
 } from '@app/req';
 import { ResLoadUser, ResRefresh, ResSignIn } from '@app/res';
 import { TokenTypeEnum, UtilService } from '@app/util';
-import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 
 @Injectable()
 export class UserService {
-  constructor(
-    private readonly db_service: DBService,
-    private readonly util_service: UtilService,
-  ) {
-  }
+  @Inject() private readonly db_service: DBService;
+  @Inject() private readonly util_service: UtilService;
 
   public async check_email(query: QueryCheckEmail): Promise<void> {
     const found_user = await this.db_service.find_user_by_email(query.email);
@@ -72,7 +69,7 @@ export class UserService {
 
   public async edit_info(token: string, payload: DtoEditUserInfo) {
     const email: string = await this.util_service.get_email_by_token(token);
-    const edit_data = { u_phone: payload.phone, u_nickname: payload.nickname };
+    const edit_data = { u_nickname: payload.nickname, u_phone: payload.phone };
     for (const key of Object.keys(edit_data)) {
       if (edit_data[key] === undefined || edit_data[key] === null) {
         delete edit_data[key];
@@ -83,10 +80,7 @@ export class UserService {
 
   public async edit_address(token: string, payload: DtoEditAddress) {
     const email: string = await this.util_service.get_email_by_token(token);
-    await this.db_service.update_user(email, {
-      u_add_street: payload.add_street,
-      u_add_parcel: payload.add_parcel,
-    });
+    await this.db_service.update_user(email, { u_add_parcel: payload.add_parcel, u_add_street: payload.add_street });
   }
 
   public async get(token: string): Promise<ResLoadUser> {

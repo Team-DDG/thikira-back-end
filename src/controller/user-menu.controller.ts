@@ -1,17 +1,14 @@
-import { MenuService } from '@app/menu';
-import { ResGetMenu, ResGetMenuCategory } from '@app/res';
-import { Controller, Get, Headers, HttpCode, HttpException, InternalServerErrorException, Query, ValidationPipe } from '@nestjs/common';
 import { ApiForbiddenResponse, ApiHeader, ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { QueryGetMenuCategoryList, QueryGetMenuList } from '@app/req';
+import { Controller, Get, Headers, HttpCode, HttpException, Inject, InternalServerErrorException, Query, ValidationPipe } from '@nestjs/common';
 import getPrototypeOf = Reflect.getPrototypeOf;
+import { QueryGetMenuCategoryList, QueryGetMenuList } from '@app/req';
+import { ResGetMenu, ResGetMenuCategory } from '@app/res';
+import { MenuService } from '@app/menu';
 
 @ApiTags('user/menu')
 @Controller('api/user/menu')
 export class UserMenuController {
-  constructor(
-    private readonly menu_service: MenuService,
-  ) {
-  }
+  @Inject() private readonly menu_service: MenuService;
 
   @Get('category')
   @HttpCode(200)

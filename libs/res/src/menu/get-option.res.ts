@@ -1,29 +1,17 @@
-import { Option } from '@app/db';
 import { ApiProperty } from '@nestjs/swagger';
-import { stringify } from "querystring";
+import { Option } from '@app/db';
+import { stringify } from 'querystring';
 
 export class ResGetOption {
-  @ApiProperty({
-    description: '옵션 아이디',
-    example: 0,
-  })
-  public readonly o_id: number;
-  @ApiProperty({
-    description: '옵션 이름',
-    example: '순살',
-  })
-  public readonly name: string;
-  @ApiProperty({
-    description: '가격',
-    example: 1000,
-  })
-  public readonly price: number;
+  @ApiProperty() public readonly name: string;
+  @ApiProperty() public readonly o_id: number;
+  @ApiProperty() public readonly price: number;
 
   constructor(option?) {
     if (option !== undefined) {
       if (option instanceof Option) {
-        this.o_id = option.o_id;
         this.name = option.o_name;
+        this.o_id = option.o_id;
         this.price = option.o_price;
       } else {
         Object.assign(this, option);

@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
 import { IsEnum, IsNumberString, IsOptional, IsString, validateSync } from 'class-validator';
+import { Injectable } from '@nestjs/common';
+import { NodeEnv } from './node-env.enum';
+import { fileExistsSync } from 'tsconfig-paths/lib/filesystem';
 import { parse } from 'dotenv';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
-import { fileExistsSync } from 'tsconfig-paths/lib/filesystem';
-import { NodeEnv } from './node-env.enum';
 
 export type Config = Record<string, string>;
 
@@ -12,48 +12,31 @@ export type Config = Record<string, string>;
 export class ConfigService {
   @IsEnum(NodeEnv)
   public readonly NODE_ENV: NodeEnv;
-
   @IsString()
   public readonly DB: string;
-
   @IsString()
   public readonly DB_HOST: string;
-
-  @IsNumberString()
-  @IsOptional()
+  @IsNumberString() @IsOptional()
   public readonly DB_PORT: string = '3306';
-
   @IsString()
   public readonly DB_USER: string;
-
   @IsString()
   public readonly DB_PASS: string;
-
   @IsString()
   public readonly DB_SCHEMA: string;
-
-  @IsOptional()
-  @IsNumberString()
+  @IsOptional() @IsNumberString()
   public readonly PORT?: string;
-
-  @IsOptional()
-  @IsString()
+  @IsOptional() @IsString()
   public readonly HOST?: string;
-
-  @IsOptional()
-  @IsString()
+  @IsOptional() @IsString()
   public readonly JWT_SECRET?: string;
-
   @IsString()
   public readonly ENCIPHERMENT: string;
-
   public readonly orm_config;
 
   constructor(file_path?: string, custom_config?: Config) {
     Object.assign(this, {
-      ...{
-        NODE_ENV: NodeEnv.development,
-      },
+      NODE_ENV: NodeEnv.development,
       ...process.env,
       ...file_path && fileExistsSync(file_path) && parse(readFileSync(file_path)),
       ...custom_config,

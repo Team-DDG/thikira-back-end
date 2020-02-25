@@ -1,4 +1,16 @@
 import {
+  ApiConflictResponse, ApiForbiddenResponse,
+  ApiHeader, ApiNotFoundResponse,
+  ApiOkResponse, ApiOperation, ApiQuery,
+  ApiTags, ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import {
+  Body, Controller, Delete, Get,
+  Headers, HttpCode, HttpException, Inject,
+  InternalServerErrorException,
+  Patch, Post, Query, ValidationPipe,
+} from '@nestjs/common';
+import {
   DtoCheckPassword, DtoCreateUser,
   DtoEditAddress, DtoEditPassword, DtoEditUserInfo,
   DtoSignIn,
@@ -8,29 +20,14 @@ import { ResGetRestaurantList, ResLoadUser, ResRefresh, ResSignIn } from '@app/r
 import { RestaurantService } from '@app/restaurant';
 import { UserService } from '@app/user';
 import { UtilService } from '@app/util';
-import {
-  Body, Controller, Delete, Get,
-  Headers, HttpCode, HttpException,
-  InternalServerErrorException,
-  Patch, Post, Query, ValidationPipe,
-} from '@nestjs/common';
-import {
-  ApiConflictResponse, ApiForbiddenResponse,
-  ApiHeader, ApiNotFoundResponse,
-  ApiOkResponse, ApiOperation, ApiQuery,
-  ApiTags, ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
 import getPrototypeOf = Reflect.getPrototypeOf;
 
 @ApiTags('user')
 @Controller('api/user')
 export class UserController {
-  constructor(
-    private readonly user_service: UserService,
-    private readonly restaurant_service: RestaurantService,
-    private readonly util_service: UtilService,
-  ) {
-  }
+  @Inject() private readonly user_service: UserService;
+  @Inject() private readonly restaurant_service: RestaurantService;
+  @Inject() private readonly util_service: UtilService;
 
   @Get('auth/email')
   @HttpCode(200)
@@ -105,7 +102,7 @@ export class UserController {
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse()
   @ApiForbiddenResponse()
-  public auth(@Headers('authorization') token) {
+  public auth() {
     return null;
   }
 

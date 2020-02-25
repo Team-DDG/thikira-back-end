@@ -3,116 +3,116 @@ import { DBModule, Group, Menu, MenuCategory, Option, Restaurant, User } from '@
 import { DtoCreateRestaurant, DtoCreateUser, DtoUploadGroup, DtoUploadMenu, DtoUploadMenuCategory, DtoUploadOption } from '@app/req';
 import { ResGetGroup, ResGetMenu, ResGetMenuCategory, ResGetOption } from '@app/res';
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
+import { Test, TestingModule } from '@nestjs/testing';
 import { UserModule, UserService } from '@app/user';
 import { UtilModule, UtilService } from '@app/util';
 import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { MenuModule } from './menu.module';
 import { MenuService } from './menu.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 describe('MenuService', () => {
   let app: INestApplication;
-  let service: MenuService;
-  let restaurant_service: RestaurantService;
-  let user_service: UserService;
-  let user_access_token: string;
   let restaurant_access_token: string;
+  let restaurant_service: RestaurantService;
+  let service: MenuService;
   const test_user: DtoCreateUser = {
     email: 'menu_test@gmail.com',
-    password: 'menu_test',
     nickname: 'menu_test',
+    password: 'menu_test',
     phone: '01012345678',
   };
   const test_restaurant: DtoCreateRestaurant = {
-    email: 'menu_test@gmail.com',
-    password: 'menu_test',
-    name: 'menu_test',
-    phone: '01012345678',
     add_parcel: 'a',
     add_street: 'b',
     area: 'c',
     category: 'd',
-    min_price: 10000,
+    close_time: 'e',
     day_off: 'f',
+    description: 'g',
+    email: 'menu_test@gmail.com',
+    image: 'image.url',
+    min_price: 10000,
+    name: 'menu_test',
     offline_payment: false,
     online_payment: false,
     open_time: 'i',
-    close_time: 'e',
-    description: 'g',
-    image: 'image.url',
+    password: 'menu_test',
+    phone: '01012345678',
   };
-  let test_req: {
+  const test_req: {
     menu_category: DtoUploadMenuCategory[],
     menu: DtoUploadMenu[]
     group: DtoUploadGroup[]
     option: DtoUploadOption[]
   } = {
-    menu_category: [
-      new DtoUploadMenuCategory({ name: 'special chicken' }),
-      new DtoUploadMenuCategory({ name: '바베큐 치킨' }),
-    ],
-    menu: [
-      new DtoUploadMenu({
-        mc_id: null, name: '신호등 치킨', price: 17000,
-        description: '딸기 바나나 멜론맛!', image: 'image.url',
-        group: [{
-          name: '소스', max_count: 0,
-          option: [
-            { name: '갈릭 소스', price: 500 },
-            { name: '양념 소스', price: 500 },
-          ],
-        }, {
-          name: '매운 정도', max_count: 1,
-          option: [
-            { name: '매운맛', price: 0 },
-            { name: '순한맛', price: 0 },
-          ],
-        }],
-      }),
-      new DtoUploadMenu({
-        mc_id: null, name: '쁘링클 치킨', price: 17000,
-        description: '치즈향 가득~', image: 'image.url',
-        group: [{
-          name: '소스', max_count: 0,
-          option: [
-            { name: '갈릭 소스', price: 500 },
-            { name: '양념 소스', price: 500 },
-          ],
-        }, {
-          name: '매운 정도', max_count: 1,
-          option: [
-            { name: '매운맛', price: 0 },
-            { name: '순한맛', price: 0 },
-          ],
-        }],
-      }),
-      new DtoUploadMenu({
-        mc_id: null, name: '쁘링클 치킨', price: 17000,
-        description: '치즈향 가득~', image: 'image.url',
-      }),
-      new DtoUploadMenu({
-        mc_id: null, name: '신호등 치킨', price: 17000,
-        description: '딸기 바나나 멜론맛!', image: 'image.url',
-      }),
-    ],
     group: [
       new DtoUploadGroup({
-        m_id: null, name: 'sauce',
-        max_count: 0, option: [
+        m_id: null, max_count: 0, name: 'sauce',
+        option: [
           { name: '갈릭소스', price: 500 },
           { name: '양념 소스', price: 500 },
         ],
       }),
       new DtoUploadGroup({
-        m_id: null, name: '매운 정도',
-        max_count: 1, option: [
+        m_id: null, max_count: 1, name: '매운 정도',
+        option: [
           { name: '매운맛', price: 0 },
           { name: '순한맛', price: 0 },
         ],
       }),
-      new DtoUploadGroup({ m_id: null, name: '소스', max_count: 0 }),
-      new DtoUploadGroup({ m_id: null, name: '매운 정도', max_count: 1 }),
+      new DtoUploadGroup({ m_id: null, max_count: 0, name: '소스' }),
+      new DtoUploadGroup({ m_id: null, max_count: 1, name: '매운 정도' }),
+    ],
+    menu: [
+      new DtoUploadMenu({
+        description: '딸기 바나나 멜론맛!',
+        group: [{
+          max_count: 0, name: '소스',
+          option: [
+            { name: '갈릭 소스', price: 500 },
+            { name: '양념 소스', price: 500 },
+          ],
+        }, {
+          max_count: 1, name: '매운 정도',
+          option: [
+            { name: '매운맛', price: 0 },
+            { name: '순한맛', price: 0 },
+          ],
+        }],
+        image: 'image.url', mc_id: null,
+        name: '신호등 치킨', price: 17000,
+      }),
+      new DtoUploadMenu({
+        description: '치즈향 가득~',
+        group: [{
+          max_count: 0, name: '소스',
+          option: [
+            { name: '갈릭 소스', price: 500 },
+            { name: '양념 소스', price: 500 },
+          ],
+        }, {
+          max_count: 1, name: '매운 정도',
+          option: [
+            { name: '매운맛', price: 0 },
+            { name: '순한맛', price: 0 },
+          ],
+        }],
+        image: 'image.url', mc_id: null,
+        name: '쁘링클 치킨', price: 17000,
+      }),
+      new DtoUploadMenu({
+        description: '치즈향 가득~', image: 'image.url',
+        mc_id: null, name: '쁘링클 치킨', price: 17000,
+      }),
+      new DtoUploadMenu({
+        description: '딸기 바나나 멜론맛!', image: 'image.url',
+        mc_id: null, name: '신호등 치킨', price: 17000,
+      }),
+    ],
+    menu_category: [
+      new DtoUploadMenuCategory({ name: 'special chicken' }),
+      new DtoUploadMenuCategory({ name: '바베큐 치킨' }),
     ],
     option: [
       new DtoUploadOption({ g_id: null, name: '갈릭 소스', price: 500 }),
@@ -121,17 +121,19 @@ describe('MenuService', () => {
       new DtoUploadOption({ g_id: null, name: '순한맛', price: 0 }),
     ],
   };
-  let test_res: {
-    menu_category: ResGetMenuCategory[],
-    menu: ResGetMenu[],
+  const test_res: {
     group: ResGetGroup[],
+    menu: ResGetMenu[],
+    menu_category: ResGetMenuCategory[],
     option: ResGetOption[]
   } = {
-    menu_category: new Array<ResGetMenuCategory>(),
-    menu: new Array<ResGetMenu>(),
     group: new Array<ResGetGroup>(),
+    menu: new Array<ResGetMenu>(),
+    menu_category: new Array<ResGetMenuCategory>(),
     option: new Array<ResGetOption>(),
   };
+  let user_service: UserService;
+  let user_access_token: string;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -245,8 +247,8 @@ describe('MenuService', () => {
 
   it('200 edit_menu()', async () => {
     const edit_data = {
-      name: '스모크 치킨', price: 18000,
       description: '물참나무 향 솔솔~ 담백한 엉치살 구이',
+      name: '스모크 치킨', price: 18000,
     };
     test_req.menu[0] = new DtoUploadMenu({ ...test_req.menu[0], ...edit_data });
     await service.edit_menu({ m_id: test_res.menu[0].m_id, ...edit_data });
@@ -280,7 +282,7 @@ describe('MenuService', () => {
   });
 
   it('200 edit_group()', async () => {
-    const edit_data = { name: '소스', max_count: 0 };
+    const edit_data = { max_count: 0, name: '소스' };
     test_req.group[0] = new DtoUploadGroup({ ...test_req.group[0], ...edit_data });
     await service.edit_group({ g_id: test_res.group[0].g_id, ...edit_data });
 
@@ -318,7 +320,7 @@ describe('MenuService', () => {
 
   it('200 remove_option()', async () => {
     const o_ids: number[] = new Array<number>();
-    for(const loop_option of test_res.option) {
+    for (const loop_option of test_res.option) {
       o_ids.push(loop_option.o_id);
     }
     await service.remove_option(o_ids);
@@ -333,7 +335,7 @@ describe('MenuService', () => {
 
   it('200 remove_group()', async () => {
     const g_ids: number[] = new Array<number>();
-    for(const loop_group of test_res.group) {
+    for (const loop_group of test_res.group) {
       g_ids.push(loop_group.g_id);
     }
     await service.remove_group(g_ids);
@@ -348,7 +350,7 @@ describe('MenuService', () => {
 
   it('200 remove_menu()', async () => {
     const m_ids: number[] = new Array<number>();
-    for(const loop_menu of test_res.menu) {
+    for (const loop_menu of test_res.menu) {
       m_ids.push(loop_menu.m_id);
     }
     await service.remove_menu(m_ids);

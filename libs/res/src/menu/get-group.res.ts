@@ -1,39 +1,20 @@
-import { Group } from '@app/db';
 import { ApiProperty } from '@nestjs/swagger';
-import { stringify } from "querystring";
+import { Group } from '@app/db';
 import { ResGetOption } from './get-option.res';
+import { stringify } from 'querystring';
 
 export class ResGetGroup {
-  @ApiProperty({
-    description: '그룹 아이디',
-    example: 0,
-  })
-  public readonly g_id: number;
-  @ApiProperty({
-    description: '그룹 이름',
-    example: '치킨 유형',
-  })
-  public readonly name: string;
-  @ApiProperty({
-    description: '최대 선택 개수',
-    example: 1,
-  })
-  public readonly max_count: number;
-  @ApiProperty({
-    description: '옵션',
-    example: [
-      { o_id: 0, name: '순살', price: 1000 },
-      { o_id: 1, name: '뼈', price: 0 },
-    ],
-  })
-  public readonly option: ResGetOption[];
+  @ApiProperty() public readonly g_id: number;
+  @ApiProperty() public readonly max_count: number;
+  @ApiProperty() public readonly name: string;
+  @ApiProperty() public readonly option: ResGetOption[];
 
   constructor(group?) {
     if (group !== undefined) {
       if (group instanceof Group) {
         this.g_id = group.g_id;
-        this.name = group.g_name;
         this.max_count = group.g_max_count;
+        this.name = group.g_name;
         this.option = new Array<ResGetOption>();
       } else {
         Object.assign(this, group);
@@ -47,8 +28,8 @@ export class ResGetGroup {
 
   public get(): string {
     return stringify({
-      name: this.name,
       max_count: this.max_count,
+      name: this.name,
     });
   }
 }

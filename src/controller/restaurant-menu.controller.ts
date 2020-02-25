@@ -1,28 +1,28 @@
+import { ApiConflictResponse, ApiForbiddenResponse, ApiHeader, ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  Body, Controller, Delete, Get, Headers,
+  HttpCode, HttpException, Inject, InternalServerErrorException,
+  Param, Patch, Post, Query, ValidationPipe,
+} from '@nestjs/common';
 import {
   DtoEditGroup, DtoEditMenu, DtoEditMenuCategory, DtoEditOption,
   DtoUploadGroup, DtoUploadMenu, DtoUploadMenuCategory, DtoUploadOption,
   ParamRemoveGroup, ParamRemoveMenu, ParamRemoveMenuCategory, ParamRemoveOption,
   QueryGetGroupList, QueryGetMenuList, QueryGetOptionList,
 } from '@app/req';
-import { MenuService } from '@app/menu';
 import {
   ResGetGroup, ResGetMenu, ResGetMenuCategory, ResGetOption,
   ResUploadGroup, ResUploadMenu, ResUploadMenuCategory, ResUploadOption,
 } from '@app/res';
+import { MenuService } from '@app/menu';
 import { UtilService } from '@app/util';
-import {
-  Body, Controller, Delete, Get, Headers,
-  HttpCode, HttpException, InternalServerErrorException,
-  Param, Patch, Post, Query, ValidationPipe,
-} from '@nestjs/common';
-import { ApiConflictResponse, ApiForbiddenResponse, ApiHeader, ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import getPrototypeOf = Reflect.getPrototypeOf;
 
 @ApiTags('restaurant/menu')
 @Controller('api/restaurant/menu')
 export class RestaurantMenuController {
-  constructor(private readonly menu_service: MenuService, private readonly util_service: UtilService) {
-  }
+  @Inject() private readonly menu_service: MenuService;
+  @Inject() private readonly util_service: UtilService;
 
   @Post('category')
   @HttpCode(200)

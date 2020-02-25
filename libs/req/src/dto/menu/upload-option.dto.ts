@@ -1,26 +1,14 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString } from 'class-validator';
-import { stringify } from "querystring";
+import { ApiProperty } from '@nestjs/swagger';
+import { stringify } from 'querystring';
 
 export class DtoUploadOption {
-  @ApiProperty({
-    description: '그룹 아이디',
-    example: 0,
-  })
-  @IsNumber()
+  @ApiProperty() @IsNumber()
   public readonly g_id: number;
-  @ApiProperty({
-    description: '가격',
-    example: 0,
-  })
-  @IsNumber()
-  public readonly price: number;
-  @ApiProperty({
-    description: '옵션 이름',
-    example: '순살',
-  })
-  @IsString()
+  @ApiProperty() @IsString()
   public readonly name: string;
+  @ApiProperty() @IsNumber()
+  public readonly price: number;
 
   constructor(payload) {
     Object.assign(this, payload);

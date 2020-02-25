@@ -1,29 +1,26 @@
-import { DtoCheckPassword, DtoCreateRestaurant, DtoEditAddress, DtoEditPassword, DtoEditRestaurantInfo, DtoSignIn, QueryCheckEmail } from '@app/req';
-import { MenuService } from '@app/menu';
-import { ResLoadRestaurant, ResRefresh, ResSignIn } from '@app/res';
-import { RestaurantService } from '@app/restaurant';
-import { UtilService } from '@app/util';
-import {
-  Body, Controller, Delete, Get, Headers, HttpCode, HttpException, InternalServerErrorException,
-  Patch, Post, Query, ValidationPipe,
-} from '@nestjs/common';
 import {
   ApiConflictResponse, ApiForbiddenResponse,
   ApiHeader, ApiNotFoundResponse,
   ApiOkResponse, ApiOperation, ApiQuery,
   ApiTags, ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import {
+  Body, Controller, Delete, Get, Headers, HttpCode, HttpException, Inject, InternalServerErrorException,
+  Patch, Post, Query, ValidationPipe,
+} from '@nestjs/common';
+import { DtoCheckPassword, DtoCreateRestaurant, DtoEditAddress, DtoEditPassword, DtoEditRestaurantInfo, DtoSignIn, QueryCheckEmail } from '@app/req';
+import { ResLoadRestaurant, ResRefresh, ResSignIn } from '@app/res';
+import { MenuService } from '@app/menu';
+import { RestaurantService } from '@app/restaurant';
+import { UtilService } from '@app/util';
 import getPrototypeOf = Reflect.getPrototypeOf;
 
 @ApiTags('Restaurant')
 @Controller('api/restaurant')
 export class RestaurantController {
-  constructor(
-    private readonly restaurant_service: RestaurantService,
-    private readonly menu_service: MenuService,
-    private readonly util_service: UtilService,
-  ) {
-  }
+  @Inject() private readonly restaurant_service: RestaurantService;
+  @Inject() private readonly menu_service: MenuService;
+  @Inject() private readonly util_service: UtilService;
 
   @Get('auth/email')
   @HttpCode(200)
@@ -98,8 +95,8 @@ export class RestaurantController {
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse()
   @ApiForbiddenResponse()
-  public auth(@Headers('authorization') tokens) {
-    return null;
+  public auth() {
+
   }
 
   @Post('auth/password')

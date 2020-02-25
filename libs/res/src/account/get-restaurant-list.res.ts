@@ -1,13 +1,12 @@
-import { Restaurant } from '@app/db';
-import { ResLoadRestaurant } from '@app/res';
 import { ApiProperty } from '@nestjs/swagger';
+import { ResLoadRestaurant } from './load-restaurant.res';
+import { Restaurant } from '@app/db';
 
-export class ResGetRestaurantList extends ResLoadRestaurant{
-  @ApiProperty()
-  public readonly r_id: number;
+export class ResGetRestaurantList extends ResLoadRestaurant {
+  @ApiProperty() public readonly r_id: number;
 
   constructor(restaurant?: Restaurant) {
-    super();
+    super(restaurant);
     if (restaurant !== undefined) {
       if (restaurant instanceof Restaurant) {
         this.r_id = restaurant.r_id;

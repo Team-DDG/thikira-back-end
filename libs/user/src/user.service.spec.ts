@@ -1,30 +1,30 @@
 import { ConfigModule, ConfigService } from '@app/config';
 import { DBModule, Group, Menu, MenuCategory, Option, Restaurant, User } from '@app/db';
 import { ResRefresh, ResSignIn } from '@app/res';
-import { UtilModule } from '@app/util';
-import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { INestApplication } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { stringify } from 'querystring';
 import { UserModule } from './user.module';
 import { UserService } from './user.service';
+import { UtilModule } from '@app/util';
+import { stringify } from 'querystring';
 
 describe('UserService', () => {
-  let app: INestApplication;
-  let service: UserService;
   let access_token: string;
+  let app: INestApplication;
   let refresh_token: string;
+  let service: UserService;
   const test_req = {
-    nickname: 'test',
-    phone: '01012345678',
     email: 'test@gmail.com',
+    nickname: 'test',
     password: 'test',
+    phone: '01012345678',
   };
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        UserModule, DBModule, UtilModule,
+        DBModule,
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
           inject: [ConfigService],
@@ -34,7 +34,9 @@ describe('UserService', () => {
               entities: [Restaurant, Menu, MenuCategory, Option, Group, User],
             };
           },
-        })],
+        }),
+        UserModule, UtilModule,
+      ],
       providers: [UserService],
     }).compile();
 
@@ -79,8 +81,8 @@ describe('UserService', () => {
 
   it('200 edit_info()', async () => {
     const edit_data = {
-      phone: '01012345679',
       nickname: 'test_2',
+      phone: '01012345679',
     };
     await service.edit_info(access_token, edit_data);
     const found_user = await service.get(access_token);
@@ -92,8 +94,8 @@ describe('UserService', () => {
 
   it('200 edit_address()', async () => {
     const edit_data = {
-      add_street: '경기도 어딘가',
       add_parcel: '경기도 어딘가',
+      add_street: '경기도 어딘가',
     };
     await service.edit_address(access_token, edit_data);
     const found_user = await service.get(access_token);
