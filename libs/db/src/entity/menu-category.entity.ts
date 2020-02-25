@@ -1,4 +1,4 @@
-import { DtoUploadMenuCategory } from '@app/dto';
+import { DtoUploadMenuCategory } from '@app/req';
 import { stringify } from 'querystring';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Menu } from './menu.entity';
@@ -17,7 +17,7 @@ export class MenuCategory {
     (restaurant: Restaurant) => restaurant.menu_category,
     { nullable: false },
   )
-  @JoinColumn({ name: 'r_id' })
+  @JoinColumn({ name: 'f_r_id' })
   public readonly restaurant: Restaurant;
 
   constructor(menu_category?: MenuCategory | DtoUploadMenuCategory, param?: Restaurant) {

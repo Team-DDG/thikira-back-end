@@ -58,6 +58,10 @@ describe('UserService', () => {
     await service.create_user(test_req);
   });
 
+  it('409 sign_up()', async () => {
+    await expect(service.create_user(test_req)).rejects.toThrow();
+  });
+
   it('409 check_email()', async () => {
     await expect(service.check_email({ email: test_req.email })).rejects.toThrow();
   });

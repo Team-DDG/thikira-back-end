@@ -1,34 +1,53 @@
-import { ResGetGroup, ResGetMenu, ResGetOption } from '@app/res';
 import { UtilService } from '@app/util';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { getManager, Repository } from 'typeorm';
 import { Group, Menu, MenuCategory, Option, Restaurant, User } from './entity';
 
 @Injectable()
 export class DBService {
-  constructor(@InjectRepository(Restaurant)
-              private readonly restaurant_repo: Repository<Restaurant>,
-              @InjectRepository(User)
-              private readonly user_repo: Repository<User>,
-              @InjectRepository(Menu)
-              private readonly menu_repo: Repository<Menu>,
-              @InjectRepository(MenuCategory)
-              private readonly menu_category_repo: Repository<MenuCategory>,
-              @InjectRepository(Option)
-              private readonly option_repo: Repository<Option>,
-              @InjectRepository(Group)
-              private readonly group_repo: Repository<Group>,
-              private readonly util_service: UtilService,
+  constructor(
+    @InjectRepository(Restaurant)
+    private readonly restaurant_repo: Repository<Restaurant>,
+    @InjectRepository(User)
+    private readonly user_repo: Repository<User>,
+    @InjectRepository(Menu)
+    private readonly menu_repo: Repository<Menu>,
+    @InjectRepository(MenuCategory)
+    private readonly menu_category_repo: Repository<MenuCategory>,
+    @InjectRepository(Option)
+    private readonly option_repo: Repository<Option>,
+    @InjectRepository(Group)
+    private readonly group_repo: Repository<Group>,
+    private readonly util_service: UtilService,
   ) {
   }
+
+  // restaurant
 
   public async insert_restaurant(restaurant: Restaurant) {
     await this.restaurant_repo.insert(restaurant);
   }
 
+  public async find_restaurant_by_id(id: number) {
+    return new Restaurant(await this.restaurant_repo.findOne(id));
+  }
+
   public async find_restaurant_by_email(email: string): Promise<Restaurant> {
     return new Restaurant(await this.restaurant_repo.findOne({ r_email: email }));
+  }
+
+  public async find_restaurant_by_name(name: string) {
+    return new Restaurant(await this.restaurant_repo.findOne({ r_name: name }));
+  }
+
+  public async find_restaurants_by_category(category: string) {
+    const found_restaurant: Restaurant[] = await this.restaurant_repo.find({ r_category: category });
+    const result: Restaurant[] = new Array<Restaurant>();
+    for(const loop_restaurant of found_restaurant) {
+      result.push(new Restaurant(loop_restaurant));
+    }
+    return result;
   }
 
   public async update_restaurant(email: string, payload): Promise<void> {
@@ -42,11 +61,17 @@ export class DBService {
     await this.restaurant_repo.delete({ r_email: email });
   }
 
-  public async insert_user(user: User) {
+  // user
+
+  public async insert_user(user: User): Promise<void> {
     await this.user_repo.insert(user);
   }
 
-  public async find_user_by_email(email: string) {
+  public async find_user_by_nickname(nickname: string): Promise<User> {
+    return new User(await this.user_repo.findOne({ u_nickname: nickname }));
+  }
+
+  public async find_user_by_email(email: string): Promise<User> {
     return new User(await this.user_repo.findOne({ u_email: email }));
   }
 
@@ -61,7 +86,9 @@ export class DBService {
     await this.user_repo.delete({ u_email: email });
   }
 
-  public async insert_menu_category(menu_category: MenuCategory) {
+  // menu_category
+
+  public async insert_menu_category(menu_category: MenuCategory): Promise<void> {
     await this.menu_category_repo.insert(menu_category);
   }
 
@@ -74,9 +101,10 @@ export class DBService {
   }
 
   public async find_menu_categories_by_restaurant(restaurant: Restaurant): Promise<MenuCategory[]> {
-    const menu_categories: MenuCategory[] = await this.menu_category_repo.find({ where: { restaurant } });
     const result: MenuCategory[] = new Array<MenuCategory>();
-    for (let loop_menu_category of menu_categories) {
+
+    const found_menu_categories: MenuCategory[] = await this.menu_category_repo.find({ where: { restaurant } });
+    for (const loop_menu_category of found_menu_categories) {
       result.push(new MenuCategory(loop_menu_category));
     }
     return result;
@@ -90,7 +118,9 @@ export class DBService {
     await this.menu_category_repo.delete(id);
   }
 
-  public async insert_menu(menu: Menu | Menu[]) {
+  // menu
+
+  public async insert_menu(menu: Menu | Menu[]): Promise<void> {
     await this.menu_repo.insert(menu);
   }
 
@@ -103,49 +133,57 @@ export class DBService {
   }
 
   public async find_menus_by_menu_category(menu_category: MenuCategory): Promise<Menu[]> {
-    const menus: Menu[] = await this.menu_repo.find({ menu_category });
     const result: Menu[] = new Array<Menu>();
-    for (let value of menus) {
-      result.push(new Menu(value));
-    }
-    return result;
-  }
-
-  public async find_menus_groups_options(menu_category: MenuCategory) {
-    const found_menus = await this.menu_repo.find({
-      where: { menu_category },
-      join: { alias: 'Menu', leftJoinAndSelect: { group: 'Menu.group' } },
-    });
-    const found_data = await this.option_repo.query(
-      `SELECT g.g_id, o.o_id, o.o_name, o.o_price, o.o_id
-      FROM thikira.menu AS m 
-      NATURAL JOIN thikira.group AS g
-      NATURAL JOIN thikira.option AS o
-      WHERE m.mc_id=${menu_category.mc_id}`,
-    );
+    const found_data =
+      await getManager()
+        .query(
+          `SELECT * FROM thikira.menu AS m
+            LEFT JOIN thikira.group AS g ON m.m_id = g.f_m_id
+            LEFT JOIN thikira.option AS o ON g.g_id = o.f_g_id
+            WHERE m.f_mc_id = ${menu_category.mc_id}`,
+        );
     const options = {};
-    for (const loop_data of found_data) {
-      if (options[loop_data.g_id] === undefined) {
-        options[loop_data.g_id] = new Array<ResGetOption>();
+    for (const loop of found_data) {
+      if (loop.o_id === null) {
+        continue;
       }
-      options[loop_data.g_id].push(new ResGetOption({
-        o_id: loop_data.o_id,
-        name: loop_data.o_name,
-        price: loop_data.o_price,
-      }));
+      if (options[loop.f_g_id] === undefined) {
+        options[loop.g_id] = new Array<Option>();
+      }
+      options[loop.g_id].push(new Option(loop));
+
+    }
+    const groups = {};
+
+    let previous_id = null;
+    for (const loop of found_data) {
+      if (loop.g_id === null || previous_id === loop.g_id) {
+        continue;
+      }
+      previous_id = loop.g_id;
+      if (groups[loop.m_id] === undefined) {
+        groups[loop.m_id] = new Array<Group>();
+      }
+      const group: Group = new Group(loop);
+      groups[loop.m_id].push(group);
+      if (options[loop.g_id] !== undefined) {
+        for (const loop_option of options[loop.g_id]) {
+          group.option.push(loop_option);
+        }
+      }
     }
 
-    const result: ResGetMenu[] = new Array<ResGetMenu>();
-    for (const loop_menu of found_menus) {
-      const menu: ResGetMenu = new ResGetMenu(loop_menu);
+    previous_id = null;
+    for (const loop of found_data) {
+      if (loop.m_id === null || previous_id === loop.m_id) {
+        continue;
+      }
+      previous_id = loop.m_id;
+      const menu: Menu = new Menu(loop);
       result.push(menu);
-      for (const loop_group of loop_menu.group) {
-        const group: ResGetGroup = new ResGetGroup(loop_group);
-        menu.group.push(group);
-        if (options[group.g_id] !== undefined) {
-          for (const loop_option of options[group.g_id]) {
-            group.option.push(loop_option);
-          }
+      if (groups[loop.m_id] !== undefined) {
+        for (const loop_group of groups[loop.m_id]) {
+          menu.group.push(loop_group);
         }
       }
     }
@@ -159,6 +197,8 @@ export class DBService {
   public async delete_menu(id: number[]): Promise<void> {
     await this.menu_repo.delete(id);
   }
+
+  // group
 
   public async insert_group(group: Group | Group[]) {
     if (group instanceof Group) {
@@ -179,19 +219,22 @@ export class DBService {
   }
 
   public async find_groups_by_menu(menu: Menu): Promise<Group[]> {
-    const groups: Group[] = await this.group_repo.find({ where: { menu } });
     const result: Group[] = new Array<Group>();
-    for (let value of groups) {
-      result.push(new Group(value));
-    }
-    return result;
-  }
-
-  public async find_groups_and_options(menu: Menu) {
-    return this.group_repo.find({
+    const found_groups: Group[] = await this.group_repo.find({
       where: { menu },
-      join: { alias: 'Group', leftJoinAndSelect: { option: 'Group.option' } },
+      join: { alias: 'Group', leftJoinAndSelect: { Option: 'Group.option' } },
     });
+
+    for (const loop_group of found_groups) {
+      const group: Group = new Group(loop_group);
+      result.push(group);
+      for (const loop_option of loop_group.option) {
+        const option: Option = new Option(loop_option);
+        group.option.push(option);
+      }
+    }
+
+    return result;
   }
 
   public async update_group(id: number, payload): Promise<void> {
@@ -201,6 +244,8 @@ export class DBService {
   public async delete_group(id: number[]): Promise<void> {
     await this.group_repo.delete(id);
   }
+
+  // option
 
   public async insert_option(option: Option | Option[]) {
     await this.option_repo.insert(option);
@@ -215,10 +260,11 @@ export class DBService {
   }
 
   public async find_options_by_group(group: Group): Promise<Option[]> {
-    const options: Option[] = await this.option_repo.find({ where: { group } });
     const result: Option[] = new Array<Option>();
-    for (let value of options) {
-      result.push(new Option(value));
+    const found_options: Option[] = await this.option_repo.find({ where: { group } });
+
+    for (const loop_option of found_options) {
+      result.push(new Option(loop_option));
     }
     return result;
   }

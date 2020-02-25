@@ -6,7 +6,4 @@ export * from './upload-group.dto';
 export * from './upload-menu.dto';
 export * from './upload-menu-category.dto';
 export * from './upload-option.dto';
-export * from './get-group-list.dto';
-export * from './get-menu-list.dto';
-export * from './get-option-list.dto';
 

@@ -1,5 +1,5 @@
-import { DtoUploadGroup } from '@app/dto';
-import { stringify } from "querystring";
+import { DtoUploadGroup } from '@app/req';
+import { stringify } from 'querystring';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Menu } from './menu.entity';
 import { Option } from './option.entity';
@@ -17,12 +17,12 @@ export class Group {
     (menu: Menu) => menu.group,
     { nullable: false },
   )
-  @JoinColumn({ name: 'm_id' })
+  @JoinColumn({ name: 'f_m_id' })
   public readonly menu: Menu;
   @OneToMany((type) => Option, (option: Option) => option.group)
   public readonly option: Option[];
 
-  constructor(group?: Group | DtoUploadGroup, param?: Menu) {
+  constructor(group?: Group | DtoUploadGroup | any, param?: Menu) {
     if (group instanceof Group) {
       Object.assign(this, group);
       this.option = new Array<Option>();
@@ -31,6 +31,11 @@ export class Group {
         this.g_name = group.name;
         this.g_max_count = group.max_count;
         this.menu = param;
+      } else {
+        this.g_id = group.g_id;
+        this.g_name = group.g_name;
+        this.g_max_count = group.g_max_count;
+        this.option = new Array<Option>();
       }
     }
   }

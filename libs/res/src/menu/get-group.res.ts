@@ -28,15 +28,15 @@ export class ResGetGroup {
   })
   public readonly option: ResGetOption[];
 
-  constructor(payload?) {
-    if (payload !== undefined) {
-      if (payload instanceof Group) {
-        this.g_id = payload.g_id;
-        this.name = payload.g_name;
-        this.max_count = payload.g_max_count;
+  constructor(group?) {
+    if (group !== undefined) {
+      if (group instanceof Group) {
+        this.g_id = group.g_id;
+        this.name = group.g_name;
+        this.max_count = group.g_max_count;
         this.option = new Array<ResGetOption>();
       } else {
-        Object.assign(this, payload);
+        Object.assign(this, group);
       }
     }
   }

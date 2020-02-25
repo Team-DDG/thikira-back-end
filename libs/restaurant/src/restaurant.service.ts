@@ -3,30 +3,34 @@ import { ResLoadRestaurant, ResRefresh, ResSignIn } from '@app/res';
 import { TokenTypeEnum, UtilService } from '@app/util';
 import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import {
-  DtoCheckEmail,
-  DtoCheckPassword,
-  DtoCreateRestaurant,
-  DtoEditAddress,
-  DtoEditPassword,
-  DtoEditRestaurantInfo,
+  DtoCheckPassword, DtoCreateRestaurant,
+  DtoEditAddress, DtoEditPassword, DtoEditRestaurantInfo,
   DtoSignIn,
-} from '@app/dto';
+  QueryGetRestaurantList, QueryCheckEmail,
+} from '@app/req';
+import { ResGetRestaurantList } from '../../res/src/account/get-restaurant-list.res';
 
 @Injectable()
 export class RestaurantService {
-  constructor(private readonly db_service: DBService,
-              private readonly util_service: UtilService,
+  constructor(
+    private readonly db_service: DBService,
+    private readonly util_service: UtilService,
   ) {
   }
 
-  public async check_email(payload: DtoCheckEmail): Promise<void> {
-    const found_restaurant: Restaurant = await this.db_service.find_restaurant_by_email(payload.email);
+  public async check_email(query: QueryCheckEmail): Promise<void> {
+    const found_restaurant: Restaurant = await this.db_service.find_restaurant_by_email(query.email);
     if (!found_restaurant.is_empty()) {
       throw new ConflictException();
     }
   }
 
   public async create_restaurant(payload: DtoCreateRestaurant): Promise<void> {
+    const found_restaurant: Restaurant = await this.db_service.find_restaurant_by_name(payload.name);
+    if (!found_restaurant.is_empty()) {
+      throw new ConflictException();
+    }
+
     await this.db_service.insert_restaurant(new Restaurant({
       ...payload, password: await this.util_service.encode(payload.password),
     }));
@@ -81,11 +85,11 @@ export class RestaurantService {
       r_close_time: payload.close_time,
       r_description: payload.description,
     };
-    Object.keys(edit_data).forEach((key) => {
-      if(edit_data[key] === undefined || edit_data[key] === null) {
+    for (const key of Object.keys(edit_data)) {
+      if (edit_data[key] === undefined || edit_data[key] === null) {
         delete edit_data[key];
       }
-    });
+    }
     await this.db_service.update_restaurant(email, edit_data);
   }
 
@@ -101,5 +105,14 @@ export class RestaurantService {
     const email: string = await this.util_service.get_email_by_token(token);
     const found_restaurant: Restaurant = await this.db_service.find_restaurant_by_email(email);
     return new ResLoadRestaurant(found_restaurant);
+  }
+
+  public async get_list(param: QueryGetRestaurantList): Promise<ResGetRestaurantList[]> {
+    const found_restaurant: Restaurant[] = await this.db_service.find_restaurants_by_category(param.category);
+    const result: ResGetRestaurantList[] = new Array<ResGetRestaurantList>();
+    for (const loop_restaurant of found_restaurant) {
+      result.push(new ResGetRestaurantList(loop_restaurant));
+    }
+    return result;
   }
 }

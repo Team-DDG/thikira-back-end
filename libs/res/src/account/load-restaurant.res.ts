@@ -34,24 +34,24 @@ export class ResLoadRestaurant {
   @ApiProperty()
   public readonly create_time: Date;
 
-  constructor(payload?: Restaurant) {
-    if (payload !== undefined) {
-      if (payload instanceof Restaurant) {
-        this.image = payload.r_image;
-        this.name = payload.r_name;
-        this.phone = payload.r_phone;
-        this.add_street = payload.r_add_street;
-        this.add_parcel = payload.r_add_parcel;
-        this.area = payload.r_area;
-        this.category = payload.r_category;
-        this.min_price = payload.r_min_price;
-        this.day_off = payload.r_day_off;
-        this.online_payment = payload.r_online_payment;
-        this.offline_payment = payload.r_offline_payment;
-        this.open_time = payload.r_open_time;
-        this.close_time = payload.r_close_time;
-        this.description = payload.r_description;
-        this.create_time = payload.r_create_time;
+  constructor(restaurant?: Restaurant) {
+    if (restaurant !== undefined) {
+      if (restaurant instanceof Restaurant) {
+        this.image = restaurant.r_image;
+        this.name = restaurant.r_name;
+        this.phone = restaurant.r_phone;
+        this.add_street = restaurant.r_add_street;
+        this.add_parcel = restaurant.r_add_parcel;
+        this.area = restaurant.r_area;
+        this.category = restaurant.r_category;
+        this.min_price = restaurant.r_min_price;
+        this.day_off = restaurant.r_day_off;
+        this.online_payment = restaurant.r_online_payment;
+        this.offline_payment = restaurant.r_offline_payment;
+        this.open_time = restaurant.r_open_time;
+        this.close_time = restaurant.r_close_time;
+        this.description = restaurant.r_description;
+        this.create_time = restaurant.r_create_time;
       }
     }
   }

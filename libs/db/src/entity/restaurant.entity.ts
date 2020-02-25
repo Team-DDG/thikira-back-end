@@ -1,4 +1,4 @@
-import { DtoCreateRestaurant } from '@app/dto';
+import { DtoCreateRestaurant } from '@app/req';
 import { stringify } from 'querystring';
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { MenuCategory } from './menu-category.entity';

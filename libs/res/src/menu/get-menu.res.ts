@@ -47,17 +47,17 @@ export class ResGetMenu {
   })
   public readonly group?: ResGetGroup[];
 
-  constructor(payload?) {
-    if (payload !== undefined) {
-      if (payload instanceof Menu) {
-        this.m_id = payload.m_id;
-        this.name = payload.m_name;
-        this.price = payload.m_price;
-        this.description = payload.m_description;
-        this.image = payload.m_image;
+  constructor(menu?) {
+    if (menu !== undefined) {
+      if (menu instanceof Menu) {
+        this.m_id = menu.m_id;
+        this.name = menu.m_name;
+        this.price = menu.m_price;
+        this.description = menu.m_description;
+        this.image = menu.m_image;
         this.group = new Array<ResGetGroup>();
       } else {
-        Object.assign(this, payload);
+        Object.assign(this, menu);
       }
     }
   }

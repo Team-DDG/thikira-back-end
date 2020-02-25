@@ -1,6 +1,6 @@
 import { ConfigModule, ConfigService } from '@app/config';
 import { DBModule, Group, Menu, MenuCategory, Option, Restaurant, User } from '@app/db';
-import { DtoCreateRestaurant, DtoCreateUser, DtoUploadGroup, DtoUploadMenu, DtoUploadMenuCategory, DtoUploadOption } from '@app/dto';
+import { DtoCreateRestaurant, DtoCreateUser, DtoUploadGroup, DtoUploadMenu, DtoUploadMenuCategory, DtoUploadOption } from '@app/req';
 import { ResGetGroup, ResGetMenu, ResGetMenuCategory, ResGetOption } from '@app/res';
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
 import { UserModule, UserService } from '@app/user';
@@ -337,6 +337,7 @@ describe('MenuService', () => {
       g_ids.push(loop_group.g_id);
     }
     await service.remove_group(g_ids);
+
     for (const index of UtilService.range(test_req.group)) {
       const found_group: ResGetGroup = await service.get_group(test_res.group[index].g_id);
       if (!found_group.is_empty()) {
@@ -351,6 +352,7 @@ describe('MenuService', () => {
       m_ids.push(loop_menu.m_id);
     }
     await service.remove_menu(m_ids);
+
     for (const index of UtilService.range(test_req.menu)) {
       const found_menu: ResGetMenu = await service.get_menu(test_res.menu[index].m_id);
       if (!found_menu.is_empty()) {

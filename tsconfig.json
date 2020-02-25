@@ -29,8 +29,8 @@
       "@app/db": [
         "libs/db/src"
       ],
-      "@app/dto": [
-        "libs/dto/src"
+      "@app/req": [
+        "libs/req/src"
       ],
       "@app/res": [
         "libs/res/src"

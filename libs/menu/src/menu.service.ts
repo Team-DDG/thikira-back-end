@@ -1,22 +1,26 @@
 import { DBService, Group, Menu, MenuCategory, Option, Restaurant } from '@app/db';
 import {
   DtoEditGroup, DtoEditMenu, DtoEditMenuCategory, DtoEditOption,
-  DtoGetGroupList, DtoGetMenuList, DtoGetOptionList,
   DtoUploadGroup, DtoUploadMenu, DtoUploadMenuCategory, DtoUploadOption,
-} from '@app/dto';
+  QueryGetMenuCategoryList,
+} from '@app/req';
 import {
   ResGetGroup, ResGetMenu, ResGetMenuCategory, ResGetOption,
   ResUploadGroup, ResUploadMenu, ResUploadMenuCategory, ResUploadOption,
 } from '@app/res';
 import { UtilService } from '@app/util';
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { QueryGetGroupList, QueryGetMenuList, QueryGetOptionList } from '@app/req';
 
 @Injectable()
 export class MenuService {
-  constructor(private readonly db_service: DBService,
-              private readonly util_service: UtilService,
+  constructor(
+    private readonly db_service: DBService,
+    private readonly util_service: UtilService,
   ) {
   }
+
+  // menu_category
 
   public async upload_menu_category(token: string, payload: DtoUploadMenuCategory): Promise<ResUploadMenuCategory> {
     const email: string = await this.util_service.get_email_by_token(token);
@@ -31,19 +35,16 @@ export class MenuService {
     return { mc_id: menu_category.mc_id };
   }
 
-  public async get_menu_category(menu_category_id: number): Promise<ResGetMenuCategory> {
-    const found_menu_category: MenuCategory = await this.db_service.find_menu_category_by_id(menu_category_id);
-    return new ResGetMenuCategory({
-      mc_id: found_menu_category.mc_id,
-      name: found_menu_category.mc_name,
-    });
-  }
-
-  public async get_menu_category_list(token: string): Promise<ResGetMenuCategory[]> {
-    const email: string = await this.util_service.get_email_by_token(token);
-    const found_restaurant: Restaurant = await this.db_service.find_restaurant_by_email(email);
-
+  public async get_menu_category_list(param: string | QueryGetMenuCategoryList): Promise<ResGetMenuCategory[]> {
+    let found_restaurant: Restaurant;
+    if (typeof param === 'string') {
+      const email: string = await this.util_service.get_email_by_token(param);
+      found_restaurant = await this.db_service.find_restaurant_by_email(email);
+    } else {
+      found_restaurant = await this.db_service.find_restaurant_by_id(param.r_id);
+    }
     const found_menu_category: MenuCategory[] = await this.db_service.find_menu_categories_by_restaurant(found_restaurant);
+
     const result: ResGetMenuCategory[] = new Array<ResGetMenuCategory>();
     for (const loop_menu_category of found_menu_category) {
       result.push(new ResGetMenuCategory({
@@ -58,20 +59,22 @@ export class MenuService {
     await this.db_service.update_menu_category(payload.mc_id, { mc_name: payload.name });
   }
 
-  public async remove_menu_category(param: number[]): Promise<void> {
-    for (const loop_id of param) {
+  public async remove_menu_category(mc_ids: number[]): Promise<void> {
+    for (const loop_id of mc_ids) {
       const found_menu_category: MenuCategory = await this.db_service.find_menu_category_by_id(loop_id);
       const found_menus: Menu[] = await this.db_service.find_menus_by_menu_category(found_menu_category);
-      if (found_menus.length !== 0) {
-        const m_ids: number[] = new Array<number>();
-        for (const loop_menu of found_menus) {
-          m_ids.push(loop_menu.m_id);
-        }
+      const m_ids: number[] = new Array<number>();
+      for (const loop_group of found_menus) {
+        m_ids.push(loop_group.m_id);
+      }
+      if (m_ids.length !== 0) {
         await this.remove_menu(m_ids);
       }
     }
-    await this.db_service.delete_menu_category(param);
+    await this.db_service.delete_menu_category(mc_ids);
   }
+
+  // menu
 
   public async upload_menu(payload: DtoUploadMenu): Promise<ResUploadMenu> {
     const found_menu_category: MenuCategory = await this.db_service.find_menu_category_by_id(payload.mc_id);
@@ -105,14 +108,26 @@ export class MenuService {
     return { m_id: menu.m_id };
   }
 
-  public async get_menu(menu_id: number): Promise<ResGetMenu> {
-    const found_menu: Menu = await this.db_service.find_menu_by_id(menu_id);
-    return new ResGetMenu(found_menu);
-  }
-
-  public async get_menu_list(payload: DtoGetMenuList): Promise<ResGetMenu[]> {
-    const found_menu_category: MenuCategory = await this.db_service.find_menu_category_by_id(payload.mc_id);
-    return await this.db_service.find_menus_groups_options(found_menu_category);
+  public async get_menu_list(query: QueryGetMenuList): Promise<ResGetMenu[]> {
+    const result: ResGetMenu[] = new Array<ResGetMenu>();
+    const found_menu_category: MenuCategory = await this.db_service.find_menu_category_by_id(query.mc_id);
+    if (found_menu_category.is_empty()) {
+      throw new NotFoundException();
+    }
+    const found_menus: Menu[] = await this.db_service.find_menus_by_menu_category(found_menu_category);
+    for (const loop_menu of found_menus) {
+      const menu: ResGetMenu = new ResGetMenu(loop_menu);
+      result.push(menu);
+      for (const loop_group of loop_menu.group) {
+        const group: ResGetGroup = new ResGetGroup(loop_group);
+        menu.group.push(group);
+        for (const loop_option of loop_group.option) {
+          const option: ResGetOption = new ResGetOption(loop_option);
+          group.option.push(option);
+        }
+      }
+    }
+    return result;
   }
 
   public async edit_menu(payload: DtoEditMenu): Promise<void> {
@@ -130,21 +145,22 @@ export class MenuService {
     await this.db_service.update_menu(payload.m_id, edit_data);
   }
 
-  public async remove_menu(param: number[]): Promise<void> {
-    for (const loop_id of param
-      ) {
+  public async remove_menu(m_ids: number[]): Promise<void> {
+    for (const loop_id of m_ids) {
       const found_menu: Menu = await this.db_service.find_menu_by_id(loop_id);
       const found_groups: Group[] = await this.db_service.find_groups_by_menu(found_menu);
-      if (found_groups.length !== 0) {
-        const g_ids: number[] = new Array<number>();
-        for (const loop_group of found_groups) {
-          g_ids.push(loop_group.g_id);
-        }
+      const g_ids: number[] = new Array<number>();
+      for (const loop_group of found_groups) {
+        g_ids.push(loop_group.g_id);
+      }
+      if (g_ids.length !== 0) {
         await this.remove_group(g_ids);
       }
     }
-    await this.db_service.delete_menu(param);
+    await this.db_service.delete_menu(m_ids);
   }
+
+  // group
 
   public async upload_group(payload: DtoUploadGroup): Promise<ResUploadGroup> {
     const found_menu: Menu = await this.db_service.find_menu_by_id(payload.m_id);
@@ -159,15 +175,10 @@ export class MenuService {
     return { g_id: group.g_id };
   }
 
-  public async get_group(group_id: number): Promise<ResGetGroup> {
-    const found_group: Group = await this.db_service.find_group_by_id(group_id);
-    return new ResGetGroup(found_group);
-  }
-
-  public async get_group_list(payload: DtoGetGroupList): Promise<ResGetGroup[]> {
-    const found_menu: Menu = await this.db_service.find_menu_by_id(payload.m_id);
+  public async get_group_list(query: QueryGetGroupList): Promise<ResGetGroup[]> {
     const result: ResGetGroup[] = new Array<ResGetGroup>();
-    const found_groups: Group[] = await this.db_service.find_groups_and_options(found_menu);
+    const found_menu: Menu = await this.db_service.find_menu_by_id(query.m_id);
+    const found_groups: Group[] = await this.db_service.find_groups_by_menu(found_menu);
 
     for (const loop_group of found_groups) {
       const group: ResGetGroup = new ResGetGroup(loop_group);
@@ -177,6 +188,7 @@ export class MenuService {
         group.option.push(option);
       }
     }
+
     return result;
   }
 
@@ -193,21 +205,22 @@ export class MenuService {
     await this.db_service.update_group(payload.g_id, edit_data);
   }
 
-  public async remove_group(param: number[]): Promise<void> {
-    for (const loop_id of param
-      ) {
+  public async remove_group(g_ids: number[]): Promise<void> {
+    for (const loop_id of g_ids) {
       const found_group: Group = await this.db_service.find_group_by_id(loop_id);
       const found_options: Option[] = await this.db_service.find_options_by_group(found_group);
-      if (found_options.length !== 0) {
-        const o_ids: number[] = new Array<number>();
-        for (const loop_option of found_options) {
-          o_ids.push(loop_option.o_id);
-        }
+      const o_ids: number[] = new Array<number>();
+      for (const loop_option of found_options) {
+        o_ids.push(loop_option.o_id);
+      }
+      if (o_ids.length !== 0) {
         await this.remove_option(o_ids);
       }
     }
-    await this.db_service.delete_group(param);
+    await this.db_service.delete_group(g_ids);
   }
+
+  // option
 
   public async upload_option(payload: DtoUploadOption): Promise<ResUploadOption> {
     const found_group: Group = await this.db_service.find_group_by_id(payload.g_id);
@@ -220,16 +233,11 @@ export class MenuService {
     return { o_id: option.o_id };
   }
 
-  public async get_option(option_id: number): Promise<ResGetOption> {
-    const found_option: Option = await this.db_service.find_option_by_id(option_id);
-    return new ResGetOption(found_option);
-  }
-
-  public async get_option_list(payload: DtoGetOptionList): Promise<ResGetOption  []> {
-    const found_group: Group = await this.db_service.find_group_by_id(payload.g_id);
-    const result: ResGetOption[] = new Array<ResGetOption>();
+  public async get_option_list(query: QueryGetOptionList): Promise<ResGetOption[]> {
+    const found_group: Group = await this.db_service.find_group_by_id(query.g_id);
     const found_options: Option[] = await this.db_service.find_options_by_group(found_group);
 
+    const result: ResGetOption[] = new Array<ResGetOption>();
     for (const loop_option of found_options) {
       const option: ResGetOption = new ResGetOption(loop_option);
       result.push(option);
@@ -251,7 +259,32 @@ export class MenuService {
     await this.db_service.update_option(payload.o_id, edit_data);
   }
 
-  public async remove_option(param: number[]): Promise<void> {
-    await this.db_service.delete_option(param);
+  public async remove_option(o_ids: number[]): Promise<void> {
+    await this.db_service.delete_option(o_ids);
+  }
+
+  // only use in test
+
+  public async get_menu_category(menu_category_id: number): Promise<ResGetMenuCategory> {
+    const found_menu_category: MenuCategory = await this.db_service.find_menu_category_by_id(menu_category_id);
+    return new ResGetMenuCategory({
+      mc_id: found_menu_category.mc_id,
+      name: found_menu_category.mc_name,
+    });
+  }
+
+  public async get_menu(menu_id: number): Promise<ResGetMenu> {
+    const found_menu: Menu = await this.db_service.find_menu_by_id(menu_id);
+    return new ResGetMenu(found_menu);
+  }
+
+  public async get_group(group_id: number): Promise<ResGetGroup> {
+    const found_group: Group = await this.db_service.find_group_by_id(group_id);
+    return new ResGetGroup(found_group);
+  }
+
+  public async get_option(option_id: number): Promise<ResGetOption> {
+    const found_option: Option = await this.db_service.find_option_by_id(option_id);
+    return new ResGetOption(found_option);
   }
 }

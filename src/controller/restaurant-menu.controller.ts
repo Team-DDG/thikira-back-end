@@ -1,23 +1,27 @@
 import {
   DtoEditGroup, DtoEditMenu, DtoEditMenuCategory, DtoEditOption,
-  DtoGetGroupList, DtoGetMenuList, DtoGetOptionList,
   DtoUploadGroup, DtoUploadMenu, DtoUploadMenuCategory, DtoUploadOption,
-} from '@app/dto';
+  ParamRemoveGroup, ParamRemoveMenu, ParamRemoveMenuCategory, ParamRemoveOption,
+  QueryGetGroupList, QueryGetMenuList, QueryGetOptionList,
+} from '@app/req';
 import { MenuService } from '@app/menu';
 import {
   ResGetGroup, ResGetMenu, ResGetMenuCategory, ResGetOption,
   ResUploadGroup, ResUploadMenu, ResUploadMenuCategory, ResUploadOption,
 } from '@app/res';
 import { UtilService } from '@app/util';
-import { Body, Controller, Delete, Get, Headers, HttpCode, InternalServerErrorException, Param, Patch, Post } from '@nestjs/common';
-import { ApiConflictResponse, ApiForbiddenResponse, ApiHeader, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  Body, Controller, Delete, Get, Headers,
+  HttpCode, HttpException, InternalServerErrorException,
+  Param, Patch, Post, Query, ValidationPipe,
+} from '@nestjs/common';
+import { ApiConflictResponse, ApiForbiddenResponse, ApiHeader, ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import getPrototypeOf = Reflect.getPrototypeOf;
 
 @ApiTags('restaurant/menu')
 @Controller('api/restaurant/menu')
 export class RestaurantMenuController {
-  constructor(private readonly menu_service: MenuService,
-              private readonly util_service: UtilService,
-  ) {
+  constructor(private readonly menu_service: MenuService, private readonly util_service: UtilService) {
   }
 
   @Post('category')
@@ -27,12 +31,14 @@ export class RestaurantMenuController {
   @ApiOkResponse({ type: ResUploadMenuCategory })
   @ApiForbiddenResponse()
   @ApiConflictResponse()
-  public async upload_menu_category(@Headers() header,
-                                    @Body() payload: DtoUploadMenuCategory) {
+  public async upload_menu_category(
+    @Headers('authorization') token,
+    @Body(new ValidationPipe()) payload: DtoUploadMenuCategory,
+  ) {
     try {
-      return await this.menu_service.upload_menu_category(this.util_service.get_token_body(header.authorization), payload);
+      return await this.menu_service.upload_menu_category(this.util_service.get_token_body(token), payload);
     } catch (e) {
-      throw new InternalServerErrorException(e.message);
+      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
   }
 
@@ -42,11 +48,11 @@ export class RestaurantMenuController {
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse({ type: [ResGetMenuCategory] })
   @ApiForbiddenResponse()
-  public async get_menu_category_list(@Headers() header) {
+  public async get_menu_category_list(@Headers('authorization') token) {
     try {
-      return await this.menu_service.get_menu_category_list(this.util_service.get_token_body(header.authorization));
+      return await this.menu_service.get_menu_category_list(this.util_service.get_token_body(token));
     } catch (e) {
-      throw new InternalServerErrorException(e.message);
+      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
   }
 
@@ -57,12 +63,14 @@ export class RestaurantMenuController {
   @ApiOkResponse()
   @ApiForbiddenResponse()
   @ApiConflictResponse()
-  public async edit_menu_category(@Headers() header,
-                                  @Body() payload: DtoEditMenuCategory) {
+  public async edit_menu_category(
+    @Headers('authorization') token,
+    @Body(new ValidationPipe()) payload: DtoEditMenuCategory,
+  ) {
     try {
       return await this.menu_service.edit_menu_category(payload);
     } catch (e) {
-      throw new InternalServerErrorException(e.message);
+      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
   }
 
@@ -72,12 +80,14 @@ export class RestaurantMenuController {
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse()
   @ApiForbiddenResponse()
-  public async remove_menu_category(@Headers() header,
-                                    @Param('mc_id') param: string) {
+  public async remove_menu_category(
+    @Headers('authorization') token,
+    @Param(new ValidationPipe()) param: ParamRemoveMenuCategory,
+  ) {
     try {
-      return await this.menu_service.remove_menu_category(UtilService.parse_ids(param));
+      return await this.menu_service.remove_menu_category(UtilService.parse_ids(param.mc_id));
     } catch (e) {
-      throw new InternalServerErrorException(e.message);
+      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
   }
 
@@ -88,12 +98,14 @@ export class RestaurantMenuController {
   @ApiOkResponse({ type: ResUploadMenu })
   @ApiForbiddenResponse()
   @ApiConflictResponse()
-  public async upload_menu(@Headers() header,
-                           @Body() payload: DtoUploadMenu) {
+  public async upload_menu(
+    @Headers('authorization') token,
+    @Body(new ValidationPipe()) payload: DtoUploadMenu,
+  ) {
     try {
       return await this.menu_service.upload_menu(payload);
     } catch (e) {
-      throw new InternalServerErrorException(e.message);
+      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
   }
 
@@ -101,14 +113,17 @@ export class RestaurantMenuController {
   @HttpCode(200)
   @ApiOperation({ summary: '메뉴 리스트 불러오기' })
   @ApiHeader({ name: 'Authorization' })
+  @ApiQuery({ name: 'mc_id' })
   @ApiOkResponse({ type: [ResGetMenu] })
   @ApiForbiddenResponse()
-  public async get_menu_list(@Headers() header,
-                             @Body() payload: DtoGetMenuList) {
+  public async get_menu_list(
+    @Headers('authorization') token,
+    @Query(new ValidationPipe()) query: QueryGetMenuList,
+  ) {
     try {
-      return await this.menu_service.get_menu_list(payload);
+      return await this.menu_service.get_menu_list(query);
     } catch (e) {
-      throw new InternalServerErrorException(e.message);
+      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
   }
 
@@ -118,12 +133,14 @@ export class RestaurantMenuController {
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse()
   @ApiForbiddenResponse()
-  public async edit_menu(@Headers() header,
-                         @Body() payload: DtoEditMenu) {
+  public async edit_menu(
+    @Headers('authorization') token,
+    @Body(new ValidationPipe()) payload: DtoEditMenu,
+  ) {
     try {
       return await this.menu_service.edit_menu(payload);
     } catch (e) {
-      throw new InternalServerErrorException(e.message);
+      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
   }
 
@@ -133,12 +150,14 @@ export class RestaurantMenuController {
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse()
   @ApiForbiddenResponse()
-  public async remove_menu(@Headers() header,
-                           @Param('m_id') param: string) {
+  public async remove_menu(
+    @Headers('authorization') token,
+    @Param(new ValidationPipe()) param: ParamRemoveMenu,
+  ) {
     try {
-      return await this.menu_service.remove_menu(UtilService.parse_ids(param));
+      return await this.menu_service.remove_menu(UtilService.parse_ids(param.m_id));
     } catch (e) {
-      throw new InternalServerErrorException(e.message);
+      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
   }
 
@@ -149,12 +168,14 @@ export class RestaurantMenuController {
   @ApiOkResponse({ type: ResUploadGroup })
   @ApiForbiddenResponse()
   @ApiConflictResponse()
-  public async upload_group(@Headers() header,
-                            @Body() payload: DtoUploadGroup) {
+  public async upload_group(
+    @Headers('authorization') token,
+    @Body(new ValidationPipe()) payload: DtoUploadGroup,
+  ) {
     try {
       return await this.menu_service.upload_group(payload);
     } catch (e) {
-      throw new InternalServerErrorException(e.message);
+      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
   }
 
@@ -162,14 +183,17 @@ export class RestaurantMenuController {
   @HttpCode(200)
   @ApiOperation({ summary: '그룹 리스트 불러오기' })
   @ApiHeader({ name: 'Authorization' })
+  @ApiQuery({ name: 'm_id' })
   @ApiOkResponse({ type: [ResGetGroup] })
   @ApiForbiddenResponse()
-  public async get_group_list(@Headers() header,
-                              @Body() payload: DtoGetGroupList) {
+  public async get_group_list(
+    @Headers('authorization') token,
+    @Query(new ValidationPipe()) query: QueryGetGroupList,
+  ) {
     try {
-      return await this.menu_service.get_group_list(payload);
+      return await this.menu_service.get_group_list(query);
     } catch (e) {
-      throw new InternalServerErrorException(e.message);
+      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
   }
 
@@ -179,12 +203,14 @@ export class RestaurantMenuController {
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse()
   @ApiForbiddenResponse()
-  public async edit_group(@Headers() header,
-                          @Body() payload: DtoEditGroup) {
+  public async edit_group(
+    @Headers('authorization') token,
+    @Body(new ValidationPipe()) payload: DtoEditGroup,
+  ) {
     try {
       return await this.menu_service.edit_group(payload);
     } catch (e) {
-      throw new InternalServerErrorException(e.message);
+      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
   }
 
@@ -194,12 +220,14 @@ export class RestaurantMenuController {
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse()
   @ApiForbiddenResponse()
-  public async remove_group(@Headers() header,
-                            @Param('g_id') param: string) {
+  public async remove_group(
+    @Headers('authorization') token,
+    @Param(new ValidationPipe()) param: ParamRemoveGroup,
+  ) {
     try {
-      return await this.menu_service.remove_group(UtilService.parse_ids(param));
+      return await this.menu_service.remove_group(UtilService.parse_ids(param.g_id));
     } catch (e) {
-      throw new InternalServerErrorException(e.message);
+      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
   }
 
@@ -210,12 +238,14 @@ export class RestaurantMenuController {
   @ApiOkResponse({ type: ResUploadOption })
   @ApiForbiddenResponse()
   @ApiConflictResponse()
-  public async upload_option(@Headers() header,
-                             @Body() payload: DtoUploadOption) {
+  public async upload_option(
+    @Headers('authorization') token,
+    @Body(new ValidationPipe()) payload: DtoUploadOption,
+  ) {
     try {
       return await this.menu_service.upload_option(payload);
     } catch (e) {
-      throw new InternalServerErrorException(e.message);
+      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
   }
 
@@ -223,14 +253,17 @@ export class RestaurantMenuController {
   @HttpCode(200)
   @ApiOperation({ summary: '옵션 리스트 불러오기' })
   @ApiHeader({ name: 'Authorization' })
+  @ApiQuery({ name: 'g_id' })
   @ApiOkResponse({ type: [ResGetOption] })
   @ApiForbiddenResponse()
-  public async get_option_list(@Headers() header,
-                               @Body() payload: DtoGetOptionList) {
+  public async get_option_list(
+    @Headers('authorization') token,
+    @Query(new ValidationPipe()) query: QueryGetOptionList,
+  ) {
     try {
-      return await this.menu_service.get_option_list(payload);
+      return await this.menu_service.get_option_list(query);
     } catch (e) {
-      throw new InternalServerErrorException(e.message);
+      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
   }
 
@@ -240,12 +273,14 @@ export class RestaurantMenuController {
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse()
   @ApiForbiddenResponse()
-  public async edit_option(@Headers() header,
-                           @Body() payload: DtoEditOption) {
+  public async edit_option(
+    @Headers('authorization') token,
+    @Body(new ValidationPipe()) payload: DtoEditOption,
+  ) {
     try {
       return await this.menu_service.edit_option(payload);
     } catch (e) {
-      throw new InternalServerErrorException(e.message);
+      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
   }
 
@@ -255,12 +290,14 @@ export class RestaurantMenuController {
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse()
   @ApiForbiddenResponse()
-  public async remove_option(@Headers() header,
-                             @Param('o_id') param: string) {
+  public async remove_option(
+    @Headers('authorization') token,
+    @Param(new ValidationPipe()) param: ParamRemoveOption,
+  ) {
     try {
-      return await this.menu_service.remove_option(UtilService.parse_ids(param));
+      return await this.menu_service.remove_option(UtilService.parse_ids(param.o_id));
     } catch (e) {
-      throw new InternalServerErrorException(e.message);
+      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
   }
 }

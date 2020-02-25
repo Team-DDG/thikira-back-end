@@ -17,8 +17,8 @@ export class ResGetMenuCategory {
     return !this.name;
   }
 
-  constructor(payload) {
-    Object.assign(this, payload);
+  constructor(menu_category) {
+    Object.assign(this, menu_category);
   }
 
   public get(): string {

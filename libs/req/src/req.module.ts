@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
 
-@Module({
-})
-export class DtoModule {}
+@Module({})
+export class ReqModule {
+}

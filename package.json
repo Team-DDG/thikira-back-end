@@ -4,9 +4,6 @@
   "description": "thikira back_end",
   "author": "JepangLee <ljsung0805@gmail.com>",
   "license": "MIT",
-  "engines": {
-    "yarn": "1.x"
-  },
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
@@ -94,8 +91,8 @@
       "@app/menu": "<rootDir>/libs/menu/src",
       "@app/db/(.*)": "<rootDir>/libs/db/src/$1",
       "@app/db": "<rootDir>/libs/db/src",
-      "@app/dto/(.*)": "<rootDir>/libs/dto/src/$1",
-      "@app/dto": "<rootDir>/libs/dto/src",
+      "@app/req/(.*)": "<rootDir>/libs/req/src/$1",
+      "@app/req": "<rootDir>/libs/req/src",
       "@app/res/(.*)": "<rootDir>/libs/res/src/$1",
       "@app/res": "<rootDir>/libs/res/src"
     }

@@ -1,4 +1,4 @@
-import { DtoCreateUser } from '@app/dto';
+import { DtoCreateUser } from '@app/req';
 import { stringify } from 'querystring';
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
 

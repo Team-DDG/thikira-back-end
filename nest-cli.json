@@ -56,13 +56,13 @@
         "tsConfigPath": "libs/db/tsconfig.lib.json"
       }
     },
-    "dto": {
+    "req": {
       "type": "library",
-      "root": "libs/dto",
+      "root": "libs/req",
       "entryFile": "index",
-      "sourceRoot": "libs/dto/src",
+      "sourceRoot": "libs/req/src",
       "compilerOptions": {
-        "tsConfigPath": "libs/dto/tsconfig.lib.json"
+        "tsConfigPath": "libs/req/tsconfig.lib.json"
       }
     },
     "res": {

@@ -14,14 +14,14 @@ export class ResLoadUser {
   @ApiProperty()
   public readonly nickname: string;
 
-  constructor(payload?: User) {
-    if (payload !== undefined) {
-      if (payload instanceof User) {
-        this.phone = payload.u_phone;
-        this.add_street = payload.u_add_street;
-        this.add_parcel = payload.u_add_parcel;
-        this.create_time = payload.u_create_time;
-        this.nickname = payload.u_nickname;
+  constructor(user?: User) {
+    if (user !== undefined) {
+      if (user instanceof User) {
+        this.phone = user.u_phone;
+        this.add_street = user.u_add_street;
+        this.add_parcel = user.u_add_parcel;
+        this.create_time = user.u_create_time;
+        this.nickname = user.u_nickname;
       }
     }
   }

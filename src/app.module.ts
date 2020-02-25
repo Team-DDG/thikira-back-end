@@ -1,6 +1,6 @@
 import { ConfigModule, ConfigService } from '@app/config';
 import { DBModule, Group, Menu, MenuCategory, Option, Restaurant, User } from '@app/db';
-import { DtoModule } from '@app/dto';
+import { ReqModule } from '@app/req';
 import { MenuModule } from '@app/menu';
 import { ResModule } from '@app/res';
 import { RestaurantModule } from '@app/restaurant';
@@ -10,11 +10,11 @@ import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppGuard } from './app.guard';
-import { RestaurantController, RestaurantMenuController, UserController } from './controller';
+import { RestaurantController, RestaurantMenuController, UserController, UserMenuController } from './controller';
 
 @Module({
   imports: [
-    UtilModule, DBModule, DtoModule, ResModule,
+    UtilModule, DBModule, ReqModule, ResModule,
     RestaurantModule, UserModule, MenuModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -31,7 +31,10 @@ import { RestaurantController, RestaurantMenuController, UserController } from '
     provide: APP_GUARD,
     useClass: AppGuard,
   }],
-  controllers: [RestaurantController, UserController, RestaurantMenuController],
+  controllers: [
+    RestaurantController, RestaurantMenuController,
+    UserController, UserMenuController,
+  ],
 })
 export class AppModule {
 }

@@ -19,14 +19,14 @@ export class ResGetOption {
   })
   public readonly price: number;
 
-  constructor(payload?) {
-    if (payload !== undefined) {
-      if (payload instanceof Option) {
-        this.o_id = payload.o_id;
-        this.name = payload.o_name;
-        this.price = payload.o_price;
+  constructor(option?) {
+    if (option !== undefined) {
+      if (option instanceof Option) {
+        this.o_id = option.o_id;
+        this.name = option.o_name;
+        this.price = option.o_price;
       } else {
-        Object.assign(this, payload);
+        Object.assign(this, option);
       }
     }
   }

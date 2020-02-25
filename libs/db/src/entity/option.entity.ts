@@ -1,4 +1,4 @@
-import { DtoUploadOption } from '@app/dto';
+import { DtoUploadOption } from '@app/req';
 import { stringify } from "querystring";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Group } from './group.entity';
@@ -16,10 +16,10 @@ export class Option {
     (group: Group) => group.option,
     { nullable: false },
   )
-  @JoinColumn({ name: 'g_id' })
+  @JoinColumn({ name: 'f_g_id' })
   public readonly group: Group;
 
-  constructor(option?: Option | DtoUploadOption, param?: Group) {
+  constructor(option?: Option | DtoUploadOption | any, param?: Group) {
     if (option instanceof Option) {
       Object.assign(this, option);
     } else if (option !== undefined) {
@@ -27,6 +27,10 @@ export class Option {
         this.o_name = option.name;
         this.o_price = option.price;
         this.group = param;
+      } else {
+        this.o_id = option.o_id;
+        this.o_name = option.o_name;
+        this.o_price = option.o_price;
       }
     }
   }

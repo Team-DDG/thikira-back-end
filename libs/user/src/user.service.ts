@@ -1,24 +1,34 @@
 import { DBService, User } from '@app/db';
-import { DtoCheckEmail, DtoCheckPassword, DtoCreateUser, DtoEditAddress, DtoEditPassword, DtoEditUserInfo, DtoSignIn } from '@app/dto';
+import {
+  DtoCheckPassword, DtoCreateUser, DtoEditAddress,
+  DtoEditPassword, DtoEditUserInfo, DtoSignIn,
+  QueryCheckEmail,
+} from '@app/req';
 import { ResLoadUser, ResRefresh, ResSignIn } from '@app/res';
 import { TokenTypeEnum, UtilService } from '@app/util';
 import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly db_service: DBService,
-              private readonly util_service: UtilService,
+  constructor(
+    private readonly db_service: DBService,
+    private readonly util_service: UtilService,
   ) {
   }
 
-  public async check_email(payload: DtoCheckEmail): Promise<void> {
-    const found_user = await this.db_service.find_user_by_email(payload.email);
+  public async check_email(query: QueryCheckEmail): Promise<void> {
+    const found_user = await this.db_service.find_user_by_email(query.email);
     if (!found_user.is_empty()) {
       throw new ConflictException();
     }
   }
 
   public async create_user(payload: DtoCreateUser): Promise<void> {
+    const found_user = await this.db_service.find_user_by_nickname(payload.nickname);
+    if (!found_user.is_empty()) {
+      throw new ConflictException();
+    }
+
     await this.db_service.insert_user(new User({
       ...payload, password: await this.util_service.encode(payload.password),
     }));
@@ -63,11 +73,11 @@ export class UserService {
   public async edit_info(token: string, payload: DtoEditUserInfo) {
     const email: string = await this.util_service.get_email_by_token(token);
     const edit_data = { u_phone: payload.phone, u_nickname: payload.nickname };
-    Object.keys(edit_data).forEach((key) => {
+    for (const key of Object.keys(edit_data)) {
       if (edit_data[key] === undefined || edit_data[key] === null) {
         delete edit_data[key];
       }
-    });
+    }
     await this.db_service.update_user(email, edit_data);
   }
 
