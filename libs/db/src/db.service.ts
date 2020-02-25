@@ -1,3 +1,4 @@
+import { ConfigService } from '@app/config';
 import { UtilService } from '@app/util';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -19,6 +20,7 @@ export class DBService {
     private readonly option_repo: Repository<Option>,
     @InjectRepository(Group)
     private readonly group_repo: Repository<Group>,
+    private readonly config_service: ConfigService,
     private readonly util_service: UtilService,
   ) {
   }
@@ -44,7 +46,7 @@ export class DBService {
   public async find_restaurants_by_category(category: string) {
     const found_restaurant: Restaurant[] = await this.restaurant_repo.find({ r_category: category });
     const result: Restaurant[] = new Array<Restaurant>();
-    for(const loop_restaurant of found_restaurant) {
+    for (const loop_restaurant of found_restaurant) {
       result.push(new Restaurant(loop_restaurant));
     }
     return result;
@@ -134,14 +136,13 @@ export class DBService {
 
   public async find_menus_by_menu_category(menu_category: MenuCategory): Promise<Menu[]> {
     const result: Menu[] = new Array<Menu>();
-    const found_data =
-      await getManager()
-        .query(
-          `SELECT * FROM thikira.menu AS m
-            LEFT JOIN thikira.group AS g ON m.m_id = g.f_m_id
-            LEFT JOIN thikira.option AS o ON g.g_id = o.f_g_id
+    const found_data = await getManager()
+      .query(
+        `SELECT * FROM ${this.config_service.DB_SCHEMA}.menu AS m
+            LEFT JOIN ${this.config_service.DB_SCHEMA}.group AS g ON m.m_id = g.f_m_id
+            LEFT JOIN ${this.config_service.DB_SCHEMA}.option AS o ON g.g_id = o.f_g_id
             WHERE m.f_mc_id = ${menu_category.mc_id}`,
-        );
+      );
     const options = {};
     for (const loop of found_data) {
       if (loop.o_id === null) {

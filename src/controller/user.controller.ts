@@ -1,30 +1,18 @@
 import {
-  DtoCheckPassword,
-  DtoCreateUser,
-  DtoEditAddress,
-  DtoEditPassword,
-  DtoEditUserInfo,
+  DtoCheckPassword, DtoCreateUser,
+  DtoEditAddress, DtoEditPassword, DtoEditUserInfo,
   DtoSignIn,
-  QueryCheckEmail,
-  QueryGetRestaurantList,
+  QueryCheckEmail, QueryGetRestaurantList,
 } from '@app/req';
-import { ResLoadUser, ResRefresh, ResSignIn } from '@app/res';
+import { ResGetRestaurantList, ResLoadUser, ResRefresh, ResSignIn } from '@app/res';
 import { RestaurantService } from '@app/restaurant';
 import { UserService } from '@app/user';
 import { UtilService } from '@app/util';
 import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Headers,
-  HttpCode,
-  HttpException,
+  Body, Controller, Delete, Get,
+  Headers, HttpCode, HttpException,
   InternalServerErrorException,
-  Param,
-  Patch,
-  Post,
-  Query, ValidationPipe,
+  Patch, Post, Query, ValidationPipe,
 } from '@nestjs/common';
 import {
   ApiConflictResponse, ApiForbiddenResponse,
@@ -204,11 +192,11 @@ export class UserController {
     }
   }
 
-  @Get('/restaurant')
+  @Get('restaurant')
   @HttpCode(200)
-  @ApiOperation({ summary: '정보 조회' })
+  @ApiOperation({ summary: '업체 리스트 조회' })
   @ApiHeader({ name: 'Authorization' })
-  @ApiOkResponse({ type: ResLoadUser })
+  @ApiOkResponse({ type: ResGetRestaurantList })
   @ApiNotFoundResponse()
   public async get_restaurant_list(
     @Headers('authorization') token,

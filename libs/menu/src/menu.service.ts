@@ -2,7 +2,7 @@ import { DBService, Group, Menu, MenuCategory, Option, Restaurant } from '@app/d
 import {
   DtoEditGroup, DtoEditMenu, DtoEditMenuCategory, DtoEditOption,
   DtoUploadGroup, DtoUploadMenu, DtoUploadMenuCategory, DtoUploadOption,
-  QueryGetMenuCategoryList,
+  QueryGetGroupList, QueryGetMenuCategoryList, QueryGetMenuList, QueryGetOptionList,
 } from '@app/req';
 import {
   ResGetGroup, ResGetMenu, ResGetMenuCategory, ResGetOption,
@@ -10,7 +10,6 @@ import {
 } from '@app/res';
 import { UtilService } from '@app/util';
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { QueryGetGroupList, QueryGetMenuList, QueryGetOptionList } from '@app/req';
 
 @Injectable()
 export class MenuService {
