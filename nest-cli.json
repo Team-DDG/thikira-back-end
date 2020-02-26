@@ -4,6 +4,15 @@
   },
   "collection": "@nestjs/schematics",
   "projects": {
+    "coupon": {
+      "compilerOptions": {
+        "tsConfigPath": "libs/coupon/tsconfig.lib.json"
+      },
+      "entryFile": "index",
+      "root": "libs/coupon",
+      "sourceRoot": "libs/coupon/src",
+      "type": "library"
+    },
     "config": {
       "compilerOptions": {
         "tsConfigPath": "libs/config/tsconfig.lib.json"
@@ -47,6 +56,15 @@
       "entryFile": "index",
       "root": "libs/menu",
       "sourceRoot": "libs/menu/src",
+      "type": "library"
+    },
+    "order": {
+      "compilerOptions": {
+        "tsConfigPath": "libs/order/tsconfig.lib.json"
+      },
+      "entryFile": "index",
+      "root": "libs/order",
+      "sourceRoot": "libs/order/src",
       "type": "library"
     },
     "db": {

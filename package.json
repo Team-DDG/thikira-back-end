@@ -55,12 +55,16 @@
       "ts"
     ],
     "moduleNameMapper": {
+      "@app/coupon/(.*)": "<rootDir>/libs/coupon/src/$1",
+      "@app/coupon": "<rootDir>/libs/coupon/src",
       "@app/config/(.*)": "<rootDir>/libs/config/src/$1",
       "@app/config": "<rootDir>/libs/config/src",
       "@app/db/(.*)": "<rootDir>/libs/db/src/$1",
       "@app/db": "<rootDir>/libs/db/src",
       "@app/menu/(.*)": "<rootDir>/libs/menu/src/$1",
       "@app/menu": "<rootDir>/libs/menu/src",
+      "@app/order/(.*)": "<rootDir>/libs/order/src/$1",
+      "@app/order": "<rootDir>/libs/order/src",
       "@app/req/(.*)": "<rootDir>/libs/req/src/$1",
       "@app/req": "<rootDir>/libs/req/src",
       "@app/restaurant": "<rootDir>/libs/restaurant/src",

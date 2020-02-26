@@ -1,9 +1,12 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Coupon } from './coupon.entity';
 import { MenuCategory } from './menu-category.entity';
 import { stringify } from 'querystring';
 
 @Entity()
 export class Restaurant {
+  @OneToMany(() => Coupon, (coupon: Coupon) => coupon.restaurant)
+  public readonly coupon: Coupon[];
   @Column()
   public readonly r_area: string;
   @Column()
@@ -40,7 +43,6 @@ export class Restaurant {
   public readonly r_image: string;
   @CreateDateColumn()
   public readonly r_create_time: Date;
-
   @OneToMany(
     () => MenuCategory,
     (menu_category: MenuCategory) => menu_category.restaurant,

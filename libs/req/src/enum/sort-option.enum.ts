@@ -1,3 +1,3 @@
-export enum SortOption {
+export enum EnumSortOption {
   POPULARITY, REVIEW, NEARNESS
 }

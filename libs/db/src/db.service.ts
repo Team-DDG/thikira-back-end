@@ -1,4 +1,4 @@
-import { Group, Menu, MenuCategory, Option, Restaurant, User } from './entity';
+import { Coupon, Group, Menu, MenuCategory, Option, Order, Restaurant, User } from './entity';
 import { Inject, Injectable } from '@nestjs/common';
 import { Repository, getManager } from 'typeorm';
 import { ConfigService } from '@app/config';
@@ -19,6 +19,10 @@ export class DBService {
   private readonly option_repo: Repository<Option>;
   @InjectRepository(Group)
   private readonly group_repo: Repository<Group>;
+  @InjectRepository(Coupon)
+  private readonly coupon_repo: Repository<Coupon>;
+  @InjectRepository(Order)
+  private readonly order_repo: Repository<Order>;
   @Inject()
   private readonly config_service: ConfigService;
   @Inject()
@@ -144,46 +148,42 @@ export class DBService {
       );
     const options = {};
     for (const loop of found_data) {
-      if (loop.o_id === null) {
-        continue;
+      if (loop.o_id !== null) {
+        if (options[loop.f_g_id] === undefined) {
+          options[loop.g_id] = new Array<Option>();
+        }
+        options[loop.g_id].push(new Option(loop));
       }
-      if (options[loop.f_g_id] === undefined) {
-        options[loop.g_id] = new Array<Option>();
-      }
-      options[loop.g_id].push(new Option(loop));
-
     }
     const groups = {};
 
     let previous_id = null;
     for (const loop of found_data) {
-      if (loop.g_id === null || previous_id === loop.g_id) {
-        continue;
-      }
-      previous_id = loop.g_id;
-      if (groups[loop.m_id] === undefined) {
-        groups[loop.m_id] = new Array<Group>();
-      }
-      const group: Group = new Group(loop);
-      groups[loop.m_id].push(group);
-      if (options[loop.g_id] !== undefined) {
-        for (const loop_option of options[loop.g_id]) {
-          group.option.push(loop_option);
+      if (loop.g_id !== null && previous_id !== loop.g_id) {
+        previous_id = loop.g_id;
+        if (groups[loop.m_id] === undefined) {
+          groups[loop.m_id] = new Array<Group>();
+        }
+        const group: Group = new Group(loop);
+        groups[loop.m_id].push(group);
+        if (options[loop.g_id] !== undefined) {
+          for (const loop_option of options[loop.g_id]) {
+            group.option.push(loop_option);
+          }
         }
       }
     }
 
     previous_id = null;
     for (const loop of found_data) {
-      if (loop.m_id === null || previous_id === loop.m_id) {
-        continue;
-      }
-      previous_id = loop.m_id;
-      const menu: Menu = new Menu(loop);
-      result.push(menu);
-      if (groups[loop.m_id] !== undefined) {
-        for (const loop_group of groups[loop.m_id]) {
-          menu.group.push(loop_group);
+      if (loop.m_id !== null && previous_id !== loop.m_id) {
+        previous_id = loop.m_id;
+        const menu: Menu = new Menu(loop);
+        result.push(menu);
+        if (groups[loop.m_id] !== undefined) {
+          for (const loop_group of groups[loop.m_id]) {
+            menu.group.push(loop_group);
+          }
         }
       }
     }
@@ -275,5 +275,38 @@ export class DBService {
 
   public async delete_option(id: number[]): Promise<void> {
     await this.option_repo.delete(id);
+  }
+
+  // coupon
+
+  public async insert_coupon(coupon: Coupon): Promise<void> {
+    await this.coupon_repo.insert(coupon);
+  }
+
+  public async find_coupon_by_restaurant(restaurant: Restaurant): Promise<Coupon> {
+    const found_coupons: Coupon[] = await this.coupon_repo.find({ restaurant });
+    for (const loop_coupon of found_coupons) {
+      if (Date.now() < loop_coupon.c_expired_day.getTime()) {
+        return new Coupon(loop_coupon);
+      }
+    }
+    return new Coupon();
+  }
+
+  public async find_coupon_by_discount_amount(discount_amount: number): Promise<Coupon> {
+    return new Coupon(await this.coupon_repo.findOne({ c_discount_amount: discount_amount }));
+  }
+
+  public async find_coupons_by_restaurant(restaurant: Restaurant): Promise<Coupon[]> {
+    const found_coupons: Coupon[] = await this.coupon_repo.find({ restaurant });
+    const result: Coupon[] = new Array<Coupon>();
+    for (const loop_coupon of found_coupons) {
+      result.push(new Coupon(loop_coupon));
+    }
+    return result;
+  }
+
+  public async delete_coupon(id: number): Promise<void> {
+    await this.coupon_repo.delete(id);
   }
 }

@@ -1,9 +1,9 @@
 import { IsEnum, IsString } from 'class-validator';
-import { SortOption } from '../../enum';
+import { EnumSortOption } from '../../enum';
 
 export class QueryGetRestaurantList {
   @IsString()
   public readonly category: string;
-  @IsEnum(SortOption)
-  public readonly sort_option: SortOption;
+  @IsEnum(EnumSortOption)
+  public readonly sort_option: EnumSortOption;
 }

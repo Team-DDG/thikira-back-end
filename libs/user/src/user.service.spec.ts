@@ -1,5 +1,5 @@
 import { ConfigModule, ConfigService } from '@app/config';
-import { DBModule, Group, Menu, MenuCategory, Option, Restaurant, User } from '@app/db';
+import { Coupon, DBModule, Group, Menu, MenuCategory, Option, Order, Restaurant, User } from '@app/db';
 import { ResRefresh, ResSignIn } from '@app/res';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
@@ -15,28 +15,26 @@ describe('UserService', () => {
   let refresh_token: string;
   let service: UserService;
   const test_req = {
-    email: 'test@gmail.com',
-    nickname: 'test',
-    password: 'test',
+    email: 'user_test@gmail.com',
+    nickname: 'user_test',
+    password: 'user_test',
     phone: '01012345678',
   };
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        DBModule,
-        TypeOrmModule.forRootAsync({
+        DBModule, TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
           inject: [ConfigService],
           useFactory(config: ConfigService) {
             return {
-              ...config.orm_config,
-              entities: [Restaurant, Menu, MenuCategory, Option, Group, User],
+              ...config.orm_config, entities: [
+                Coupon, Group, Menu, MenuCategory, Option, Order, Restaurant, User,
+              ],
             };
           },
-        }),
-        UserModule, UtilModule,
-      ],
+        }), UserModule, UtilModule],
       providers: [UserService],
     }).compile();
 

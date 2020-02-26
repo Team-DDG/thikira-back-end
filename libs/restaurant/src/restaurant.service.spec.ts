@@ -1,5 +1,5 @@
 import { ConfigModule, ConfigService } from '@app/config';
-import { DBModule, Group, Menu, MenuCategory, Option, Restaurant, User } from '@app/db';
+import { Coupon, DBModule, Group, Menu, MenuCategory, Option, Order, Restaurant, User } from '@app/db';
 import { ResRefresh, ResSignIn } from '@app/res';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
@@ -22,32 +22,32 @@ describe('RestaurantService', () => {
     close_time: '00:00',
     day_off: '주일날은 교회에 갑니다.',
     description: '증포동 bbq 입니다.',
-    email: 'test@gmail.com',
+    email: 'restaurant_test@gmail.com',
     image: 'image_url',
     min_price: 17500,
-    name: 'test',
+    name: 'restaurant_test',
     offline_payment: false,
     online_payment: true,
     open_time: '15:00',
-    password: 'test',
+    password: 'restaurant_test',
     phone: '01012345678',
   };
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        DBModule, UtilModule,
+        DBModule, RestaurantModule,
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
           inject: [ConfigService],
           useFactory(config: ConfigService) {
             return {
-              ...config.orm_config,
-              entities: [Restaurant, Menu, MenuCategory, Option, Group, User],
+              ...config.orm_config, entities: [
+                Coupon, Group, Menu, MenuCategory, Option, Order, Restaurant, User,
+              ],
             };
           },
-        }),
-        RestaurantModule],
+        }), UtilModule],
       providers: [RestaurantService],
     }).compile();
 

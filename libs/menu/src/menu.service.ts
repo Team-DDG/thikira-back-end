@@ -13,10 +13,8 @@ import { UtilService } from '@app/util';
 
 @Injectable()
 export class MenuService {
-  @Inject()
-  private readonly db_service: DBService;
-  @Inject()
-  private readonly util_service: UtilService;
+  @Inject()  private readonly db_service: DBService;
+  @Inject()  private readonly util_service: UtilService;
 
   // menu_category
 

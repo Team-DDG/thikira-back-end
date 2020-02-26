@@ -8,6 +8,9 @@
     "module": "commonjs",
     "outDir": "./dist",
     "paths": {
+      "@app/coupon": [
+        "libs/coupon/src"
+      ],
       "@app/config": [
         "libs/config/src"
       ],
@@ -16,6 +19,9 @@
       ],
       "@app/menu": [
         "libs/menu/src"
+      ],
+      "@app/order": [
+        "libs/order/src"
       ],
       "@app/req": [
         "libs/req/src"

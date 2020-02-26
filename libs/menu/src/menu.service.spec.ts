@@ -1,5 +1,5 @@
 import { ConfigModule, ConfigService } from '@app/config';
-import { DBModule, Group, Menu, MenuCategory, Option, Restaurant, User } from '@app/db';
+import { Coupon, DBModule, Group, Menu, MenuCategory, Option, Order, Restaurant, User } from '@app/db';
 import { DtoCreateRestaurant, DtoCreateUser, DtoUploadGroup, DtoUploadMenu, DtoUploadMenuCategory, DtoUploadOption } from '@app/req';
 import { ResGetGroup, ResGetMenu, ResGetMenuCategory, ResGetOption } from '@app/res';
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
@@ -138,31 +138,32 @@ describe('MenuService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        MenuModule, RestaurantModule, UserModule, DBModule, UtilModule,
+        DBModule, MenuModule, RestaurantModule,
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
           inject: [ConfigService],
           useFactory(config: ConfigService) {
             return {
-              ...config.orm_config,
-              entities: [Restaurant, Menu, MenuCategory, Option, Group, User],
+              ...config.orm_config, entities: [
+                Coupon, Group, Menu, MenuCategory, Option, Order, Restaurant, User,
+              ],
             };
           },
-        })],
+        }), UserModule, UtilModule],
       providers: [MenuService],
     }).compile();
 
     app = module.createNestApplication();
     service = module.get<MenuService>(MenuService);
-
     restaurant_service = module.get<RestaurantService>(RestaurantService);
+    user_service = module.get<UserService>(UserService);
+
     await restaurant_service.create_restaurant(test_restaurant);
     restaurant_access_token = (await restaurant_service.sign_in({
       email: test_restaurant.email,
       password: test_restaurant.password,
     })).access_token;
 
-    user_service = module.get<UserService>(UserService);
     await user_service.create_user(test_user);
     user_access_token = (await user_service.sign_in({
       email: test_user.email,

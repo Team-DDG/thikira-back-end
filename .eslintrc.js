@@ -25,6 +25,7 @@ module.exports = {
     curly: 'error',
     indent: ['error', 2],
     'no-console': 'error',
+    'no-continue': "error",
     'no-empty-character-class': 'error',
     'no-return-await': 'error',
     'no-this-before-super': 'error',

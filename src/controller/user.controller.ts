@@ -14,9 +14,10 @@ import {
   DtoCheckPassword, DtoCreateUser,
   DtoEditAddress, DtoEditPassword, DtoEditUserInfo,
   DtoSignIn,
-  QueryCheckEmail, QueryGetRestaurantList,
+  QueryCheckEmail, QueryGetCoupon, QueryGetRestaurantList,
 } from '@app/req';
 import { ResGetRestaurantList, ResLoadUser, ResRefresh, ResSignIn } from '@app/res';
+import { CouponService } from '@app/coupon';
 import { RestaurantService } from '@app/restaurant';
 import { UserService } from '@app/user';
 import { UtilService } from '@app/util';
@@ -25,8 +26,9 @@ import getPrototypeOf = Reflect.getPrototypeOf;
 @ApiTags('user')
 @Controller('api/user')
 export class UserController {
-  @Inject() private readonly user_service: UserService;
+  @Inject() private readonly coupon_service: CouponService;
   @Inject() private readonly restaurant_service: RestaurantService;
+  @Inject() private readonly user_service: UserService;
   @Inject() private readonly util_service: UtilService;
 
   @Get('auth/email')
@@ -201,6 +203,23 @@ export class UserController {
   ) {
     try {
       return await this.restaurant_service.get_list(query);
+    } catch (e) {
+      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+    }
+  }
+
+  @Get('restaurant/coupon')
+  @HttpCode(200)
+  @ApiOperation({ summary: '업체 리스트 조회' })
+  @ApiHeader({ name: 'Authorization' })
+  @ApiOkResponse({ type: ResGetRestaurantList })
+  @ApiNotFoundResponse()
+  public async get_coupon(
+    @Headers('authorization') token,
+    @Query(new ValidationPipe()) query: QueryGetCoupon,
+  ) {
+    try {
+      return await this.coupon_service.get_coupon(query);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
