@@ -1,11 +1,8 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Order } from './order.entity';
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { stringify } from 'querystring';
 
 @Entity()
 export class User {
-  @OneToMany(()=> Order, (order: Order) => order.user)
-  public readonly order: Order[];
   @PrimaryGeneratedColumn()
   public readonly u_id: number;
   @Column()

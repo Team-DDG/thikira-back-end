@@ -1,5 +1,5 @@
-import { ConfigModule, ConfigService } from '@app/config';
-import { Coupon, DBModule, Group, Menu, MenuCategory, Option, Order, Restaurant, User } from '@app/db';
+import { ConfigModule, config } from '@app/config';
+import { DBModule, mysql_entities } from '@app/db';
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DtoCreateRestaurant } from '@app/req';
@@ -39,13 +39,8 @@ describe('OrderService', () => {
         DBModule, OrderModule, RestaurantModule,
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
-          inject: [ConfigService],
-          useFactory(config: ConfigService) {
-            return {
-              ...config.orm_config, entities: [
-                Coupon, Group, Menu, MenuCategory, Option, Order, Restaurant, User,
-              ],
-            };
+          useFactory() {
+            return { ...config.orm_config, entities: mysql_entities };
           },
         }), UtilModule],
       providers: [OrderService],

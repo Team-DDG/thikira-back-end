@@ -1,4 +1,4 @@
-import { Coupon, Group, Menu, MenuCategory, Option, Order, Restaurant, User } from './entity';
+import { Coupon, Group, Menu, MenuCategory, Option, Restaurant, User } from './entity';
 import { Inject, Injectable } from '@nestjs/common';
 import { Repository, getManager } from 'typeorm';
 import { ConfigService } from '@app/config';
@@ -21,8 +21,6 @@ export class DBService {
   private readonly group_repo: Repository<Group>;
   @InjectRepository(Coupon)
   private readonly coupon_repo: Repository<Coupon>;
-  @InjectRepository(Order)
-  private readonly order_repo: Repository<Order>;
   @Inject()
   private readonly config_service: ConfigService;
   @Inject()

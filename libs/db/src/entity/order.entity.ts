@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { EnumOrderStatus } from '../enum';
 import { User } from './user.entity';
 
@@ -18,11 +18,5 @@ export class Order {
   public readonly od_status: EnumOrderStatus;
   @Column()
   public readonly od_reduced_price: number;
-  @ManyToOne(
-    () => User,
-    (user: User) => user.order,
-    { nullable: false },
-  )
-  @JoinColumn({ name: 'f_u_id' })
   public readonly user: User;
 }
