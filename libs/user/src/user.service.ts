@@ -20,7 +20,7 @@ export class UserService {
     }
   }
 
-  public async create_user(payload: DtoCreateUser): Promise<void> {
+  public async create(payload: DtoCreateUser): Promise<void> {
     const found_user = await this.db_service.find_user_by_nickname(payload.nickname);
     if (!found_user.is_empty()) {
       throw new ConflictException();

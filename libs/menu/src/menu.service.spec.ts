@@ -1,27 +1,21 @@
 import { ConfigModule, config } from '@app/config';
-import { DBModule, mysql_entities } from '@app/db';
-import { DtoCreateRestaurant, DtoCreateUser, DtoUploadGroup, DtoUploadMenu, DtoUploadMenuCategory, DtoUploadOption } from '@app/req';
+import { DBModule, mongodb_entities, mysql_entities } from '@app/db';
+import { DtoCreateRestaurant, DtoUploadGroup, DtoUploadMenu, DtoUploadMenuCategory, DtoUploadOption } from '@app/req';
 import { ResGetGroup, ResGetMenu, ResGetMenuCategory, ResGetOption } from '@app/res';
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserModule, UserService } from '@app/user';
 import { UtilModule, UtilService } from '@app/util';
 import { INestApplication } from '@nestjs/common';
 import { MenuModule } from './menu.module';
 import { MenuService } from './menu.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserModule } from '@app/user';
 
 describe('MenuService', () => {
   let app: INestApplication;
-  let restaurant_access_token: string;
+  let restaurant_token: string;
   let restaurant_service: RestaurantService;
   let service: MenuService;
-  const test_user: DtoCreateUser = {
-    email: 'menu_test@gmail.com',
-    nickname: 'menu_test',
-    password: 'menu_test',
-    phone: '01012345678',
-  };
   const test_restaurant: DtoCreateRestaurant = {
     add_parcel: 'a',
     add_street: 'b',
@@ -41,9 +35,9 @@ describe('MenuService', () => {
     phone: '01012345678',
   };
   const test_req: {
-    menu_category: DtoUploadMenuCategory[],
-    menu: DtoUploadMenu[]
     group: DtoUploadGroup[]
+    menu: DtoUploadMenu[]
+    menu_category: DtoUploadMenuCategory[],
     option: DtoUploadOption[]
   } = {
     group: [
@@ -132,8 +126,6 @@ describe('MenuService', () => {
     menu_category: new Array<ResGetMenuCategory>(),
     option: new Array<ResGetOption>(),
   };
-  let user_service: UserService;
-  let user_access_token: string;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -141,8 +133,15 @@ describe('MenuService', () => {
         DBModule, MenuModule, RestaurantModule,
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
+          name: 'mysql',
           useFactory() {
-            return { ...config.orm_config, entities: mysql_entities };
+            return { ...config.mysql_config, entities: mysql_entities };
+          },
+        }), TypeOrmModule.forRootAsync({
+          imports: [ConfigModule],
+          name: 'mongodb',
+          useFactory() {
+            return { ...config.mongodb_config, entities: mongodb_entities };
           },
         }), UserModule, UtilModule],
       providers: [MenuService],
@@ -151,33 +150,25 @@ describe('MenuService', () => {
     app = module.createNestApplication();
     service = module.get<MenuService>(MenuService);
     restaurant_service = module.get<RestaurantService>(RestaurantService);
-    user_service = module.get<UserService>(UserService);
 
-    await restaurant_service.create_restaurant(test_restaurant);
-    restaurant_access_token = (await restaurant_service.sign_in({
+    await restaurant_service.create(test_restaurant);
+    restaurant_token = (await restaurant_service.sign_in({
       email: test_restaurant.email,
       password: test_restaurant.password,
-    })).access_token;
-
-    await user_service.create_user(test_user);
-    user_access_token = (await user_service.sign_in({
-      email: test_user.email,
-      password: test_user.password,
     })).access_token;
   });
 
   afterAll(async () => {
-    await restaurant_service.leave(restaurant_access_token);
-    await user_service.leave(user_access_token);
+    await restaurant_service.leave(restaurant_token);
     await app.close();
   });
 
   it('200 upload_menu_category()', async () => {
     for (const loop_menu_category of test_req.menu_category) {
-      await service.upload_menu_category(restaurant_access_token, loop_menu_category);
+      await service.upload_menu_category(restaurant_token, loop_menu_category);
     }
 
-    test_res.menu_category = await service.get_menu_category_list(restaurant_access_token);
+    test_res.menu_category = await service.get_menu_category_list(restaurant_token);
     for (const index of UtilService.range(test_res.menu_category)) {
       if (test_req.menu_category[index].get() !== test_res.menu_category[index].get()) {
         throw new Error();

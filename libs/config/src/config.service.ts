@@ -13,17 +13,25 @@ export class ConfigService {
   @IsEnum(NodeEnv)
   public readonly NODE_ENV: NodeEnv;
   @IsString()
-  public readonly DB: string;
+  public readonly MONGODB_HOST: string;
   @IsString()
-  public readonly DB_HOST: string;
+  public readonly MONGODB_PASS: string;
   @IsNumberString() @IsOptional()
-  public readonly DB_PORT: string = '3306';
+  public readonly MONGODB_PORT: string = '27017';
   @IsString()
-  public readonly DB_USER: string;
+  public readonly MONGODB_SCHEMA: string;
   @IsString()
-  public readonly DB_PASS: string;
+  public readonly MONGODB_USER: string;
   @IsString()
-  public readonly DB_SCHEMA: string;
+  public readonly MYSQL_HOST: string;
+  @IsString()
+  public readonly MYSQL_PASS: string;
+  @IsNumberString() @IsOptional()
+  public readonly MYSQL_PORT: string = '3306';
+  @IsString()
+  public readonly MYSQL_SCHEMA: string;
+  @IsString()
+  public readonly MYSQL_USER: string;
   @IsOptional() @IsNumberString()
   public readonly PORT?: string;
   @IsOptional() @IsString()
@@ -32,7 +40,8 @@ export class ConfigService {
   public readonly JWT_SECRET?: string;
   @IsString()
   public readonly ENCIPHERMENT: string;
-  public readonly orm_config;
+  public readonly mysql_config;
+  public readonly mongodb_config;
 
   constructor(file_path?: string, custom_config?: Config) {
     Object.assign(this, {
@@ -47,14 +56,24 @@ export class ConfigService {
       throw new Error(errors[0].toString());
     }
 
-    this.orm_config = {
-      database: this.DB_SCHEMA,
-      host: this.DB_HOST,
-      password: this.DB_PASS,
-      port: parseInt(this.DB_PORT, 10),
+    this.mysql_config = {
+      database: this.MYSQL_SCHEMA,
+      host: this.MYSQL_HOST,
+      password: this.MYSQL_PASS,
+      port: parseInt(this.MYSQL_PORT, 10),
       synchronize: true,
-      type: this.DB,
-      username: this.DB_USER,
+      type: 'mysql',
+      username: this.MYSQL_USER,
+    };
+    this.mongodb_config = {
+      database: this.MONGODB_SCHEMA,
+      host: this.MONGODB_HOST,
+      password: this.MONGODB_PASS,
+      port: parseInt(this.MONGODB_PORT, 10),
+      synchronize: true,
+      type: 'mongodb',
+      useUnifiedTopology: true,
+      username: this.MONGODB_USER,
     };
   }
 }

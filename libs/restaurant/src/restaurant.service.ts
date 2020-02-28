@@ -21,7 +21,7 @@ export class RestaurantService {
     }
   }
 
-  public async create_restaurant(payload: DtoCreateRestaurant): Promise<void> {
+  public async create(payload: DtoCreateRestaurant): Promise<void> {
     const found_restaurant: Restaurant = await this.db_service.find_restaurant_by_name(payload.name);
     if (!found_restaurant.is_empty()) {
       throw new ConflictException();

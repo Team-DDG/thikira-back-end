@@ -8,7 +8,7 @@ export class CouponService {
   @Inject() private readonly db_service: DBService;
   @Inject() private readonly util_service: UtilService;
 
-  public async upload_coupon(token: string, payload: DtoUploadCoupon): Promise<void> {
+  public async upload(token: string, payload: DtoUploadCoupon): Promise<void> {
     const email: string = await this.util_service.get_email_by_token(token);
     const found_restaurant: Restaurant = await this.db_service.find_restaurant_by_email(email);
     const found_coupon: Coupon = await this.db_service.find_coupon_by_restaurant(found_restaurant);
@@ -20,7 +20,7 @@ export class CouponService {
     await this.db_service.insert_coupon(coupon);
   }
 
-  public async get_coupon_list(token: string): Promise<ResGetCouponList[]> {
+  public async get_list(token: string): Promise<ResGetCouponList[]> {
     const result: ResGetCouponList[] = new Array<ResGetCouponList>();
     const email: string = await this.util_service.get_email_by_token(token);
     const found_restaurant: Restaurant = await this.db_service.find_restaurant_by_email(email);
@@ -34,7 +34,7 @@ export class CouponService {
     return result;
   }
 
-  public async get_coupon(param: string | QueryGetCoupon): Promise<ResGetCoupon> {
+  public async get(param: string | QueryGetCoupon): Promise<ResGetCoupon> {
     let found_restaurant: Restaurant;
     if (typeof param === 'string') {
       const email: string = await this.util_service.get_email_by_token(param);
@@ -51,7 +51,7 @@ export class CouponService {
 
   // only use in test
 
-  public async get(discount_amount: number): Promise<Coupon> {
+  public async get_coupon(discount_amount: number): Promise<Coupon> {
     return this.db_service.find_coupon_by_discount_amount(discount_amount);
   }
 

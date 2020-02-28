@@ -13,8 +13,8 @@ import {
 import {
   DtoCheckPassword, DtoCreateUser,
   DtoEditAddress, DtoEditPassword, DtoEditUserInfo,
-  DtoSignIn,
-  QueryCheckEmail, QueryGetCoupon, QueryGetRestaurantList,
+  DtoSignIn, EnumSortOption,
+  QueryCheckEmail, QueryGetRestaurantList,
 } from '@app/req';
 import { ResGetRestaurantList, ResLoadUser, ResRefresh, ResSignIn } from '@app/res';
 import { CouponService } from '@app/coupon';
@@ -39,7 +39,7 @@ export class UserController {
   @ApiConflictResponse()
   public async check_email(@Query(new ValidationPipe()) query: QueryCheckEmail) {
     try {
-      return await this.user_service.check_email(query);
+      return this.user_service.check_email(query);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -51,7 +51,7 @@ export class UserController {
   @ApiOkResponse()
   public async create(@Body(new ValidationPipe()) payload: DtoCreateUser) {
     try {
-      return await this.user_service.create_user(payload);
+      return this.user_service.create(payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -64,7 +64,7 @@ export class UserController {
   @ApiNotFoundResponse()
   public async sign_in(@Body(new ValidationPipe()) payload: DtoSignIn) {
     try {
-      return await this.user_service.sign_in(payload);
+      return this.user_service.sign_in(payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -78,7 +78,7 @@ export class UserController {
   @ApiForbiddenResponse()
   public async refresh(@Headers('x-refresh-token') token) {
     try {
-      return await this.user_service.refresh(this.util_service.get_token_body(token));
+      return this.user_service.refresh(this.util_service.get_token_body(token));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -92,7 +92,7 @@ export class UserController {
   @ApiForbiddenResponse()
   public async leave(@Headers('authorization') token) {
     try {
-      return await this.user_service.leave(this.util_service.get_token_body(token));
+      return this.user_service.leave(this.util_service.get_token_body(token));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -120,7 +120,7 @@ export class UserController {
     @Body(new ValidationPipe()) payload: DtoCheckPassword,
   ) {
     try {
-      return await this.user_service.check_password(this.util_service.get_token_body(token), payload);
+      return this.user_service.check_password(this.util_service.get_token_body(token), payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -137,7 +137,7 @@ export class UserController {
     @Body(new ValidationPipe()) payload: DtoEditPassword,
   ) {
     try {
-      return await this.user_service.edit_password(this.util_service.get_token_body(token.authorization), payload);
+      return this.user_service.edit_password(this.util_service.get_token_body(token.authorization), payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -154,7 +154,7 @@ export class UserController {
     @Body(new ValidationPipe()) payload: DtoEditUserInfo,
   ) {
     try {
-      return await this.user_service.edit_info(this.util_service.get_token_body(token), payload);
+      return this.user_service.edit_info(this.util_service.get_token_body(token), payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -171,7 +171,7 @@ export class UserController {
     @Body(new ValidationPipe()) payload: DtoEditAddress,
   ) {
     try {
-      return await this.user_service.edit_address(this.util_service.get_token_body(token), payload);
+      return this.user_service.edit_address(this.util_service.get_token_body(token), payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -185,7 +185,7 @@ export class UserController {
   @ApiNotFoundResponse()
   public async get(@Headers('authorization') header) {
     try {
-      return await this.user_service.get(this.util_service.get_token_body(header));
+      return this.user_service.get(this.util_service.get_token_body(header));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -196,30 +196,15 @@ export class UserController {
   @ApiOperation({ summary: '업체 리스트 조회' })
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse({ type: ResGetRestaurantList })
+  @ApiQuery({ name: 'category' })
+  @ApiQuery({ enum: EnumSortOption, name: 'sort_option', type: 'enum' })
   @ApiNotFoundResponse()
   public async get_restaurant_list(
     @Headers('authorization') token,
     @Query(new ValidationPipe()) query: QueryGetRestaurantList,
   ) {
     try {
-      return await this.restaurant_service.get_list(query);
-    } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
-    }
-  }
-
-  @Get('restaurant/coupon')
-  @HttpCode(200)
-  @ApiOperation({ summary: '업체 리스트 조회' })
-  @ApiHeader({ name: 'Authorization' })
-  @ApiOkResponse({ type: ResGetRestaurantList })
-  @ApiNotFoundResponse()
-  public async get_coupon(
-    @Headers('authorization') token,
-    @Query(new ValidationPipe()) query: QueryGetCoupon,
-  ) {
-    try {
-      return await this.coupon_service.get_coupon(query);
+      return this.restaurant_service.get_list(query);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }

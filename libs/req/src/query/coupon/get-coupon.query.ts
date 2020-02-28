@@ -1,6 +1,6 @@
-import { IsNumber } from 'class-validator';
+import { IsNumberString } from 'class-validator';
 
 export class QueryGetCoupon {
-  @IsNumber()
+  @IsNumberString()
   public readonly r_id: number;
 }

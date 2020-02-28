@@ -36,7 +36,7 @@ export class RestaurantMenuController {
     @Body(new ValidationPipe()) payload: DtoUploadMenuCategory,
   ) {
     try {
-      return await this.menu_service.upload_menu_category(this.util_service.get_token_body(token), payload);
+      return this.menu_service.upload_menu_category(this.util_service.get_token_body(token), payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -50,7 +50,7 @@ export class RestaurantMenuController {
   @ApiForbiddenResponse()
   public async get_menu_category_list(@Headers('authorization') token) {
     try {
-      return await this.menu_service.get_menu_category_list(this.util_service.get_token_body(token));
+      return this.menu_service.get_menu_category_list(this.util_service.get_token_body(token));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -68,7 +68,7 @@ export class RestaurantMenuController {
     @Body(new ValidationPipe()) payload: DtoEditMenuCategory,
   ) {
     try {
-      return await this.menu_service.edit_menu_category(payload);
+      return this.menu_service.edit_menu_category(payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -85,7 +85,7 @@ export class RestaurantMenuController {
     @Param(new ValidationPipe()) param: ParamRemoveMenuCategory,
   ) {
     try {
-      return await this.menu_service.remove_menu_category(UtilService.parse_ids(param.mc_id));
+      return this.menu_service.remove_menu_category(UtilService.parse_ids(param.mc_id));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -103,7 +103,7 @@ export class RestaurantMenuController {
     @Body(new ValidationPipe()) payload: DtoUploadMenu,
   ) {
     try {
-      return await this.menu_service.upload_menu(payload);
+      return this.menu_service.upload_menu(payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -121,7 +121,7 @@ export class RestaurantMenuController {
     @Query(new ValidationPipe()) query: QueryGetMenuList,
   ) {
     try {
-      return await this.menu_service.get_menu_list(query);
+      return this.menu_service.get_menu_list(query);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -138,7 +138,7 @@ export class RestaurantMenuController {
     @Body(new ValidationPipe()) payload: DtoEditMenu,
   ) {
     try {
-      return await this.menu_service.edit_menu(payload);
+      return this.menu_service.edit_menu(payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -155,7 +155,7 @@ export class RestaurantMenuController {
     @Param(new ValidationPipe()) param: ParamRemoveMenu,
   ) {
     try {
-      return await this.menu_service.remove_menu(UtilService.parse_ids(param.m_id));
+      return this.menu_service.remove_menu(UtilService.parse_ids(param.m_id));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -173,7 +173,7 @@ export class RestaurantMenuController {
     @Body(new ValidationPipe()) payload: DtoUploadGroup,
   ) {
     try {
-      return await this.menu_service.upload_group(payload);
+      return this.menu_service.upload_group(payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -191,7 +191,7 @@ export class RestaurantMenuController {
     @Query(new ValidationPipe()) query: QueryGetGroupList,
   ) {
     try {
-      return await this.menu_service.get_group_list(query);
+      return this.menu_service.get_group_list(query);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -208,7 +208,7 @@ export class RestaurantMenuController {
     @Body(new ValidationPipe()) payload: DtoEditGroup,
   ) {
     try {
-      return await this.menu_service.edit_group(payload);
+      return this.menu_service.edit_group(payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -225,7 +225,7 @@ export class RestaurantMenuController {
     @Param(new ValidationPipe()) param: ParamRemoveGroup,
   ) {
     try {
-      return await this.menu_service.remove_group(UtilService.parse_ids(param.g_id));
+      return this.menu_service.remove_group(UtilService.parse_ids(param.g_id));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -243,7 +243,7 @@ export class RestaurantMenuController {
     @Body(new ValidationPipe()) payload: DtoUploadOption,
   ) {
     try {
-      return await this.menu_service.upload_option(payload);
+      return this.menu_service.upload_option(payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -261,7 +261,7 @@ export class RestaurantMenuController {
     @Query(new ValidationPipe()) query: QueryGetOptionList,
   ) {
     try {
-      return await this.menu_service.get_option_list(query);
+      return this.menu_service.get_option_list(query);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -278,7 +278,7 @@ export class RestaurantMenuController {
     @Body(new ValidationPipe()) payload: DtoEditOption,
   ) {
     try {
-      return await this.menu_service.edit_option(payload);
+      return this.menu_service.edit_option(payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -295,7 +295,7 @@ export class RestaurantMenuController {
     @Param(new ValidationPipe()) param: ParamRemoveOption,
   ) {
     try {
-      return await this.menu_service.remove_option(UtilService.parse_ids(param.o_id));
+      return this.menu_service.remove_option(UtilService.parse_ids(param.o_id));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }

@@ -1,26 +1,29 @@
-import { Coupon, Group, Menu, MenuCategory, Option, Restaurant, User } from './entity';
+import { Coupon, Group, Menu, MenuCategory, Option, Order, Restaurant, User } from './entity';
 import { Inject, Injectable } from '@nestjs/common';
-import { Repository, getManager } from 'typeorm';
+import { MongoRepository, ObjectID, Repository, getManager } from 'typeorm';
 import { ConfigService } from '@app/config';
+import { EnumPaymentType } from './enum';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UtilService } from '@app/util';
 
 @Injectable()
 export class DBService {
-  @InjectRepository(Restaurant)
+  @InjectRepository(Restaurant, 'mysql')
   private readonly restaurant_repo: Repository<Restaurant>;
-  @InjectRepository(User)
+  @InjectRepository(User, 'mysql')
   private readonly user_repo: Repository<User>;
-  @InjectRepository(Menu)
+  @InjectRepository(Menu, 'mysql')
   private readonly menu_repo: Repository<Menu>;
-  @InjectRepository(MenuCategory)
+  @InjectRepository(MenuCategory, 'mysql')
   private readonly menu_category_repo: Repository<MenuCategory>;
-  @InjectRepository(Option)
+  @InjectRepository(Option, 'mysql')
   private readonly option_repo: Repository<Option>;
-  @InjectRepository(Group)
+  @InjectRepository(Group, 'mysql')
   private readonly group_repo: Repository<Group>;
-  @InjectRepository(Coupon)
+  @InjectRepository(Coupon, 'mysql')
   private readonly coupon_repo: Repository<Coupon>;
+  @InjectRepository(Order, 'mongodb')
+  private readonly order_repo: MongoRepository<Order>;
   @Inject()
   private readonly config_service: ConfigService;
   @Inject()
@@ -137,11 +140,11 @@ export class DBService {
 
   public async find_menus_by_menu_category(menu_category: MenuCategory): Promise<Menu[]> {
     const result: Menu[] = new Array<Menu>();
-    const found_data = await getManager()
+    const found_data = await getManager('mysql')
       .query(
-        `SELECT * FROM ${this.config_service.DB_SCHEMA}.menu AS m
-            LEFT JOIN ${this.config_service.DB_SCHEMA}.group AS g ON m.m_id = g.f_m_id
-            LEFT JOIN ${this.config_service.DB_SCHEMA}.option AS o ON g.g_id = o.f_g_id
+        `SELECT * FROM ${this.config_service.MYSQL_SCHEMA}.menu AS m
+            LEFT JOIN ${this.config_service.MYSQL_SCHEMA}.group AS g ON m.m_id = g.f_m_id
+            LEFT JOIN ${this.config_service.MYSQL_SCHEMA}.option AS o ON g.g_id = o.f_g_id
             WHERE m.f_mc_id = ${menu_category.mc_id}`,
       );
     const options = {};
@@ -306,5 +309,41 @@ export class DBService {
 
   public async delete_coupon(id: number): Promise<void> {
     await this.coupon_repo.delete(id);
+  }
+
+  // order
+
+  public async insert_order(order: Order): Promise<void> {
+    await this.order_repo.insertOne(order);
+  }
+
+  public async find_orders_by_user(user: User): Promise<Order[]> {
+    const found_orders: Order[] = await this.order_repo.find({ f_u_id: user.u_id });
+    const result: Order[] = new Array<Order>();
+    for (const loop_order of found_orders) {
+      result.push(new Order(loop_order));
+    }
+    return result;
+  }
+
+  public async find_orders_by_restaurant(restaurant: Restaurant): Promise<Order[]> {
+    const found_orders: Order[] = await this.order_repo.find({ f_r_id: restaurant.r_id });
+    const result: Order[] = new Array<Order>();
+    for (const loop_order of found_orders) {
+      result.push(new Order(loop_order));
+    }
+    return result;
+  }
+
+  public async find_order_by_payment_type(payment_type: EnumPaymentType): Promise<Order> {
+    return new Order(await this.order_repo.findOne({ od_payment_type: payment_type }));
+  }
+
+  public async update_order(id: string, payload): Promise<void> {
+    await this.order_repo.update(id, payload);
+  }
+
+  public async delete_order(id: ObjectID): Promise<void> {
+    await this.order_repo.delete(id);
   }
 }

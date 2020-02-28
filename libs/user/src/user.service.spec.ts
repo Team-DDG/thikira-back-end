@@ -1,5 +1,5 @@
 import { ConfigModule, config } from '@app/config';
-import { DBModule, mysql_entities } from '@app/db';
+import { DBModule, mongodb_entities, mysql_entities } from '@app/db';
 import { ResRefresh, ResSignIn } from '@app/res';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
@@ -26,8 +26,15 @@ describe('UserService', () => {
       imports: [
         DBModule, TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
+          name:'mysql',
           useFactory() {
-            return { ...config.orm_config, entities: mysql_entities };
+            return { ...config.mysql_config, entities: mysql_entities };
+          },
+        }), TypeOrmModule.forRootAsync({
+          imports: [ConfigModule],
+          name:'mongodb',
+          useFactory() {
+            return { ...config.mongodb_config, entities: mongodb_entities };
           },
         }), UserModule, UtilModule],
       providers: [UserService],
@@ -50,11 +57,11 @@ describe('UserService', () => {
   });
 
   it('200 sign_up()', async () => {
-    await service.create_user(test_req);
+    await service.create(test_req);
   });
 
   it('409 sign_up()', async () => {
-    await expect(service.create_user(test_req)).rejects.toThrow();
+    await expect(service.create(test_req)).rejects.toThrow();
   });
 
   it('409 check_email()', async () => {

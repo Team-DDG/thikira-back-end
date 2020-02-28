@@ -1,5 +1,5 @@
 import { ConfigModule, config } from '@app/config';
-import { DBModule, mysql_entities } from '@app/db';
+import { DBModule, mongodb_entities, mysql_entities } from '@app/db';
 import { DtoCreateRestaurant, DtoUploadCoupon } from '@app/req';
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -44,8 +44,15 @@ describe('CouponService', () => {
         CouponModule, DBModule, RestaurantModule,
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
+          name:'mysql',
           useFactory() {
-            return { ...config.orm_config, entities: mysql_entities };
+            return { ...config.mysql_config, entities: mysql_entities };
+          },
+        }), TypeOrmModule.forRootAsync({
+          imports: [ConfigModule],
+          name:'mongodb',
+          useFactory() {
+            return { ...config.mongodb_config, entities: mongodb_entities };
           },
         }), UtilModule],
       providers: [CouponService],
@@ -55,7 +62,7 @@ describe('CouponService', () => {
     service = module.get<CouponService>(CouponService);
     restaurant_service = module.get<RestaurantService>(RestaurantService);
 
-    await restaurant_service.create_restaurant(test_restaurant);
+    await restaurant_service.create(test_restaurant);
     restaurant_token = (await restaurant_service.sign_in({
       email: test_restaurant.email,
       password: test_restaurant.password,
@@ -63,18 +70,18 @@ describe('CouponService', () => {
   });
 
   afterAll(async () => {
-    const c_id = (await service.get(test_req.discount_amount)).c_id;
+    const c_id = (await service.get_coupon(test_req.discount_amount)).c_id;
     await service.remove(c_id);
     await restaurant_service.leave(restaurant_token);
     await app.close();
   });
 
   it('200 upload()', async () => {
-    await service.upload_coupon(restaurant_token, test_req);
+    await service.upload(restaurant_token, test_req);
   });
 
   it('200 get()', async () => {
-    const found_coupon: ResGetCoupon = await service.get_coupon(restaurant_token);
+    const found_coupon: ResGetCoupon = await service.get(restaurant_token);
     if (test_req.discount_amount !== found_coupon.discount_amount) {
       throw Error();
     }
