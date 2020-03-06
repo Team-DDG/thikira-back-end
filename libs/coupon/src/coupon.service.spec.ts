@@ -20,7 +20,7 @@ describe('CouponService', () => {
     add_parcel: 'a',
     add_street: 'b',
     area: 'c',
-    category: 'd',
+    category: 'coupon_test',
     close_time: 'e',
     day_off: 'f',
     description: 'g',
