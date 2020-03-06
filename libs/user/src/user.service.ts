@@ -1,5 +1,5 @@
 import { ConflictException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { DBService, User } from '@app/db';
+import { DBService, Order, User } from '@app/db';
 import {
   DtoCheckPassword, DtoCreateUser, DtoEditAddress,
   DtoEditPassword, DtoEditUserInfo, DtoSignIn,
@@ -7,6 +7,7 @@ import {
 } from '@app/req';
 import { ResLoadUser, ResRefresh, ResSignIn } from '@app/res';
 import { TokenTypeEnum, UtilService } from '@app/util';
+import { ObjectID } from 'typeorm';
 
 @Injectable()
 export class UserService {
@@ -51,6 +52,15 @@ export class UserService {
 
   public async leave(token: string): Promise<void> {
     const email: string = await this.util_service.get_email_by_token(token);
+    const found_user: User = await this.db_service.find_user_by_email(email);
+
+    const found_orders: Order[] = await this.db_service.find_orders_by_user(found_user);
+    const od_ids: ObjectID[] = new Array<ObjectID>();
+    for (const loop_order of found_orders) {
+      od_ids.push(loop_order.od_id);
+    }
+    await this.db_service.delete_order(od_ids);
+
     await this.db_service.delete_user(email);
   }
 

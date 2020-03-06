@@ -1,14 +1,10 @@
-import { IsBoolean, IsDate, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Coupon } from '@app/db';
 
 export class ResGetCouponList {
-  @ApiProperty() @IsDate()
-  public readonly expired_day: Date;
-  @ApiProperty() @IsNumber()
-  public readonly discount_amount: number;
-  @ApiProperty() @IsBoolean()
-  public readonly is_expired: boolean;
+  @ApiProperty() public readonly expired_day: Date;
+  @ApiProperty() public readonly discount_amount: number;
+  @ApiProperty() public readonly is_expired: boolean;
 
   constructor(coupon?) {
     if (coupon !== undefined) {

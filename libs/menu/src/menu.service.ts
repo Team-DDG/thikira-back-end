@@ -39,7 +39,8 @@ export class MenuService {
     } else {
       found_restaurant = await this.db_service.find_restaurant_by_id(param.r_id);
     }
-    const found_menu_category: MenuCategory[] = await this.db_service.find_menu_categories_by_restaurant(found_restaurant);
+    const found_menu_category: MenuCategory[] =
+      await this.db_service.find_menu_categories_by_restaurant(found_restaurant, false);
 
     const result: ResGetMenuCategory[] = new Array<ResGetMenuCategory>();
     for (const loop_menu_category of found_menu_category) {

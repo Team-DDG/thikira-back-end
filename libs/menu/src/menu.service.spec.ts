@@ -10,6 +10,7 @@ import { MenuModule } from './menu.module';
 import { MenuService } from './menu.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from '@app/user';
+import { getConnection } from 'typeorm';
 
 describe('MenuService', () => {
   let app: INestApplication;
@@ -160,6 +161,8 @@ describe('MenuService', () => {
 
   afterAll(async () => {
     await restaurant_service.leave(restaurant_token);
+    await getConnection('mysql').close();
+    await getConnection('mongodb').close();
     await app.close();
   });
 

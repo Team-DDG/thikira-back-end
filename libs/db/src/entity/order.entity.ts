@@ -7,6 +7,7 @@ import { User } from './user.entity';
 export class Order {
   @ObjectIdColumn()
   public readonly _id: ObjectID;
+  public readonly od_id: ObjectID;
   @Column({ enum: EnumPaymentType, type: 'enum' })
   public readonly od_payment_type: EnumPaymentType = EnumPaymentType.OFFLINE;
   @Column()
@@ -26,6 +27,7 @@ export class Order {
     if (order instanceof Order) {
       Object.assign(this, order);
       this.od_status = order.od_status;
+      this.od_id = order._id;
     } else {
       if (param instanceof User) {
         this.od_total_price = -(order.discount_amount);

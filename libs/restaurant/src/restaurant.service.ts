@@ -1,5 +1,5 @@
 import { ConflictException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { DBService, Restaurant } from '@app/db';
+import { Coupon, DBService, MenuCategory, Restaurant } from '@app/db';
 import {
   DtoCheckPassword, DtoCreateRestaurant,
   DtoEditAddress, DtoEditPassword, DtoEditRestaurantInfo,
@@ -52,6 +52,43 @@ export class RestaurantService {
 
   public async leave(token: string): Promise<void> {
     const email: string = await this.util_service.get_email_by_token(token);
+    const found_restaurant: Restaurant = await this.db_service.find_restaurant_by_email(email);
+
+    const found_coupons: Coupon[] = await this.db_service.find_coupons_by_restaurant(found_restaurant);
+    for (const loop_coupon of found_coupons) {
+      await this.db_service.delete_coupon(loop_coupon.c_id);
+    }
+
+    const found_menu_categories: MenuCategory[] =
+      await this.db_service.find_menu_categories_by_restaurant(found_restaurant, true);
+    if (found_menu_categories.length > 0) {
+      const mc_ids: number[] = new Array<number>();
+      for (const loop_menu_category of found_menu_categories) {
+        mc_ids.push(loop_menu_category.mc_id);
+        if (loop_menu_category.menu.length > 0) {
+          const m_ids: number[] = new Array<number>();
+          for (const loop_menu of loop_menu_category.menu) {
+            m_ids.push(loop_menu.m_id);
+            if (loop_menu.group.length > 0) {
+              const g_ids: number[] = new Array<number>();
+              for (const loop_group of loop_menu.group) {
+                g_ids.push(loop_group.g_id);
+                if (loop_group.option.length > 0) {
+                  const o_ids: number[] = new Array<number>();
+                  for (const loop_option of loop_group.option) {
+                    o_ids.push(loop_option.o_id);
+                  }
+                  await this.db_service.delete_option(o_ids);
+                }
+              }
+              await this.db_service.delete_group(g_ids);
+            }
+          }
+          await this.db_service.delete_menu(m_ids);
+        }
+      }
+      await this.db_service.delete_menu_category(mc_ids);
+    }
     await this.db_service.delete_restaurant(email);
   }
 
@@ -83,9 +120,9 @@ export class RestaurantService {
       r_open_time: payload.open_time,
       r_phone: payload.phone,
     };
-    for (const key of Object.keys(edit_data)) {
-      if (edit_data[key] === undefined || edit_data[key] === null) {
-        delete edit_data[key];
+    for (const loop_key of Object.keys(edit_data)) {
+      if (edit_data[loop_key] === undefined || edit_data[loop_key] === null) {
+        delete edit_data[loop_key];
       }
     }
     await this.db_service.update_restaurant(email, edit_data);

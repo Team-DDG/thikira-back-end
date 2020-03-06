@@ -2,39 +2,39 @@ import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { EnumPaymentType } from '@app/db';
 
-export class OrderOptionClass {
+export class DtoOrderOption {
   @ApiProperty() @IsString()
   readonly name: string;
   @ApiProperty() @IsNumber()
   readonly price: number;
 }
 
-export class OrderGroupClass {
+export class DtoOrderGroup {
   @ApiProperty() @IsString()
   readonly name: string;
-  @ApiProperty({ type: [OrderOptionClass] })
+  @ApiProperty({ type: [DtoOrderOption] })
   @IsArray() @IsOptional()
-  readonly option?: OrderOptionClass[];
+  readonly option?: DtoOrderOption[];
 }
 
-export class OrderMenuClass {
+export class DtoOrderMenu {
   @ApiProperty() @IsNumber()
   readonly quantity: number;
   @ApiProperty() @IsString()
   readonly name: string;
   @ApiProperty() @IsNumber()
   readonly price: number;
-  @ApiProperty({ type: [OrderGroupClass] })
+  @ApiProperty({ type: [DtoOrderGroup] })
   @IsArray() @IsOptional()
-  readonly group?: OrderGroupClass[];
+  readonly group?: DtoOrderGroup[];
 }
 
 export class DtoUploadOrder {
   @ApiProperty() @IsNumber()
   public readonly discount_amount: number;
-  @ApiProperty({ type: [OrderMenuClass] })
+  @ApiProperty({ type: [DtoOrderMenu] })
   @IsArray() @IsOptional()
-  public readonly menu?: OrderMenuClass[];
+  public readonly menu?: DtoOrderMenu[];
   @ApiProperty() @IsNumber()
   public readonly quantity: number;
   @ApiProperty({ enum: EnumPaymentType, type: 'enum' })

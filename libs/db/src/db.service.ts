@@ -1,10 +1,10 @@
 import { Coupon, Group, Menu, MenuCategory, Option, Order, Restaurant, User } from './entity';
 import { Inject, Injectable } from '@nestjs/common';
 import { MongoRepository, ObjectID, Repository, getManager } from 'typeorm';
-import { ConfigService } from '@app/config';
 import { EnumPaymentType } from './enum';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UtilService } from '@app/util';
+import { config } from '@app/config';
 
 @Injectable()
 export class DBService {
@@ -24,8 +24,6 @@ export class DBService {
   private readonly coupon_repo: Repository<Coupon>;
   @InjectRepository(Order, 'mongodb')
   private readonly order_repo: MongoRepository<Order>;
-  @Inject()
-  private readonly config_service: ConfigService;
   @Inject()
   private readonly util_service: UtilService;
 
@@ -106,14 +104,87 @@ export class DBService {
     return new MenuCategory(await this.menu_category_repo.findOne({ mc_name: name, restaurant }));
   }
 
-  public async find_menu_categories_by_restaurant(restaurant: Restaurant): Promise<MenuCategory[]> {
+  public async find_menu_categories_by_restaurant(restaurant: Restaurant, are_with_menu: boolean): Promise<MenuCategory[]> {
     const result: MenuCategory[] = new Array<MenuCategory>();
+    if (are_with_menu) {
+      const found_data = await getManager('mysql')
+        .query(`SELECT * FROM ${config.MYSQL_SCHEMA}.menu_category AS mc
+            LEFT JOIN ${config.MYSQL_SCHEMA}.menu AS m ON mc.mc_id = m.f_mc_id
+            LEFT JOIN ${config.MYSQL_SCHEMA}.group AS g ON m.m_id = g.f_m_id
+            LEFT JOIN ${config.MYSQL_SCHEMA}.option AS o ON g.g_id = o.f_g_id
+            WHERE mc.f_r_id=${restaurant.r_id}`);
 
-    const found_menu_categories: MenuCategory[] = await this.menu_category_repo.find({ where: { restaurant } });
-    for (const loop_menu_category of found_menu_categories) {
-      result.push(new MenuCategory(loop_menu_category));
+      const options = {};
+      for (const loop of found_data) {
+        if (loop.o_id !== null) {
+          if (options[loop.f_g_id] === undefined) {
+            options[loop.g_id] = new Array<Option>();
+          }
+          options[loop.g_id].push(new Option(loop));
+        }
+      }
+
+      const groups = {};
+      let previous_id = null;
+      for (const loop of found_data) {
+        if (loop.g_id !== null && previous_id !== loop.g_id) {
+          previous_id = loop.g_id;
+          if (groups[loop.m_id] === undefined) {
+            groups[loop.m_id] = new Array<Group>();
+          }
+          const group: Group = new Group(loop);
+          groups[loop.m_id].push(group);
+          if (options[loop.g_id] !== undefined) {
+            for (const loop_option of options[loop.g_id]) {
+              group.option.push(loop_option);
+            }
+          }
+        }
+      }
+
+      const menus = {};
+      previous_id = null;
+      for (const loop of found_data) {
+        if (loop.m_id !== null && previous_id !== loop.m_id) {
+          previous_id = loop.m_id;
+          if (menus[loop.mc_id] === undefined) {
+            menus[loop.mc_id] = new Array<Menu>();
+          }
+          const menu: Menu = new Menu(loop);
+          menus[loop.mc_id].push(menu);
+          if (groups[loop.m_id] !== undefined) {
+            for (const loop_group of groups[loop.m_id]) {
+              menu.group.push(loop_group);
+            }
+          }
+        }
+      }
+
+      previous_id = null;
+      for (const loop of found_data) {
+        if (loop.mc_id !== null && previous_id !== loop.mc_id) {
+          previous_id = loop.mc_id;
+          const menu_category: MenuCategory = new MenuCategory(loop);
+          result.push(menu_category);
+          if (menus[loop.mc_id] !== undefined) {
+            for (const loop_menu of menus[loop.mc_id]) {
+              menu_category.menu.push(loop_menu);
+            }
+          }
+        }
+      }
+      return result;
+
+    } else {
+      const result: MenuCategory[] = new Array<MenuCategory>();
+
+      const found_menu_categories: MenuCategory[] =
+        await this.menu_category_repo.find({ where: { restaurant } });
+      for (const loop_menu_category of found_menu_categories) {
+        result.push(new MenuCategory(loop_menu_category));
+      }
+      return result;
     }
-    return result;
   }
 
   public async update_menu_category(id: number, payload): Promise<void> {
@@ -142,9 +213,9 @@ export class DBService {
     const result: Menu[] = new Array<Menu>();
     const found_data = await getManager('mysql')
       .query(
-        `SELECT * FROM ${this.config_service.MYSQL_SCHEMA}.menu AS m
-            LEFT JOIN ${this.config_service.MYSQL_SCHEMA}.group AS g ON m.m_id = g.f_m_id
-            LEFT JOIN ${this.config_service.MYSQL_SCHEMA}.option AS o ON g.g_id = o.f_g_id
+        `SELECT * FROM ${config.MYSQL_SCHEMA}.menu AS m
+            LEFT JOIN ${config.MYSQL_SCHEMA}.group AS g ON m.m_id = g.f_m_id
+            LEFT JOIN ${config.MYSQL_SCHEMA}.option AS o ON g.g_id = o.f_g_id
             WHERE m.f_mc_id = ${menu_category.mc_id}`,
       );
     const options = {};
@@ -343,7 +414,8 @@ export class DBService {
     await this.order_repo.update(id, payload);
   }
 
-  public async delete_order(id: ObjectID): Promise<void> {
+  public async delete_order(id: ObjectID | ObjectID[]): Promise<void> {
     await this.order_repo.delete(id);
   }
+
 }

@@ -9,6 +9,7 @@ import { INestApplication } from '@nestjs/common';
 import { ResGetCoupon } from '@app/res';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UtilModule } from '@app/util';
+import { getConnection } from 'typeorm';
 
 describe('CouponService', () => {
   let app: INestApplication;
@@ -73,6 +74,8 @@ describe('CouponService', () => {
     const c_id = (await service.get_coupon(test_req.discount_amount)).c_id;
     await service.remove(c_id);
     await restaurant_service.leave(restaurant_token);
+    await getConnection('mysql').close();
+    await getConnection('mongodb').close();
     await app.close();
   });
 

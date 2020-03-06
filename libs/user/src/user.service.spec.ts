@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user.module';
 import { UserService } from './user.service';
 import { UtilModule } from '@app/util';
+import { getConnection } from 'typeorm';
 import { stringify } from 'querystring';
 
 describe('UserService', () => {
@@ -45,6 +46,8 @@ describe('UserService', () => {
   });
 
   afterAll(async () => {
+    await getConnection('mysql').close();
+    await getConnection('mongodb').close();
     await app.close();
   });
 

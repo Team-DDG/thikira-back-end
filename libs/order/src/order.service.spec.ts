@@ -10,6 +10,7 @@ import { OrderModule } from './order.module';
 import { OrderService } from './order.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UtilModule } from '@app/util';
+import { getConnection } from 'typeorm';
 
 describe('OrderService', () => {
   let app: INestApplication;
@@ -52,7 +53,7 @@ describe('OrderService', () => {
       price: 500,
       quantity: 3,
     }],
-    payment_type: EnumPaymentType.OFFLINE,
+    payment_type: EnumPaymentType.ONLINE,
     quantity: 0,
     r_id: 0,
   };
@@ -105,6 +106,8 @@ describe('OrderService', () => {
   afterAll(async () => {
     await restaurant_service.leave(restaurant_token);
     await user_service.leave(user_token);
+    await getConnection('mysql').close();
+    await getConnection('mongodb').close();
     await app.close();
   });
 
@@ -115,13 +118,13 @@ describe('OrderService', () => {
   it('200 edit_order_status', async () => {
     let found_order: Order = await service.get_order(test_req.payment_type);
 
-    await service.edit_order_status({ od_id: found_order._id.toString(), status: EnumOrderStatus.DONE });
+    await service.edit_order_status({ od_id: found_order.od_id.toString(), status: EnumOrderStatus.DONE });
 
     found_order = await service.get_order(test_req.payment_type);
     if (found_order.od_payment_type !== test_req.payment_type) {
       throw Error();
     }
 
-    await service.remove_order(found_order._id);
+    await service.remove_order(found_order.od_id);
   });
 });

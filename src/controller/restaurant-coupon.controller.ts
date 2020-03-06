@@ -11,7 +11,7 @@ export class RestaurantCouponController {
   @Inject() private readonly coupon_service: CouponService;
   @Inject() private readonly util_service: UtilService;
 
-  @Post('coupon')
+  @Post()
   @HttpCode(200)
   @ApiOperation({ summary: '업체 쿠폰 등록' })
   @ApiHeader({ name: 'Authorization' })
@@ -27,7 +27,7 @@ export class RestaurantCouponController {
     }
   }
 
-  @Get('coupon')
+  @Get()
   @HttpCode(200)
   @ApiOperation({ summary: '업체 쿠폰 조회' })
   @ApiHeader({ name: 'Authorization' })

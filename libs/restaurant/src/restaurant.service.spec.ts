@@ -7,6 +7,7 @@ import { RestaurantModule } from './restaurant.module';
 import { RestaurantService } from './restaurant.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UtilModule } from '@app/util';
+import { getConnection } from 'typeorm';
 import { stringify } from 'querystring';
 
 describe('RestaurantService', () => {
@@ -39,13 +40,13 @@ describe('RestaurantService', () => {
         DBModule, RestaurantModule,
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
-          name:'mysql',
+          name: 'mysql',
           useFactory() {
             return { ...config.mysql_config, entities: mysql_entities };
           },
         }), TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
-          name:'mongodb',
+          name: 'mongodb',
           useFactory() {
             return { ...config.mongodb_config, entities: mongodb_entities };
           },
@@ -58,6 +59,8 @@ describe('RestaurantService', () => {
   });
 
   afterAll(async () => {
+    await getConnection('mysql').close();
+    await getConnection('mongodb').close();
     await app.close();
   });
 
