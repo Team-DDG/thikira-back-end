@@ -1,6 +1,6 @@
 import { ConfigModule, config } from '@app/config';
 import { DBModule, EnumOrderStatus, EnumPaymentType, Order, mongodb_entities, mysql_entities } from '@app/db';
-import { DtoCreateRestaurant, DtoCreateUser, DtoUploadOrder } from '@app/req';
+import { DtoCreateRestaurant, DtoCreateUser, DtoUploadOrder, EnumSortOption } from '@app/req';
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserModule, UserService } from '@app/user';
@@ -21,7 +21,7 @@ describe('OrderService', () => {
     add_parcel: 'a',
     add_street: 'b',
     area: 'c',
-    category: 'd',
+    category: 'order_test',
     close_time: 'e',
     day_off: 'f',
     description: 'g',
@@ -35,7 +35,7 @@ describe('OrderService', () => {
     password: 'order_test',
     phone: '01012345678',
   };
-  const test_req: DtoUploadOrder = {
+  let test_req: DtoUploadOrder = {
     discount_amount: 500,
     menu: [{
       group: [{
@@ -65,6 +65,7 @@ describe('OrderService', () => {
   };
   let user_service: UserService;
   let user_token: string;
+
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
@@ -96,6 +97,12 @@ describe('OrderService', () => {
       password: test_restaurant.password,
     })).access_token;
 
+    const r_id = (await restaurant_service.get_list({
+      category: test_restaurant.category,
+      sort_option: EnumSortOption.NEARNESS,
+    }))[0].r_id;
+    test_req = { ...test_req, r_id };
+
     await user_service.create(test_user);
     user_token = (await user_service.sign_in({
       email: test_user.email,
@@ -112,7 +119,7 @@ describe('OrderService', () => {
   });
 
   it('200 upload_order', async () => {
-    await service.upload(restaurant_token, test_req);
+    await service.upload(user_token, test_req);
   });
 
   it('200 edit_order_status', async () => {

@@ -21,7 +21,7 @@ describe('MenuService', () => {
     add_parcel: 'a',
     add_street: 'b',
     area: 'c',
-    category: 'd',
+    category: 'menu_test',
     close_time: 'e',
     day_off: 'f',
     description: 'g',
