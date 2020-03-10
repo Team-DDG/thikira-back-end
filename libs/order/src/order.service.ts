@@ -1,6 +1,6 @@
 import { DBService, EnumPaymentType, Order, Restaurant, User } from '@app/db';
-import { DtoEditOrderStatus, DtoUploadOrder } from '@app/req';
-import { ResGetOrderListByRestaurant, ResGetOrderListByUser } from '@app/res';
+import { DtoEditOrderStatus, DtoUploadOrder } from '@app/type/req';
+import { ResGetOrderListByRestaurant, ResGetOrderListByUser } from '@app/type/res';
 import { Inject } from '@nestjs/common';
 import { ObjectID } from 'typeorm';
 import { UtilService } from '@app/util';

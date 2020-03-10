@@ -1,7 +1,7 @@
 import { Coupon, Group, Menu, MenuCategory, Option, Order, Restaurant, User } from './entity';
 import { Inject, Injectable } from '@nestjs/common';
 import { MongoRepository, ObjectID, Repository, getManager } from 'typeorm';
-import { EnumPaymentType } from './enum';
+import { EnumPaymentType } from './payment-type.enum';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UtilService } from '@app/util';
 import { config } from '@app/config';

@@ -1,9 +1,0 @@
-{
-  "compilerOptions": {
-    "declaration": true,
-    "outDir": "../../dist/libs/req"
-  },
-  "exclude": ["node_modules", "dist", "test", "**/*spec.ts"],
-  "extends": "../../tsconfig.json",
-  "include": ["src/**/*"]
-}

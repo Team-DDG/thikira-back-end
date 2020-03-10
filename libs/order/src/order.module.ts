@@ -1,16 +1,12 @@
-import { DBModule, mongodb_entities, mysql_entities } from '@app/db';
+import { DBModule } from '@app/db';
 import { Module } from '@nestjs/common';
 import { OrderService } from './order.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeModule } from '@app/type';
 import { UtilModule } from '@app/util';
 
 @Module({
   exports: [OrderService],
-  imports: [
-    DBModule,
-    TypeOrmModule.forFeature(mysql_entities, 'mysql'),
-    TypeOrmModule.forFeature(mongodb_entities, 'mongodb'),
-    UtilModule],
+  imports: [DBModule, TypeModule, UtilModule],
   providers: [OrderService],
 })
 export class OrderModule {

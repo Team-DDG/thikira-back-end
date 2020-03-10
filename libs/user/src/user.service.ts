@@ -4,8 +4,8 @@ import {
   DtoCheckPassword, DtoCreateUser, DtoEditAddress,
   DtoEditPassword, DtoEditUserInfo, DtoSignIn,
   QueryCheckEmail,
-} from '@app/req';
-import { ResLoadUser, ResRefresh, ResSignIn } from '@app/res';
+} from '@app/type/req';
+import { ResLoadUser, ResRefresh, ResSignIn } from '@app/type/res';
 import { TokenTypeEnum, UtilService } from '@app/util';
 import { ObjectID } from 'typeorm';
 

@@ -5,8 +5,8 @@ import {
   DtoEditAddress, DtoEditPassword, DtoEditRestaurantInfo,
   DtoSignIn,
   QueryCheckEmail, QueryGetRestaurantList,
-} from '@app/req';
-import { ResGetRestaurantList, ResLoadRestaurant, ResRefresh, ResSignIn } from '@app/res';
+} from '@app/type/req';
+import { ResGetRestaurantList, ResLoadRestaurant, ResRefresh, ResSignIn } from '@app/type/res';
 import { TokenTypeEnum, UtilService } from '@app/util';
 
 @Injectable()

@@ -1,12 +1,12 @@
 import { ConfigModule, config } from '@app/config';
 import { DBModule, mongodb_entities, mysql_entities } from '@app/db';
-import { DtoCreateRestaurant, DtoUploadCoupon } from '@app/req';
+import { DtoCreateRestaurant, DtoUploadCoupon } from '@app/type/req';
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CouponModule } from './coupon.module';
 import { CouponService } from './coupon.service';
 import { INestApplication } from '@nestjs/common';
-import { ResGetCoupon } from '@app/res';
+import { ResGetCoupon } from '@app/type/res';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UtilModule } from '@app/util';
 import { getConnection } from 'typeorm';

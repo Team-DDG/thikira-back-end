@@ -15,8 +15,8 @@ import {
   DtoEditAddress, DtoEditPassword, DtoEditUserInfo,
   DtoSignIn, EnumSortOption,
   QueryCheckEmail, QueryGetRestaurantList,
-} from '@app/req';
-import { ResGetRestaurantList, ResLoadUser, ResRefresh, ResSignIn } from '@app/res';
+} from '@app/type/req';
+import { ResGetRestaurantList, ResLoadUser, ResRefresh, ResSignIn } from '@app/type/res';
 import { CouponService } from '@app/coupon';
 import { RestaurantService } from '@app/restaurant';
 import { UserService } from '@app/user';

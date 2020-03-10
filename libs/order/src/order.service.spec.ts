@@ -1,6 +1,6 @@
 import { ConfigModule, config } from '@app/config';
 import { DBModule, EnumOrderStatus, EnumPaymentType, Order, mongodb_entities, mysql_entities } from '@app/db';
-import { DtoCreateRestaurant, DtoCreateUser, DtoUploadOrder, EnumSortOption } from '@app/req';
+import { DtoCreateRestaurant, DtoCreateUser, DtoUploadOrder, EnumSortOption } from '@app/type/req';
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserModule, UserService } from '@app/user';

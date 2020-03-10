@@ -1,6 +1,6 @@
 import { ConfigModule, config } from '@app/config';
 import { DBModule, mongodb_entities, mysql_entities } from '@app/db';
-import { ResRefresh, ResSignIn } from '@app/res';
+import { ResRefresh, ResSignIn } from '@app/type/res';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';

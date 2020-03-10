@@ -12,8 +12,8 @@ import {
   DtoCheckPassword, DtoCreateRestaurant, DtoEditAddress,
   DtoEditPassword, DtoEditRestaurantInfo, DtoSignIn,
   QueryCheckEmail,
-} from '@app/req';
-import { ResLoadRestaurant, ResRefresh, ResSignIn } from '@app/res';
+} from '@app/type/req';
+import { ResLoadRestaurant, ResRefresh, ResSignIn } from '@app/type/res';
 import { MenuService } from '@app/menu';
 import { RestaurantService } from '@app/restaurant';
 import { UtilService } from '@app/util';

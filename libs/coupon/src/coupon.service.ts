@@ -1,7 +1,7 @@
 import { ConflictException, Inject, NotFoundException } from '@nestjs/common';
 import { Coupon, DBService, Restaurant } from '@app/db';
-import { DtoUploadCoupon, QueryGetCoupon } from '@app/req';
-import { ResGetCoupon, ResGetCouponList } from '@app/res';
+import { DtoUploadCoupon, QueryGetCoupon } from '@app/type/req';
+import { ResGetCoupon, ResGetCouponList } from '@app/type/res';
 import { UtilService } from '@app/util';
 
 export class CouponService {

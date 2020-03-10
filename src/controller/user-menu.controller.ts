@@ -1,8 +1,8 @@
 import { ApiForbiddenResponse, ApiHeader, ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Controller, Get, Headers, HttpCode, HttpException, Inject, InternalServerErrorException, Query, ValidationPipe } from '@nestjs/common';
 import getPrototypeOf = Reflect.getPrototypeOf;
-import { QueryGetMenuCategoryList, QueryGetMenuList } from '@app/req';
-import { ResGetMenu, ResGetMenuCategory } from '@app/res';
+import { QueryGetMenuCategoryList, QueryGetMenuList } from '@app/type/req';
+import { ResGetMenu, ResGetMenuCategory } from '@app/type/res';
 import { MenuService } from '@app/menu';
 
 @ApiTags('user/menu')

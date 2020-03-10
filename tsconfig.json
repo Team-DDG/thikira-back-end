@@ -8,11 +8,11 @@
     "module": "commonjs",
     "outDir": "./dist",
     "paths": {
-      "@app/coupon": [
-        "libs/coupon/src"
-      ],
       "@app/config": [
         "libs/config/src"
+      ],
+      "@app/coupon": [
+        "libs/coupon/src"
       ],
       "@app/db": [
         "libs/db/src"
@@ -23,14 +23,20 @@
       "@app/order": [
         "libs/order/src"
       ],
-      "@app/req": [
-        "libs/req/src"
-      ],
       "@app/restaurant": [
         "libs/restaurant/src"
       ],
-      "@app/res": [
-        "libs/res/src"
+      "@app/type": [
+        "libs/type/src"
+      ],
+      "@app/type/etc": [
+        "libs/type/src/etc"
+      ],
+      "@app/type/req": [
+        "libs/type/src/req"
+      ],
+      "@app/type/res": [
+        "libs/type/src/res"
       ],
       "@app/user": [
         "libs/user/src"

@@ -4,9 +4,9 @@ import {
   HttpCode, HttpException, Inject,
   InternalServerErrorException, Patch, ValidationPipe,
 } from '@nestjs/common';
-import { DtoEditOrderStatus } from '@app/req';
+import { DtoEditOrderStatus } from '@app/type/req';
 import { OrderService } from '@app/order';
-import { ResGetOrderListByRestaurant } from '@app/res';
+import { ResGetOrderListByRestaurant } from '@app/type/res';
 import getPrototypeOf = Reflect.getPrototypeOf;
 import { UtilService } from '@app/util';
 

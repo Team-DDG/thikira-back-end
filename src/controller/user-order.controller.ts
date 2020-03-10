@@ -5,9 +5,9 @@ import {
   InternalServerErrorException,
   Post, ValidationPipe,
 } from '@nestjs/common';
-import { DtoUploadOrder } from '@app/req';
+import { DtoUploadOrder } from '@app/type/req';
 import { OrderService } from '@app/order';
-import { ResGetOrderListByUser } from '@app/res';
+import { ResGetOrderListByUser } from '@app/type/res';
 import getPrototypeOf = Reflect.getPrototypeOf;
 import { UtilService } from '@app/util';
 

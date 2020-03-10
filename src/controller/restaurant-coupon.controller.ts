@@ -1,7 +1,7 @@
 import { ApiHeader, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Body, Controller, Get, Headers, HttpCode, HttpException, Inject, InternalServerErrorException, Post, ValidationPipe } from '@nestjs/common';
 import { CouponService } from '@app/coupon';
-import { DtoUploadCoupon } from '@app/req';
+import { DtoUploadCoupon } from '@app/type/req';
 import { UtilService } from '@app/util';
 import getPrototypeOf = Reflect.getPrototypeOf;
 

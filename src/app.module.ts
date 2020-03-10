@@ -13,9 +13,8 @@ import { CouponModule } from '@app/coupon';
 import { MenuModule } from '@app/menu';
 import { Module } from '@nestjs/common';
 import { OrderModule } from '@app/order';
-import { ReqModule } from '@app/req';
-import { ResModule } from '@app/res';
 import { RestaurantModule } from '@app/restaurant';
+import { TypeModule } from '@app/type';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from '@app/user';
 
@@ -28,7 +27,7 @@ import { UserModule } from '@app/user';
   ],
   imports: [
     CouponModule, DBModule, MenuModule, OrderModule,
-    ReqModule, ResModule, RestaurantModule,
+    RestaurantModule, TypeModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       name: 'mysql',

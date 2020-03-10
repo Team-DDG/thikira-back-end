@@ -1,18 +1,9 @@
 {
+  "collection": "@nestjs/schematics",
   "compilerOptions": {
     "webpack": true
   },
-  "collection": "@nestjs/schematics",
   "projects": {
-    "coupon": {
-      "compilerOptions": {
-        "tsConfigPath": "libs/coupon/tsconfig.lib.json"
-      },
-      "entryFile": "index",
-      "root": "libs/coupon",
-      "sourceRoot": "libs/coupon/src",
-      "type": "library"
-    },
     "config": {
       "compilerOptions": {
         "tsConfigPath": "libs/config/tsconfig.lib.json"
@@ -22,31 +13,22 @@
       "sourceRoot": "libs/config/src",
       "type": "library"
     },
-    "util": {
+    "coupon": {
       "compilerOptions": {
-        "tsConfigPath": "libs/util/tsconfig.lib.json"
+        "tsConfigPath": "libs/coupon/tsconfig.lib.json"
       },
       "entryFile": "index",
-      "root": "libs/util",
-      "sourceRoot": "libs/util/src",
+      "root": "libs/coupon",
+      "sourceRoot": "libs/coupon/src",
       "type": "library"
     },
-    "restaurant": {
+    "db": {
       "compilerOptions": {
-        "tsConfigPath": "libs/restaurant/tsconfig.lib.json"
+        "tsConfigPath": "libs/db/tsconfig.lib.json"
       },
       "entryFile": "index",
-      "root": "libs/restaurant",
-      "sourceRoot": "libs/restaurant/src",
-      "type": "library"
-    },
-    "user": {
-      "compilerOptions": {
-        "tsConfigPath": "libs/user/tsconfig.lib.json"
-      },
-      "entryFile": "index",
-      "root": "libs/user",
-      "sourceRoot": "libs/user/src",
+      "root": "libs/db",
+      "sourceRoot": "libs/db/src",
       "type": "library"
     },
     "menu": {
@@ -67,31 +49,40 @@
       "sourceRoot": "libs/order/src",
       "type": "library"
     },
-    "db": {
+    "restaurant": {
       "compilerOptions": {
-        "tsConfigPath": "libs/db/tsconfig.lib.json"
+        "tsConfigPath": "libs/restaurant/tsconfig.lib.json"
       },
       "entryFile": "index",
-      "root": "libs/db",
-      "sourceRoot": "libs/db/src",
+      "root": "libs/restaurant",
+      "sourceRoot": "libs/restaurant/src",
       "type": "library"
     },
-    "req": {
+    "type": {
       "compilerOptions": {
-        "tsConfigPath": "libs/req/tsconfig.lib.json"
+        "tsConfigPath": "libs/type/tsconfig.lib.json"
       },
       "entryFile": "index",
-      "root": "libs/req",
-      "sourceRoot": "libs/req/src",
+      "root": "libs/type",
+      "sourceRoot": "libs/type/src",
       "type": "library"
     },
-    "res": {
+    "user": {
       "compilerOptions": {
-        "tsConfigPath": "libs/res/tsconfig.lib.json"
+        "tsConfigPath": "libs/user/tsconfig.lib.json"
       },
       "entryFile": "index",
-      "root": "libs/res",
-      "sourceRoot": "libs/res/src",
+      "root": "libs/user",
+      "sourceRoot": "libs/user/src",
+      "type": "library"
+    },
+    "util": {
+      "compilerOptions": {
+        "tsConfigPath": "libs/util/tsconfig.lib.json"
+      },
+      "entryFile": "index",
+      "root": "libs/util",
+      "sourceRoot": "libs/util/src",
       "type": "library"
     }
   },

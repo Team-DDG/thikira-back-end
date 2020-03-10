@@ -1,7 +1,7 @@
 import { ConfigModule, config } from '@app/config';
 import { DBModule, mongodb_entities, mysql_entities } from '@app/db';
-import { DtoCreateRestaurant, DtoUploadGroup, DtoUploadMenu, DtoUploadMenuCategory, DtoUploadOption } from '@app/req';
-import { ResGetGroup, ResGetMenu, ResGetMenuCategory, ResGetOption } from '@app/res';
+import { DtoCreateRestaurant, DtoUploadGroup, DtoUploadMenu, DtoUploadMenuCategory, DtoUploadOption } from '@app/type/req';
+import { ResGetGroup, ResGetMenu, ResGetMenuCategory, ResGetOption } from '@app/type/res';
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UtilModule, UtilService } from '@app/util';

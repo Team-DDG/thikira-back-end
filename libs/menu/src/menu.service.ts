@@ -4,11 +4,11 @@ import {
   DtoEditGroup, DtoEditMenu, DtoEditMenuCategory, DtoEditOption,
   DtoUploadGroup, DtoUploadMenu, DtoUploadMenuCategory, DtoUploadOption,
   QueryGetGroupList, QueryGetMenuCategoryList, QueryGetMenuList, QueryGetOptionList,
-} from '@app/req';
+} from '@app/type/req';
 import {
   ResGetGroup, ResGetMenu, ResGetMenuCategory, ResGetOption,
   ResUploadGroup, ResUploadMenu, ResUploadMenuCategory, ResUploadOption,
-} from '@app/res';
+} from '@app/type/res';
 import { UtilService } from '@app/util';
 
 @Injectable()

@@ -6,8 +6,8 @@ import {
   Query, ValidationPipe,
 } from '@nestjs/common';
 import { CouponService } from '@app/coupon';
-import { QueryGetCoupon } from '@app/req';
-import { ResGetCoupon } from '@app/res';
+import { QueryGetCoupon } from '@app/type/req';
+import { ResGetCoupon } from '@app/type/res';
 import { UtilService } from '@app/util';
 import getPrototypeOf = Reflect.getPrototypeOf;
 

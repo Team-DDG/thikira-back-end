@@ -1,7 +1,59 @@
 import { Column, Entity, ObjectID, ObjectIdColumn } from 'typeorm';
-import { EnumOrderStatus, EnumPaymentType } from '../enum';
-import { OrderDetailClass, OrderDetailGroupClass, OrderDetailOptionClass } from '../class';
+import { ApiProperty } from '@nestjs/swagger';
+import { EnumOrderStatus } from '../order-status.enum';
+import { EnumPaymentType } from '../payment-type.enum';
 import { User } from './user.entity';
+
+export class OrderDetailOptionClass {
+  @ApiProperty()
+  public name: string;
+  @ApiProperty()
+  public price: number;
+
+  constructor(param?) {
+    if (param !== undefined) {
+      this.name = param.name;
+      this.price = param.price;
+    }
+  }
+}
+
+export class OrderDetailGroupClass {
+  @ApiProperty()
+  public readonly name: string;
+  @ApiProperty({ type: [OrderDetailOptionClass] })
+  public readonly option: OrderDetailOptionClass[];
+
+  constructor(param?) {
+    if (param !== undefined) {
+      this.name = param.name;
+      this.option = new Array<OrderDetailOptionClass>();
+    }
+  }
+}
+
+export class OrderDetailClass {
+  @ApiProperty()
+  public readonly name: string;
+  @ApiProperty()
+  public readonly price: number;
+  @ApiProperty()
+  public readonly quantity: number;
+  @ApiProperty()
+  public readonly sub_price: number;
+  @ApiProperty({ type: [OrderDetailGroupClass] })
+  public readonly group: OrderDetailGroupClass[];
+
+  constructor(param?) {
+    if (param !== undefined) {
+      this.name = param.name;
+      this.price = param.price;
+      this.quantity = param.quantity;
+      this.sub_price = param.sub_price;
+      this.group = new Array<OrderDetailGroupClass>();
+    }
+  }
+}
 
 @Entity()
 export class Order {
