@@ -1,3 +1,4 @@
+import { ResGetCouponList } from '@app/type';
 import { ApiHeader, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Body, Controller, Get, Headers, HttpCode, HttpException, Inject, InternalServerErrorException, Post, ValidationPipe } from '@nestjs/common';
 import { CouponService } from '@app/coupon';
@@ -31,7 +32,7 @@ export class RestaurantCouponController {
   @HttpCode(200)
   @ApiOperation({ summary: '업체 쿠폰 조회' })
   @ApiHeader({ name: 'Authorization' })
-  @ApiOkResponse()
+  @ApiOkResponse({ type: [ResGetCouponList] })
   @ApiNotFoundResponse()
   public async get_coupon_list(@Headers('authorization') token) {
     try {
