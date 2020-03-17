@@ -14,7 +14,7 @@ export class DtoOrderGroup {
   readonly name: string;
   @ApiProperty({ type: [DtoOrderOption] })
   @IsArray() @IsOptional()
-  readonly option?: DtoOrderOption[];
+  readonly o?: DtoOrderOption[];
 }
 
 export class DtoOrderMenu {
@@ -26,7 +26,7 @@ export class DtoOrderMenu {
   readonly price: number;
   @ApiProperty({ type: [DtoOrderGroup] })
   @IsArray() @IsOptional()
-  readonly group?: DtoOrderGroup[];
+  readonly g?: DtoOrderGroup[];
 }
 
 export class DtoUploadOrder {
@@ -34,7 +34,7 @@ export class DtoUploadOrder {
   public readonly discount_amount: number;
   @ApiProperty({ type: [DtoOrderMenu] })
   @IsArray() @IsOptional()
-  public readonly menu?: DtoOrderMenu[];
+  public readonly m?: DtoOrderMenu[];
   @ApiProperty() @IsNumber()
   public readonly quantity: number;
   @ApiProperty({ enum: EnumPaymentType, type: 'enum' })

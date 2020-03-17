@@ -14,7 +14,7 @@ import { UtilService } from '@app/util';
 @ApiTags('user/order')
 @Controller('api/user/order')
 export class UserOrderController {
-  @Inject() private readonly order_service: OrderService;
+  @Inject() private readonly od_service: OrderService;
   @Inject() private readonly util_service: UtilService;
 
   @Post()
@@ -28,7 +28,7 @@ export class UserOrderController {
     @Body(new ValidationPipe()) payload: DtoUploadOrder,
   ) {
     try {
-      return this.order_service.upload(this.util_service.get_token_body(token), payload);
+      return this.od_service.upload(this.util_service.get_token_body(token), payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -42,7 +42,7 @@ export class UserOrderController {
   @ApiForbiddenResponse()
   public async get_orders(@Headers('authorization') token) {
     try {
-      return this.order_service.get_list_by_user(this.util_service.get_token_body(token));
+      return this.od_service.get_list_by_user(this.util_service.get_token_body(token));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }

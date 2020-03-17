@@ -1,6 +1,6 @@
-import { IsString } from 'class-validator';
+import { IsNumberString } from 'class-validator';
 
 export class ParamRemoveOption {
-  @IsString()
+  @IsNumberString()
   public readonly o_id: string;
 }

@@ -1,21 +1,20 @@
 import { ConfigModule, config } from '@app/config';
 import { DBModule, mongodb_entities, mysql_entities } from '@app/db';
-import { ResRefresh, ResSignIn } from '@app/type/res';
+import { DtoCreateUser, DtoEditAddress, DtoEditUserInfo } from '@app/type/req';
+import { ResLoadUser, ResRefresh, ResSignIn } from '@app/type/res';
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user.module';
 import { UserService } from './user.service';
 import { UtilModule } from '@app/util';
+import { classToPlain } from 'class-transformer';
 import { getConnection } from 'typeorm';
-import { stringify } from 'querystring';
 
 describe('UserService', () => {
   let access_token: string;
-  let app: INestApplication;
   let refresh_token: string;
   let service: UserService;
-  const test_req = {
+  const test_req: DtoCreateUser = {
     email: 'user_test@gmail.com',
     nickname: 'user_test',
     password: 'user_test',
@@ -27,13 +26,13 @@ describe('UserService', () => {
       imports: [
         DBModule, TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
-          name:'mysql',
+          name: 'mysql',
           useFactory() {
             return { ...config.mysql_config, entities: mysql_entities };
           },
         }), TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
-          name:'mongodb',
+          name: 'mongodb',
           useFactory() {
             return { ...config.mongodb_config, entities: mongodb_entities };
           },
@@ -41,30 +40,16 @@ describe('UserService', () => {
       providers: [UserService],
     }).compile();
 
-    app = module.createNestApplication();
     service = module.get<UserService>(UserService);
-  });
 
-  afterAll(async () => {
-    await getConnection('mysql').close();
-    await getConnection('mongodb').close();
-    await app.close();
-  });
-
-  it('404 sign_in()', async () => {
-    await expect(service.sign_in({ email: test_req.email, password: test_req.password })).rejects.toThrow();
-  });
-
-  it('200 check_email()', async () => {
-    await service.check_email({ email: test_req.email });
-  });
-
-  it('200 sign_up()', async () => {
     await service.create(test_req);
   });
 
-  it('409 sign_up()', async () => {
-    await expect(service.create(test_req)).rejects.toThrow();
+  afterAll(async () => {
+    await service.leave(access_token);
+
+    await getConnection('mysql').close();
+    await getConnection('mongodb').close();
   });
 
   it('409 check_email()', async () => {
@@ -72,56 +57,56 @@ describe('UserService', () => {
   });
 
   it('200 sign_in()', async () => {
-    const result: ResSignIn = await service.sign_in({ email: test_req.email, password: test_req.password });
-    access_token = result.access_token;
-    refresh_token = result.refresh_token;
+    const res: ResSignIn = await service.sign_in({ email: test_req.email, password: test_req.password });
+    access_token = res.access_token;
+    refresh_token = res.refresh_token;
   });
 
-  it('200 refresh()', async () => {
-    const result: ResRefresh = await service.refresh(refresh_token);
-    access_token = result.access_token;
+  it('200 refresh()', () => {
+    const res: ResRefresh = service.refresh(refresh_token);
+    access_token = res.access_token;
   });
 
-  it('200 edit_info()', async () => {
-    const edit_data = {
+  it('Should fail check_email()', async () => {
+    await expect(service.check_email({ email: test_req.email })).rejects.toThrow();
+  });
+
+  it('Should success edit_info()', async () => {
+    const edit_data: DtoEditUserInfo = {
       nickname: 'test_2',
       phone: '01012345679',
     };
-    await service.edit_info(access_token, edit_data);
-    const found_user = await service.get(access_token);
-
-    if (found_user.get_info() !== stringify(edit_data)) {
-      throw new Error();
-    }
+    await service.edit(access_token, edit_data);
+    const f_u: ResLoadUser = await service.get(access_token);
+    ['add_parcel', 'add_street', 'create_time'].map((e) => {
+      Reflect.deleteProperty(f_u, e);
+    });
+    expect(classToPlain(f_u)).toStrictEqual(classToPlain(edit_data));
   });
 
-  it('200 edit_address()', async () => {
-    const edit_data = {
+  it('Should success edit_address()', async () => {
+    const edit_data: DtoEditAddress = {
       add_parcel: '경기도 어딘가',
       add_street: '경기도 어딘가',
     };
-    await service.edit_address(access_token, edit_data);
-    const found_user = await service.get(access_token);
-    if (found_user.get_address() !== stringify(edit_data)) {
+    await service.edit(access_token, edit_data);
+    const f_u: ResLoadUser = await service.get(access_token);
+    if (edit_data.add_street !== f_u.add_street ||
+      edit_data.add_parcel !== f_u.add_parcel) {
       throw new Error();
     }
   });
 
-  it('200 check_password()', async () => {
+  it('Should success check_password()', async () => {
     await service.check_password(access_token, { password: test_req.password });
   });
 
-  it('401 check_password()', async () => {
+  it('Should fail check_password()', async () => {
     await expect(service.check_password(access_token, { password: `${test_req.password}1` })).rejects.toThrow();
   });
 
-  it('200 edit_password()', async () => {
-    test_req.password = `${test_req.email}1`;
-    await service.edit_password(access_token, { password: test_req.password });
-    await service.sign_in({ email: test_req.email, password: test_req.password });
-  });
-
-  it('200 leave()', async () => {
-    await service.leave(access_token);
+  it('Should success edit_password()', async () => {
+    await service.edit(access_token, { password: `${test_req.email}1` });
+    await service.sign_in({ email: test_req.email, password: `${test_req.email}1` });
   });
 });

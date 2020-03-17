@@ -1,7 +1,6 @@
 import { IsArray, IsNumber, IsOptional, IsString, IsUrl } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { DtoUploadGroup } from './upload-group.dto';
-import { stringify } from 'querystring';
+import { UploadGroupClass } from '@app/type/etc';
 
 export class DtoUploadMenu {
   @ApiProperty() @IsString()
@@ -15,18 +14,5 @@ export class DtoUploadMenu {
   @ApiProperty() @IsNumber()
   public readonly price: number;
   @ApiProperty()  @IsArray()  @IsOptional()
-  public readonly group?: DtoUploadGroup[];
-
-  constructor(payload) {
-    Object.assign(this, payload);
-  }
-
-  public get(): string {
-    return stringify({
-      description: this.description,
-      image: this.image,
-      name: this.name,
-      price: this.price,
-    });
-  }
+  public readonly g?: UploadGroupClass[];
 }

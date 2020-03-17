@@ -14,7 +14,7 @@ import getPrototypeOf = Reflect.getPrototypeOf;
 @ApiTags('user/coupon')
 @Controller('api/user/coupon')
 export class UserCouponController {
-  @Inject() private readonly coupon_service: CouponService;
+  @Inject() private readonly c_service: CouponService;
   @Inject() private readonly util_service: UtilService;
 
   @Get()
@@ -28,7 +28,7 @@ export class UserCouponController {
     @Query(new ValidationPipe()) query: QueryGetCoupon,
   ) {
     try {
-      return this.coupon_service.get(query);
+      return this.c_service.get(query);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }

@@ -1,11 +1,14 @@
 import { ConfigModule, config } from '@app/config';
 import { DBModule, mongodb_entities, mysql_entities } from '@app/db';
-import { DtoCreateRestaurant, DtoUploadGroup, DtoUploadMenu, DtoUploadMenuCategory, DtoUploadOption } from '@app/type/req';
-import { ResGetGroup, ResGetMenu, ResGetMenuCategory, ResGetOption } from '@app/type/res';
+import {
+  DtoCreateRestaurant,
+  DtoEditGroup, DtoEditMenu, DtoEditMenuCategory, DtoEditOption,
+  DtoUploadGroup, DtoUploadMenu, DtoUploadMenuCategory, DtoUploadOption,
+} from '@app/type/req';
+import { ResGetGroupList, ResGetMenuCategoryList, ResGetMenuList, ResGetOptionList } from '@app/type/res';
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UtilModule, UtilService } from '@app/util';
-import { INestApplication } from '@nestjs/common';
 import { MenuModule } from './menu.module';
 import { MenuService } from './menu.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -13,11 +16,10 @@ import { UserModule } from '@app/user';
 import { getConnection } from 'typeorm';
 
 describe('MenuService', () => {
-  let app: INestApplication;
-  let restaurant_token: string;
-  let restaurant_service: RestaurantService;
+  let r_token: string;
+  let r_service: RestaurantService;
   let service: MenuService;
-  const test_restaurant: DtoCreateRestaurant = {
+  const test_r: DtoCreateRestaurant = {
     add_parcel: 'a',
     add_street: 'b',
     area: 'c',
@@ -36,96 +38,92 @@ describe('MenuService', () => {
     phone: '01012345678',
   };
   const test_req: {
-    group: DtoUploadGroup[]
-    menu: DtoUploadMenu[]
-    menu_category: DtoUploadMenuCategory[],
-    option: DtoUploadOption[]
+    g: DtoUploadGroup[];
+    m: DtoUploadMenu[];
+    mc: DtoUploadMenuCategory[];
+    o: DtoUploadOption[];
   } = {
-    group: [
-      new DtoUploadGroup({
+    g: [
+      {
         m_id: null, max_count: 0, name: 'sauce',
-        option: [
+        o: [
           { name: '갈릭소스', price: 500 },
           { name: '양념 소스', price: 500 },
         ],
-      }),
-      new DtoUploadGroup({
+      }, {
         m_id: null, max_count: 1, name: '매운 정도',
-        option: [
+        o: [
           { name: '매운맛', price: 0 },
           { name: '순한맛', price: 0 },
         ],
-      }),
-      new DtoUploadGroup({ m_id: null, max_count: 0, name: '소스' }),
-      new DtoUploadGroup({ m_id: null, max_count: 1, name: '매운 정도' }),
+      },
+      { m_id: null, max_count: 0, name: '소스' },
+      { m_id: null, max_count: 1, name: '매운 정도' },
     ],
-    menu: [
-      new DtoUploadMenu({
+    m: [
+      {
         description: '딸기 바나나 멜론맛!',
-        group: [{
+        g: [{
           max_count: 0, name: '소스',
-          option: [
+          o: [
             { name: '갈릭 소스', price: 500 },
             { name: '양념 소스', price: 500 },
           ],
         }, {
           max_count: 1, name: '매운 정도',
-          option: [
+          o: [
             { name: '매운맛', price: 0 },
             { name: '순한맛', price: 0 },
           ],
         }],
         image: 'image.url', mc_id: null,
         name: '신호등 치킨', price: 17000,
-      }),
-      new DtoUploadMenu({
+      }, {
         description: '치즈향 가득~',
-        group: [{
+        g: [{
           max_count: 0, name: '소스',
-          option: [
+          o: [
             { name: '갈릭 소스', price: 500 },
             { name: '양념 소스', price: 500 },
           ],
         }, {
           max_count: 1, name: '매운 정도',
-          option: [
+          o: [
             { name: '매운맛', price: 0 },
             { name: '순한맛', price: 0 },
           ],
         }],
         image: 'image.url', mc_id: null,
-        name: '쁘링클 치킨', price: 17000,
-      }),
-      new DtoUploadMenu({
+        name: '뿌링클 치킨', price: 17000,
+      }, {
         description: '치즈향 가득~', image: 'image.url',
-        mc_id: null, name: '쁘링클 치킨', price: 17000,
-      }),
-      new DtoUploadMenu({
+        mc_id: null, name: '뿌링클 치킨', price: 17000,
+      }, {
         description: '딸기 바나나 멜론맛!', image: 'image.url',
         mc_id: null, name: '신호등 치킨', price: 17000,
-      }),
+      },
     ],
-    menu_category: [
-      new DtoUploadMenuCategory({ name: 'special chicken' }),
-      new DtoUploadMenuCategory({ name: '바베큐 치킨' }),
+    mc: [
+      { name: 'special chicken' },
+      { name: '바베큐 치킨' },
     ],
-    option: [
-      new DtoUploadOption({ g_id: null, name: '갈릭 소스', price: 500 }),
-      new DtoUploadOption({ g_id: null, name: '양념 소스', price: 500 }),
-      new DtoUploadOption({ g_id: null, name: '매운맛', price: 0 }),
-      new DtoUploadOption({ g_id: null, name: '순한맛', price: 0 }),
+    o: [
+      { g_id: null, name: '갈릭 소스', price: 500 },
+      { g_id: null, name: '양념 소스', price: 500 },
+      { g_id: null, name: '매운맛', price: 0 },
+      { g_id: null, name: '순한맛', price: 0 },
     ],
   };
   const test_res: {
-    group: ResGetGroup[],
-    menu: ResGetMenu[],
-    menu_category: ResGetMenuCategory[],
-    option: ResGetOption[]
+    g: ResGetGroupList[];
+    m: ResGetMenuList[];
+    mc: ResGetMenuCategoryList[];
+    o: ResGetOptionList[];
   } = {
-    group: new Array<ResGetGroup>(),
-    menu: new Array<ResGetMenu>(),
-    menu_category: new Array<ResGetMenuCategory>(),
-    option: new Array<ResGetOption>(),
+    g: [],
+    m: [],
+    mc: [],
+    o: [],
   };
 
   beforeAll(async () => {
@@ -148,222 +146,183 @@ describe('MenuService', () => {
       providers: [MenuService],
     }).compile();
 
-    app = module.createNestApplication();
     service = module.get<MenuService>(MenuService);
-    restaurant_service = module.get<RestaurantService>(RestaurantService);
+    r_service = module.get<RestaurantService>(RestaurantService);
 
-    await restaurant_service.create(test_restaurant);
-    restaurant_token = (await restaurant_service.sign_in({
-      email: test_restaurant.email,
-      password: test_restaurant.password,
+    await r_service.create(test_r);
+    r_token = (await r_service.sign_in({
+      email: test_r.email,
+      password: test_r.password,
     })).access_token;
+
+    // upload MenuCategory
+
+    await Promise.all(test_req.mc.map((e_mc) => service.upload_menu_category(r_token, e_mc)));
+    test_res.mc = await service.get_menu_category_list(r_token);
+    test_res.mc.forEach((e_mc, index) => {
+      UtilService.verify(test_req.mc[index], e_mc, ['mc_id']);
+    });
+
+    // upload Menu
+
+    test_req.m.forEach((e_m, index) => {
+      test_req.m[index] = index < 2 ?
+        { ...e_m, mc_id: test_res.mc[0].mc_id }
+        : { ...e_m, mc_id: test_res.mc[1].mc_id };
+    });
+    await Promise.all(test_req.m.map((e_m) => service.upload_menu(e_m)));
+    test_res.m = (await Promise.all([
+      ...test_res.mc.map((e_mc) =>
+        service.get_menu_list({ mc_id: e_mc.mc_id.toString() })),
+    ])).flat();
+    test_res.m.forEach((e_m, index) => {
+      UtilService.verify(test_req.m[index], e_m, ['g_id', 'g', 'mc_id', 'm_id']);
+    });
+
+    // upload Group
+
+    test_req.g.forEach((e_g, index) => {
+      test_req.g[index] = index < 2 ?
+        { ...e_g, m_id: test_res.m[2].m_id }
+        : { ...e_g, m_id: test_res.m[3].m_id };
+    });
+    await Promise.all(test_req.g.map((e_g) => service.upload_group(e_g)));
+    test_res.g = (await Promise.all([
+      ...[2, 3].map((e) => service.get_group_list({ m_id: test_res.m[e].m_id.toString() })),
+    ])).flat();
+    test_res.g.forEach((e_g, index) => {
+      UtilService.verify(test_req.g[index], e_g, ['g_id', 'o', 'm_id']);
+    });
+
+    // upload Option
+    test_req.o.forEach((e_o, index) => {
+      test_req.o[index] = index < 2 ?
+        { ...e_o, g_id: test_res.g[2].g_id }
+        : { ...e_o, g_id: test_res.g[3].g_id };
+    });
+    await Promise.all(test_req.o.map((e_o) => service.upload_option(e_o)));
+    test_res.o = (await Promise.all([
+      ...[2, 3].map((e) => service.get_option_list({ g_id: test_res.g[e].g_id.toString() })),
+    ])).flat();
+    test_res.o.forEach((e_o, index) => {
+      UtilService.verify(test_req.o[index], e_o, ['g_id', 'o_id']);
+    });
   });
 
   afterAll(async () => {
-    await restaurant_service.leave(restaurant_token);
-    await getConnection('mysql').close();
-    await getConnection('mongodb').close();
-    await app.close();
-  });
+    // remove Option
 
-  it('200 upload_menu_category()', async () => {
-    for (const loop_menu_category of test_req.menu_category) {
-      await service.upload_menu_category(restaurant_token, loop_menu_category);
+    const o_ids: number[] = [];
+    for (const e_o of test_res.o) {
+      o_ids.push(e_o.o_id);
     }
 
-    test_res.menu_category = await service.get_menu_category_list(restaurant_token);
-    for (const index of UtilService.range(test_res.menu_category)) {
-      if (test_req.menu_category[index].get() !== test_res.menu_category[index].get()) {
-        throw new Error();
-      }
-    }
-
-    for (const index of UtilService.range(test_req.menu)) {
-      test_req.menu[index] = index < 2 ?
-        new DtoUploadMenu({
-          ...test_req.menu[index],
-          mc_id: test_res.menu_category[0].mc_id,
-        })
-        : new DtoUploadMenu({
-          ...test_req.menu[index],
-          mc_id: test_res.menu_category[1].mc_id,
-        });
-    }
-  });
-
-  it('200 edit_menu_category()', async () => {
-    const edit_data = { name: '스페셜 치킨' };
-    test_req.menu_category[0] = new DtoUploadMenuCategory({ ...test_req.menu_category[0], ...edit_data });
-    await service.edit_menu_category({ ...edit_data, mc_id: test_res.menu_category[0].mc_id });
-
-    test_res.menu_category[0] = await service.get_menu_category(test_res.menu_category[0].mc_id);
-    if (test_req.menu_category[0].get() !== test_res.menu_category[0].get()) {
-      throw new Error();
-    }
-  });
-
-  it('200 upload_menu()', async () => {
-    for (const loop_menu of test_req.menu) {
-      await service.upload_menu(loop_menu);
-    }
-    for (const loop_menu_category of test_res.menu_category) {
-      const found_menus: ResGetMenu[] = await service.get_menu_list({ mc_id: loop_menu_category.mc_id });
-      test_res.menu = test_res.menu.concat(found_menus);
-    }
-    for (const index of UtilService.range(test_res.menu)) {
-      if (test_req.menu[index].get() !== test_res.menu[index].get()) {
-        throw new Error();
-      }
-      for (const index_2 of UtilService.range(test_res.group)) {
-        if (test_req.menu[index].group[index_2].get()
-          !== test_res.menu[index].group[index_2].get()) {
-          throw new Error();
-        }
-        for (const index_3 of UtilService.range(test_res.option)) {
-          if (test_req.menu[index].group[index_2].option[index_3].get()
-            !== test_res.menu[index].group[index_2].option[index_3].get()) {
-            throw new Error();
-          }
-        }
-      }
-
-      for (const index of UtilService.range(test_req.group)) {
-        test_req.group[index] = index < 2 ?
-          new DtoUploadGroup({ ...test_req.group[index], m_id: test_res.menu[2].m_id })
-          : new DtoUploadGroup({ ...test_req.group[index], m_id: test_res.menu[3].m_id });
-      }
-    }
-  });
-
-  it('200 edit_menu()', async () => {
-    const edit_data = {
-      description: '물참나무 향 솔솔~ 담백한 엉치살 구이',
-      name: '스모크 치킨', price: 18000,
-    };
-    test_req.menu[0] = new DtoUploadMenu({ ...test_req.menu[0], ...edit_data });
-    await service.edit_menu({ m_id: test_res.menu[0].m_id, ...edit_data });
-
-    test_res.menu[0] = await service.get_menu(test_res.menu[0].m_id);
-    if (test_req.menu[0].get() !== test_res.menu[0].get()) {
-      throw new Error();
-    }
-  });
-
-  it('200 upload_group()', async () => {
-    for (const loop_group of test_req.group) {
-      await service.upload_group(loop_group);
-    }
-
-    for (const index of [2, 3]) {
-      const found_groups: ResGetGroup[] = await service.get_group_list({ m_id: test_res.menu[index].m_id });
-      test_res.group = test_res.group.concat(found_groups);
-    }
-    for (const index_2 of UtilService.range(test_res.group)) {
-      if (test_req.group[index_2].get() !== test_res.group[index_2].get()) {
-        throw new Error();
-      }
-    }
-
-    for (const index of UtilService.range(test_req.option)) {
-      test_req.option[index] = index < 2 ?
-        new DtoUploadOption({ ...test_req.option[index], g_id: test_res.group[2].g_id })
-        : new DtoUploadOption({ ...test_req.option[index], g_id: test_res.group[3].g_id });
-    }
-  });
-
-  it('200 edit_group()', async () => {
-    const edit_data = { max_count: 0, name: '소스' };
-    test_req.group[0] = new DtoUploadGroup({ ...test_req.group[0], ...edit_data });
-    await service.edit_group({ g_id: test_res.group[0].g_id, ...edit_data });
-
-    test_res.group[0] = await service.get_group(test_res.group[0].g_id);
-    if (test_req.group[0].get() !== test_res.group[0].get()) {
-      throw new Error();
-    }
-  });
-
-  it('200 upload_option()', async () => {
-    for (const loop_option of test_req.option) {
-      await service.upload_option(loop_option);
-    }
-    for (const index of [2, 3]) {
-      const found_options: ResGetOption[] = await service.get_option_list({ g_id: test_res.group[index].g_id });
-      test_res.option = test_res.option.concat(found_options);
-    }
-    for (const index_2 of UtilService.range(test_res.option)) {
-      if (test_req.option[index_2].get() !== test_req.option[index_2].get()) {
-        throw new Error();
-      }
-    }
-  });
-
-  it('200 edit_option()', async () => {
-    const edit_data = { name: '어니언 소스', price: 400 };
-    test_req.option[0] = new DtoUploadOption({ ...test_req.option[0], ...edit_data });
-    await service.edit_option({ o_id: test_res.option[0].o_id, ...edit_data });
-
-    test_res.option[0] = await service.get_option(test_res.option[0].o_id);
-    if (test_req.option[0].get() !== test_res.option[0].get()) {
-      throw new Error();
-    }
-  });
-
-  it('200 remove_option()', async () => {
-    const o_ids: number[] = new Array<number>();
-    for (const loop_option of test_res.option) {
-      o_ids.push(loop_option.o_id);
-    }
     await service.remove_option(o_ids);
 
-    for (const index of UtilService.range(test_req.option)) {
-      const found_option: ResGetOption = await service.get_option(test_res.option[index].o_id);
-      if (!found_option.is_empty()) {
-        throw new Error();
-      }
+    const g_ids: number[] = [];
+    for (const e_g of test_res.g) {
+      g_ids.push(e_g.g_id);
     }
-  });
 
-  it('200 remove_group()', async () => {
-    const g_ids: number[] = new Array<number>();
-    for (const loop_group of test_res.group) {
-      g_ids.push(loop_group.g_id);
+    const str_g_ids: string = g_ids.toString()
+      .replace('[', '')
+      .replace(']', '');
+
+    const f_o_list: ResGetOptionList[] = await service.get_option_list({ g_id: str_g_ids });
+    if (f_o_list.length > 0) {
+      throw new Error();
     }
+    // remove Group
+
     await service.remove_group(g_ids);
 
-    for (const index of UtilService.range(test_req.group)) {
-      const found_group: ResGetGroup = await service.get_group(test_res.group[index].g_id);
-      if (!found_group.is_empty()) {
-        throw new Error();
-      }
+    const m_ids: number[] = [];
+    for (const e_m of test_res.m) {
+      m_ids.push(e_m.m_id);
     }
-  });
 
-  it('200 remove_menu()', async () => {
-    const m_ids: number[] = new Array<number>();
-    for (const loop_menu of test_res.menu) {
-      m_ids.push(loop_menu.m_id);
+    const str_m_ids: string = m_ids.toString()
+      .replace('[', '')
+      .replace(']', '');
+
+    const f_g_list: ResGetGroupList[] = await service.get_group_list({ m_id: str_m_ids });
+    if (f_g_list.length > 2) {
+      throw new Error();
     }
+
+    // remove Menu
+
     await service.remove_menu(m_ids);
 
-    for (const index of UtilService.range(test_req.menu)) {
-      const found_menu: ResGetMenu = await service.get_menu(test_res.menu[index].m_id);
-      if (!found_menu.is_empty()) {
-        throw new Error();
-      }
+    const mc_ids: number[] = [];
+    for (const e_mc of test_res.mc) {
+      mc_ids.push(e_mc.mc_id);
     }
+
+    const str_mc_ids: string = mc_ids.toString()
+      .replace('[', '')
+      .replace(']', '');
+
+    const f_m_list: ResGetMenuList[] = await service.get_menu_list({ mc_id: str_mc_ids });
+    if (f_m_list.length > 0) {
+      throw new Error();
+
+    }
+
+    // remove MenuCategory
+
+    await service.remove_menu_category(mc_ids);
+
+    const f_mc_list: ResGetMenuCategoryList[] = await service.get_menu_category_list(r_token);
+    if (f_mc_list.length > 0) {
+      throw new Error();
+    }
+
+    // leave Restaurant
+
+    await r_service.leave(r_token);
+
+    await getConnection('mysql').close();
+    await getConnection('mongodb').close();
   });
 
-  it('200 remove_menu_category()', async () => {
-    const mc_ids: number[] = new Array<number>();
-    for (const loop_menu_category of test_res.menu_category) {
-      mc_ids.push(loop_menu_category.mc_id);
-    }
-    await service.remove_menu_category(mc_ids);
-    for (const loop_menu_category of test_res.menu_category) {
-      const found_menu_category: ResGetMenuCategory = await service.get_menu_category(loop_menu_category.mc_id);
-      if (!found_menu_category.is_empty()) {
-        throw new Error();
-      }
-    }
+  it('Should success edit_menu_category()', async () => {
+    const edit_data: DtoEditMenuCategory = { mc_id: test_res.mc[0].mc_id, name: '스페셜 치킨' };
+    test_req.mc[0] = { ...test_req.mc[0], ...edit_data };
+    await service.edit_menu_category(edit_data);
+    test_res.mc[0] = await service.get_menu_category(test_res.mc[0].mc_id);
+
+    UtilService.verify(test_req.mc[0], test_res.mc[0], ['mc_id']);
+  });
+
+  it('Should success edit_menu()', async () => {
+    const edit_data: DtoEditMenu = {
+      description: '물참나무 향 솔솔~ 담백한 엉치살 구이',
+      m_id: test_res.m[0].m_id,
+      name: '스모크 치킨', price: 18000,
+    };
+    test_req.m[0] = { ...test_req.m[0], ...edit_data };
+    await service.edit_menu({ ...edit_data });
+    test_res.m[0] = await service.get_menu(test_res.m[0].m_id);
+
+    UtilService.verify(test_req.m[0], test_res.m[0], ['g_id', 'g', 'mc_id', 'm_id']);
+  });
+
+  it('Should success edit_group()', async () => {
+    const edit_data: DtoEditGroup = { g_id: test_res.g[0].g_id, max_count: 0, name: '소스' };
+    test_req.g[0] = { ...test_req.g[0], ...edit_data };
+    await service.edit_group(edit_data);
+    test_res.g[0] = await service.get_group(test_res.g[0].g_id);
+
+    UtilService.verify(test_req.g[0], test_res.g[0], ['g_id', 'o', 'm_id']);
+  });
+
+  it('Should success edit_option()', async () => {
+    const edit_data: DtoEditOption = { name: '어니언 소스', o_id: test_res.o[0].o_id, price: 400 };
+    test_req.o[0] = { ...test_req.o[0], ...edit_data };
+    await service.edit_option(edit_data);
+    test_res.o[0] = await service.get_option(test_res.o[0].o_id);
+
+    UtilService.verify(test_req.o[0], test_res.o[0], ['g_id', 'o_id']);
   });
 });

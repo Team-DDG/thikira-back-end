@@ -4,7 +4,6 @@ import { DtoCreateRestaurant, DtoCreateUser, DtoUploadOrder, EnumSortOption } fr
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserModule, UserService } from '@app/user';
-import { INestApplication } from '@nestjs/common';
 import { MenuModule } from '@app/menu';
 import { OrderModule } from './order.module';
 import { OrderService } from './order.service';
@@ -13,11 +12,10 @@ import { UtilModule } from '@app/util';
 import { getConnection } from 'typeorm';
 
 describe('OrderService', () => {
-  let app: INestApplication;
-  let restaurant_service: RestaurantService;
+  let r_service: RestaurantService;
   let restaurant_token: string;
   let service: OrderService;
-  const test_restaurant: DtoCreateRestaurant = {
+  const test_r: DtoCreateRestaurant = {
     add_parcel: 'a',
     add_street: 'b',
     area: 'c',
@@ -37,10 +35,10 @@ describe('OrderService', () => {
   };
   let test_req: DtoUploadOrder = {
     discount_amount: 500,
-    menu: [{
-      group: [{
+    m: [{
+      g: [{
         name: '치킨 유형',
-        option: [{
+        o: [{
           name: '순살',
           price: 1000,
         }],
@@ -57,13 +55,13 @@ describe('OrderService', () => {
     quantity: 0,
     r_id: 0,
   };
-  const test_user: DtoCreateUser = {
+  const test_u: DtoCreateUser = {
     email: 'order_test',
     nickname: 'order_test',
     password: 'order_test',
     phone: '01012345678',
   };
-  let user_service: UserService;
+  let u_service: UserService;
   let user_token: string;
 
   beforeAll(async () => {
@@ -86,52 +84,48 @@ describe('OrderService', () => {
       providers: [OrderService],
     }).compile();
 
-    app = module.createNestApplication();
     service = module.get<OrderService>(OrderService);
-    restaurant_service = module.get<RestaurantService>(RestaurantService);
-    user_service = module.get<UserService>(UserService);
+    r_service = module.get<RestaurantService>(RestaurantService);
+    u_service = module.get<UserService>(UserService);
 
-    await restaurant_service.create(test_restaurant);
-    restaurant_token = (await restaurant_service.sign_in({
-      email: test_restaurant.email,
-      password: test_restaurant.password,
+    await r_service.create(test_r);
+    restaurant_token = (await r_service.sign_in({
+      email: test_r.email,
+      password: test_r.password,
     })).access_token;
 
-    const r_id = (await restaurant_service.get_list({
-      category: test_restaurant.category,
+    const r_id = (await r_service.get_list({
+      category: test_r.category,
       sort_option: EnumSortOption.NEARNESS,
     }))[0].r_id;
     test_req = { ...test_req, r_id };
 
-    await user_service.create(test_user);
-    user_token = (await user_service.sign_in({
-      email: test_user.email,
-      password: test_user.password,
+    await u_service.create(test_u);
+    user_token = (await u_service.sign_in({
+      email: test_u.email,
+      password: test_u.password,
     })).access_token;
-  });
 
-  afterAll(async () => {
-    await restaurant_service.leave(restaurant_token);
-    await user_service.leave(user_token);
-    await getConnection('mysql').close();
-    await getConnection('mongodb').close();
-    await app.close();
-  });
-
-  it('200 upload_order', async () => {
     await service.upload(user_token, test_req);
   });
 
+  afterAll(async () => {
+    await r_service.leave(restaurant_token);
+    await u_service.leave(user_token);
+    await getConnection('mysql').close();
+    await getConnection('mongodb').close();
+  });
+
   it('200 edit_order_status', async () => {
-    let found_order: Order = await service.get_order(test_req.payment_type);
+    let f_od: Order = await service.get_order(test_req.r_id);
 
-    await service.edit_order_status({ od_id: found_order.od_id.toString(), status: EnumOrderStatus.DONE });
+    await service.edit_order_status({ od_id: f_od.od_id.toString(), status: EnumOrderStatus.DONE });
 
-    found_order = await service.get_order(test_req.payment_type);
-    if (found_order.od_payment_type !== test_req.payment_type) {
+    f_od = await service.get_order(test_req.r_id);
+    if (EnumOrderStatus.DONE !== f_od.status) {
       throw Error();
     }
 
-    await service.remove_order(found_order.od_id);
+    await service.remove_order(f_od.od_id);
   });
 });

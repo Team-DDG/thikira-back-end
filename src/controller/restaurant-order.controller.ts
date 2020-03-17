@@ -13,7 +13,7 @@ import { UtilService } from '@app/util';
 @ApiTags('restaurant/order')
 @Controller('api/restaurant/order')
 export class RestaurantOrderController {
-  @Inject() private readonly order_service: OrderService;
+  @Inject() private readonly od_service: OrderService;
   @Inject() private readonly util_service: UtilService;
 
   @Get()
@@ -24,7 +24,7 @@ export class RestaurantOrderController {
   @ApiForbiddenResponse()
   public async get_orders(@Headers('authorization') token) {
     try {
-      return this.order_service.get_list_by_restaurant(this.util_service.get_token_body(token));
+      return this.od_service.get_list_by_restaurant(this.util_service.get_token_body(token));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -41,7 +41,7 @@ export class RestaurantOrderController {
     @Body(new ValidationPipe()) payload: DtoEditOrderStatus,
   ) {
     try {
-      return this.order_service.edit_order_status(payload);
+      return this.od_service.edit_order_status(payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
