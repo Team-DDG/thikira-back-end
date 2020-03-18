@@ -1,4 +1,4 @@
-import { ConflictException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Coupon, DBService, MenuCategory, Restaurant } from '@app/db';
 import {
   DtoCheckPassword, DtoCreateRestaurant, DtoEditAddress, DtoEditPassword,
@@ -51,6 +51,9 @@ export class RestaurantService {
   public async leave(token: string): Promise<void> {
     const email: string = this.util_service.get_email_by_token(token);
     const f_r: Restaurant = await this.db_service.find_restaurant_by_email(email);
+    if (!f_r) {
+      throw new ForbiddenException();
+    }
 
     const f_c_list: Coupon[] = await this.db_service.find_coupons_by_restaurant(f_r);
     for (const e_c of f_c_list) {

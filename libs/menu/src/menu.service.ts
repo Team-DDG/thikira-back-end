@@ -1,17 +1,15 @@
 import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { DBService, Group, Menu, MenuCategory, Option, Restaurant } from '@app/db';
 import {
-  DtoEditGroup, DtoEditMenu, DtoEditMenuCategory, DtoEditOption,
-  DtoUploadGroup, DtoUploadMenu, DtoUploadMenuCategory, DtoUploadOption,
+  DtoEditGroup, DtoEditMenu, DtoEditMenuCategory, DtoEditOption, DtoUploadGroup,
+  DtoUploadMenu, DtoUploadMenuCategory, DtoUploadOption,
   QueryGetGroupList, QueryGetMenuCategoryList, QueryGetMenuList, QueryGetOptionList,
 } from '@app/type/req';
-import { Group, Menu, MenuCategory, Option, Restaurant } from '@app/db';
 import {
   ResGetGroupList, ResGetMenuCategoryList, ResGetMenuList, ResGetOptionList,
   ResUploadGroup, ResUploadMenu, ResUploadMenuCategory, ResUploadOption,
 } from '@app/type/res';
-import { DBService } from '@app/db';
 import { UtilService } from '@app/util';
-import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class MenuService {
@@ -35,8 +33,6 @@ export class MenuService {
   }
 
   public async get_menu_category_list(param: string | QueryGetMenuCategoryList): Promise<ResGetMenuCategoryList[]> {
-    const res: ResGetMenuCategoryList[] = [];
-
     let f_r: Restaurant;
     if (typeof param === 'string') {
       const email: string = this.util_service.get_email_by_token(param);
@@ -44,16 +40,14 @@ export class MenuService {
     } else {
       f_r = await this.db_service.find_restaurant_by_id(parseInt(param.r_id));
     }
-    const f_mc: MenuCategory[] =
-      await this.db_service.find_menu_categories_by_restaurant(f_r, false);
 
-    for (const e_mc of f_mc) {
-      ['m', 'r'].map((e) => {
-        Reflect.deleteProperty(e_mc, e);
-      });
-      res.push(e_mc);
+    const f_mc_list: MenuCategory[] = await this.db_service.find_menu_categories_by_restaurant(f_r, false);
+
+    if (f_mc_list.length < 1) {
+      throw new NotFoundException();
     }
-    return res;
+
+    return f_mc_list;
   }
 
   public async edit_menu_category(payload: DtoEditMenuCategory): Promise<void> {
@@ -68,7 +62,7 @@ export class MenuService {
       for (const e_g of f_m_list) {
         m_ids.push(e_g.m_id);
       }
-      if (m_ids.length !== 0) {
+      if (m_ids.length > 0) {
         await this.remove_menu(m_ids);
       }
     }
@@ -109,25 +103,15 @@ export class MenuService {
   }
 
   public async get_menu_list(query: QueryGetMenuList): Promise<ResGetMenuList[]> {
-    const res: ResGetMenuList[] = [];
     const f_mc: MenuCategory = await this.db_service.find_menu_category_by_id(parseInt(query.mc_id));
     if (!f_mc) {
       throw new NotFoundException();
     }
     const f_m_list: Menu[] = await this.db_service.find_menus_by_menu_category(f_mc);
-    for (const e_m of f_m_list) {
-      const menu: ResGetMenuList = plainToClass(ResGetMenuList, e_m);
-      res.push(menu);
-      for (const e_g of e_m.g) {
-        const group: ResGetGroupList = plainToClass(ResGetGroupList, e_g);
-        menu.g.push(group);
-        for (const e_o of e_g.o) {
-          const o: ResGetOptionList = plainToClass(ResGetOptionList, e_o);
-          group.o.push(o);
-        }
-      }
+    if (f_m_list.length < 1) {
+      throw new NotFoundException();
     }
-    return res;
+    return f_m_list;
   }
 
   public async edit_menu(payload: DtoEditMenu): Promise<void> {
@@ -142,7 +126,7 @@ export class MenuService {
       for (const e_g of f_g_list) {
         g_ids.push(e_g.g_id);
       }
-      if (g_ids.length !== 0) {
+      if (g_ids.length > 0) {
         await this.remove_group(g_ids);
       }
     }
@@ -158,30 +142,31 @@ export class MenuService {
       throw new ConflictException();
     }
 
-    const group: Group = new Group();
+    const g: Group = new Group();
     Reflect.deleteProperty(payload, 'm_id');
-    Object.assign(group, { ...payload, m: f_m });
+    Object.assign(g, { ...payload, m: f_m });
 
-    await this.db_service.insert_group(group);
+    await this.db_service.insert_group(g);
 
-    return { g_id: group.g_id };
+    if (payload.o) {
+      for (const e_o of payload.o) {
+        const o: Option = new Option();
+        Object.assign(o, { ...e_o, g });
+        await this.db_service.insert_option(o);
+      }
+
+    }
+
+    return { g_id: g.g_id };
   }
 
   public async get_group_list(query: QueryGetGroupList): Promise<ResGetGroupList[]> {
-    const res: ResGetGroupList[] = [];
     const f_m: Menu = await this.db_service.find_menu_by_id(parseInt(query.m_id));
     const f_g_list: Group[] = await this.db_service.find_groups_by_menu(f_m);
-
-    for (const e_g of f_g_list) {
-      const group: ResGetGroupList = plainToClass(ResGetGroupList, e_g);
-      res.push(group);
-      for (const e_o of e_g.o) {
-        const o: ResGetOptionList = plainToClass(ResGetOptionList, e_o);
-        group.o.push(o);
-      }
+    if (f_g_list.length < 1) {
+      throw new NotFoundException();
     }
-
-    return res;
+    return f_g_list;
   }
 
   public async edit_group(payload: DtoEditGroup): Promise<void> {
@@ -196,7 +181,7 @@ export class MenuService {
       for (const e_o of f_o_list) {
         o_ids.push(e_o.o_id);
       }
-      if (o_ids.length !== 0) {
+      if (o_ids.length > 0) {
         await this.remove_option(o_ids);
       }
     }
@@ -221,15 +206,12 @@ export class MenuService {
   }
 
   public async get_option_list(query: QueryGetOptionList): Promise<ResGetOptionList[]> {
-    const res: ResGetOptionList[] = [];
     const f_g: Group = await this.db_service.find_group_by_id(parseInt(query.g_id));
     const f_o_list: Option[] = await this.db_service.find_options_by_group(f_g);
-    for (const e_o of f_o_list) {
-      const o: ResGetOptionList = plainToClass(ResGetOptionList, e_o);
-      res.push(o);
+    if (f_o_list.length < 1) {
+      throw new NotFoundException();
     }
-
-    return res;
+    return f_o_list;
   }
 
   public async edit_option(payload: DtoEditOption): Promise<void> {

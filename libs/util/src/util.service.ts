@@ -2,7 +2,6 @@ import { createHash, randomBytes } from 'crypto';
 import { sign, verify } from 'jsonwebtoken';
 import { Injectable } from '@nestjs/common';
 import { TokenTypeEnum } from './token-type.enum';
-import { classToPlain } from 'class-transformer';
 import { config } from '@app/config';
 
 @Injectable()
@@ -20,16 +19,6 @@ export class UtilService {
       res.push(parseInt(e_id));
     }
     return res;
-  }
-
-  public static verify(param_1: {}, param_2: {}, delete_key: string[]) {
-    const data_1 = { ...param_1 };
-    const data_2 = { ...param_2 };
-    delete_key.forEach((e) => {
-      Reflect.deleteProperty(data_1, e);
-      Reflect.deleteProperty(data_2, e);
-    });
-    return expect(classToPlain(data_1)).toStrictEqual(classToPlain(data_2));
   }
 
   public encode(content: string): string {

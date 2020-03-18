@@ -18,6 +18,7 @@ module.exports = {
     jest: true,
   },
   rules: {
+    '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-empty-function': 'off',
     '@typescript-eslint/camelcase': ['off', { 'properties': 'always' }],
     '@typescript-eslint/explicit-function-return-type': 'off',
@@ -25,7 +26,7 @@ module.exports = {
     curly: 'error',
     indent: ['error', 2],
     'no-console': 'error',
-    'no-continue': "error",
+    'no-continue': 'error',
     'no-empty-character-class': 'error',
     'no-return-await': 'error',
     'no-this-before-super': 'error',
