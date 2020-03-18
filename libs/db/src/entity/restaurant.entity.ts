@@ -4,8 +4,8 @@ import { MenuCategory } from './menu-category.entity';
 
 @Entity()
 export class Restaurant {
-  @OneToMany(() => Coupon, (coupon: Coupon) => coupon.r)
-  public c: Coupon[];
+  @OneToMany(() => Coupon, (coupon: Coupon) => coupon.restaurant)
+  public coupon: Coupon[];
   @Column()
   public area: string;
   @Column()
@@ -44,7 +44,7 @@ export class Restaurant {
   public create_time: Date;
   @OneToMany(
     () => MenuCategory,
-    (menu_category: MenuCategory) => menu_category.r,
+    (menu_category: MenuCategory) => menu_category.restaurant,
   )
-  public mc: MenuCategory[];
+  public menu_category: MenuCategory[];
 }

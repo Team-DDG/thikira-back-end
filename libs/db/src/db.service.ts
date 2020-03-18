@@ -1,4 +1,8 @@
 import { Coupon, Group, Menu, MenuCategory, Option, Order, Restaurant, User } from './entity';
+import {
+  EditGroupClass, EditMenuCategoryClass, EditMenuClass,
+  EditOptionClass, EditOrderClass, EditRestaurantClass, EditUserClass,
+} from '@app/type/etc';
 import { Inject, Injectable } from '@nestjs/common';
 import { MongoRepository, ObjectID, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -25,10 +29,10 @@ export class DBService {
   @Inject()
   private readonly util_service: UtilService;
 
-  //r
+  //restaurant
 
-  public async insert_restaurant(r: Restaurant): Promise<void> {
-    await this.r_repo.insert({ ...r, password: this.util_service.encode(r.password) });
+  public async insert_restaurant(restaurant: Restaurant): Promise<void> {
+    await this.r_repo.insert({ ...restaurant, password: this.util_service.encode(restaurant.password) });
   }
 
   public async find_restaurant_by_id(id: number): Promise<Restaurant> {
@@ -47,7 +51,7 @@ export class DBService {
     return this.r_repo.find({ category });
   }
 
-  public async update_restaurant(email: string, payload): Promise<void> {
+  public async update_restaurant(email: string, payload: EditRestaurantClass): Promise<void> {
     if (payload.password) {
       payload = { ...payload, password: this.util_service.encode(payload.password) };
     }
@@ -72,7 +76,7 @@ export class DBService {
     return this.u_repo.findOne({ email });
   }
 
-  public async update_user(email: string, payload): Promise<void> {
+  public async update_user(email: string, payload: EditUserClass): Promise<void> {
     if (payload.password) {
       payload = { ...payload, password: this.util_service.encode(payload.password) };
     }
@@ -83,32 +87,32 @@ export class DBService {
     await this.u_repo.delete({ email });
   }
 
-  public async insert_menu_category(mc: MenuCategory): Promise<void> {
-    await this.mc_repo.insert(mc);
+  public async insert_menu_category(menu_category: MenuCategory): Promise<void> {
+    await this.mc_repo.insert(menu_category);
   }
 
   public async find_menu_category_by_id(id: number): Promise<MenuCategory> {
     return this.mc_repo.findOne(id);
   }
 
-  public async find_menu_category_by_name(name: string, r: Restaurant): Promise<MenuCategory> {
-    return this.mc_repo.findOne({ name, r });
+  public async find_menu_category_by_name(name: string, restaurant: Restaurant): Promise<MenuCategory> {
+    return this.mc_repo.findOne({ name, restaurant: restaurant });
   }
 
-  public async find_menu_categories_by_restaurant(r: Restaurant, are_with_menu: boolean): Promise<MenuCategory[]> {
+  public async find_menu_categories_by_restaurant(restaurant: Restaurant, are_with_menu: boolean): Promise<MenuCategory[]> {
     if (are_with_menu) {
       return this.mc_repo.createQueryBuilder()
-        .where(`MenuCategory.r_id = ${r.r_id.toString()}`)
-        .leftJoinAndSelect('MenuCategory.m', 'Menu')
-        .leftJoinAndSelect('Menu.g', 'Group')
-        .leftJoinAndSelect('Group.o', 'Option')
+        .where(`MenuCategory.r_id = ${restaurant.r_id.toString()}`)
+        .leftJoinAndSelect('MenuCategory.menu', 'Menu')
+        .leftJoinAndSelect('Menu.group', 'Group')
+        .leftJoinAndSelect('Group.option', 'Option')
         .getMany();
     } else {
-      return this.mc_repo.find({ r });
+      return this.mc_repo.find({ restaurant: restaurant });
     }
   }
 
-  public async update_menu_category(id: number, payload): Promise<void> {
+  public async update_menu_category(id: number, payload: EditMenuCategoryClass): Promise<void> {
     await this.mc_repo.update(id, payload);
   }
 
@@ -126,19 +130,19 @@ export class DBService {
     return this.m_repo.findOne(id);
   }
 
-  public async find_menu_by_name(name: string, mc: MenuCategory): Promise<Menu> {
-    return this.m_repo.findOne({ mc, name });
+  public async find_menu_by_name(name: string, menu_category: MenuCategory): Promise<Menu> {
+    return this.m_repo.findOne({ menu_category: menu_category, name });
   }
 
-  public async find_menus_by_menu_category(mc: MenuCategory): Promise<Menu[]> {
+  public async find_menus_by_menu_category(menu_category: MenuCategory): Promise<Menu[]> {
     return this.m_repo.createQueryBuilder()
-      .where(`Menu.mc_id = ${mc.mc_id.toString()}`)
-      .leftJoinAndSelect('Menu.g', 'Group')
-      .leftJoinAndSelect('Group.o', 'Option')
+      .where(`Menu.mc_id = ${menu_category.mc_id.toString()}`)
+      .leftJoinAndSelect('Menu.group', 'Group')
+      .leftJoinAndSelect('Group.option', 'Option')
       .getMany();
   }
 
-  public async update_menu(id: number, payload): Promise<void> {
+  public async update_menu(id: number, payload: EditMenuClass): Promise<void> {
     await this.m_repo.update(id, payload);
   }
 
@@ -148,26 +152,26 @@ export class DBService {
 
   // group
 
-  public async insert_group(g: Group): Promise<void> {
-    await this.g_repo.insert(g);
+  public async insert_group(group: Group): Promise<void> {
+    await this.g_repo.insert(group);
   }
 
   public async find_group_by_id(id: number): Promise<Group> {
     return this.g_repo.findOne(id);
   }
 
-  public async find_group_by_name(name: string, m: Menu): Promise<Group> {
-    return this.g_repo.findOne({ m, name });
+  public async find_group_by_name(name: string, menu: Menu): Promise<Group> {
+    return this.g_repo.findOne({ menu: menu, name });
   }
 
-  public async find_groups_by_menu(m: Menu): Promise<Group[]> {
+  public async find_groups_by_menu(menu: Menu): Promise<Group[]> {
     return this.g_repo.find({
-      join: { alias: 'Group', leftJoinAndSelect: { Option: 'Group.o' } },
-      where: { m },
+      join: { alias: 'Group', leftJoinAndSelect: { Option: 'Group.option' } },
+      where: { menu },
     });
   }
 
-  public async update_group(id: number, payload): Promise<void> {
+  public async update_group(id: number, payload: EditGroupClass): Promise<void> {
     await this.g_repo.update(id, payload);
   }
 
@@ -177,8 +181,8 @@ export class DBService {
 
   // option
 
-  public async insert_option(o: Option): Promise<void> {
-    await this.o_repo.insert(o);
+  public async insert_option(option: Option): Promise<void> {
+    await this.o_repo.insert(option);
   }
 
   public async find_option_by_id(id: number): Promise<Option> {
@@ -186,14 +190,14 @@ export class DBService {
   }
 
   public async find_option_by_name(name: string, group: Group): Promise<Option> {
-    return this.o_repo.findOne({ g: group, name });
+    return this.o_repo.findOne({ group: group, name });
   }
 
-  public async find_options_by_group(g: Group): Promise<Option[]> {
-    return this.o_repo.find({ where: { g: g } });
+  public async find_options_by_group(group: Group): Promise<Option[]> {
+    return this.o_repo.find({ where: { group } });
   }
 
-  public async update_option(id: number, payload): Promise<void> {
+  public async update_option(id: number, payload: EditOptionClass): Promise<void> {
     await this.o_repo.update(id, payload);
   }
 
@@ -203,13 +207,13 @@ export class DBService {
 
   // coupon
 
-  public async insert_coupon(c: Coupon): Promise<void> {
-    await this.c_repo.insert(c);
+  public async insert_coupon(coupon: Coupon): Promise<void> {
+    await this.c_repo.insert(coupon);
   }
 
-  public async find_coupon_by_restaurant(r: Restaurant): Promise<Coupon> {
-    const f_c_list: Coupon[] = await this.c_repo.find({ r });
-    for (const e_c of f_c_list) {
+  public async find_coupon_by_restaurant(restaurant: Restaurant): Promise<Coupon> {
+    const f_coupons: Coupon[] = await this.c_repo.find({ restaurant: restaurant });
+    for (const e_c of f_coupons) {
       if (Date.now() < e_c.expired_day.getTime()) {
         return e_c;
       }
@@ -221,8 +225,8 @@ export class DBService {
     return this.c_repo.findOne({ discount_amount });
   }
 
-  public async find_coupons_by_restaurant(r: Restaurant): Promise<Coupon[]> {
-    return this.c_repo.find({ r });
+  public async find_coupons_by_restaurant(restaurant: Restaurant): Promise<Coupon[]> {
+    return this.c_repo.find({ restaurant });
   }
 
   public async delete_coupon(id: number): Promise<void> {
@@ -231,15 +235,15 @@ export class DBService {
 
   // order
 
-  public async insert_order(o: Order): Promise<void> {
-    await this.od_repo.insertOne(o);
+  public async insert_order(option: Order): Promise<void> {
+    await this.od_repo.insertOne(option);
   }
 
-  public async find_orders_by_user(u: User): Promise<Order[]> {
+  public async find_orders_by_user(user: User): Promise<Order[]> {
     const res: Order[] = [];
-    const f_od_list: Order[] = await this.od_repo.find({ u_id: u.u_id });
-    if (0 === f_od_list.length) {
-      for (const e_od of f_od_list) {
+    const f_orders: Order[] = await this.od_repo.find({ u_id: user.u_id });
+    if (0 === f_orders.length) {
+      for (const e_od of f_orders) {
         res.push(new Order(e_od));
       }
       return res;
@@ -247,11 +251,11 @@ export class DBService {
     return null;
   }
 
-  public async find_orders_by_restaurant(r: Restaurant): Promise<Order[]> {
+  public async find_orders_by_restaurant(restaurant: Restaurant): Promise<Order[]> {
     const res: Order[] = [];
-    const f_od_list: Order[] = await this.od_repo.find({ r_id: r.r_id });
-    if (0 === f_od_list.length) {
-      for (const e_od of f_od_list) {
+    const f_orders: Order[] = await this.od_repo.find({ r_id: restaurant.r_id });
+    if (0 === f_orders.length) {
+      for (const e_od of f_orders) {
         res.push(new Order(e_od));
       }
       return res;
@@ -263,7 +267,7 @@ export class DBService {
     return new Order(await this.od_repo.findOne({ r_id: id }));
   }
 
-  public async update_order(id: string, payload): Promise<void> {
+  public async update_order(id: string, payload: EditOrderClass): Promise<void> {
     await this.od_repo.update(id, payload);
   }
 

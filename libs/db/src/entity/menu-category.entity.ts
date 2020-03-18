@@ -8,13 +8,13 @@ export class MenuCategory {
   public mc_id: number;
   @Column()
   public name: string;
-  @OneToMany(() => Menu, (menu: Menu) => menu.mc)
-  public m: Menu[];
+  @OneToMany(() => Menu, (menu: Menu) => menu.menu_category)
+  public menu: Menu[];
   @ManyToOne(
     () => Restaurant,
-    (restaurant: Restaurant) => restaurant.mc,
+    (restaurant: Restaurant) => restaurant.menu_category,
     { nullable: false },
   )
   @JoinColumn({ name: 'r_id' })
-  public r: Restaurant;
+  public restaurant: Restaurant;
 }

@@ -1,14 +1,15 @@
 import { ApiForbiddenResponse, ApiHeader, ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Controller, Get, Headers, HttpCode, HttpException, Inject, InternalServerErrorException, Query, ValidationPipe } from '@nestjs/common';
-import getPrototypeOf = Reflect.getPrototypeOf;
 import { QueryGetMenuCategoryList, QueryGetMenuList } from '@app/type/req';
 import { ResGetMenuCategoryList, ResGetMenuList } from '@app/type/res';
+import { Header } from '@app/type/etc';
 import { MenuService } from '@app/menu';
+import getPrototypeOf = Reflect.getPrototypeOf;
 
 @ApiTags('user/menu')
 @Controller('api/user/menu')
 export class UserMenuController {
-  @Inject() private readonly m_service: MenuService;
+  @Inject() private readonly menu_service: MenuService;
 
   @Get('category')
   @HttpCode(200)
@@ -18,11 +19,11 @@ export class UserMenuController {
   @ApiOkResponse({ type: [ResGetMenuCategoryList] })
   @ApiForbiddenResponse()
   public async get_menu_category_list(
-    @Headers('authorization') token,
+    @Headers() header: Header,
     @Query(new ValidationPipe()) query: QueryGetMenuCategoryList,
-  ) {
+  ): Promise<ResGetMenuCategoryList[]> {
     try {
-      return await this.m_service.get_menu_category_list(query);
+      return await this.menu_service.get_menu_category_list(query);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -36,11 +37,11 @@ export class UserMenuController {
   @ApiOkResponse({ type: [ResGetMenuList] })
   @ApiForbiddenResponse()
   public async get_menu_list(
-    @Headers('authorization') token,
+    @Headers() header: Header,
     @Query(new ValidationPipe()) query: QueryGetMenuList,
-  ) {
+  ): Promise<ResGetMenuList[]> {
     try {
-      return await this.m_service.get_menu_list(query);
+      return await this.menu_service.get_menu_list(query);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }

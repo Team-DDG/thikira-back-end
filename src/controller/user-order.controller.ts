@@ -6,15 +6,16 @@ import {
   Post, ValidationPipe,
 } from '@nestjs/common';
 import { DtoUploadOrder } from '@app/type/req';
+import { Header } from '@app/type/etc';
 import { OrderService } from '@app/order';
 import { ResGetOrderListByUser } from '@app/type/res';
-import getPrototypeOf = Reflect.getPrototypeOf;
 import { UtilService } from '@app/util';
+import getPrototypeOf = Reflect.getPrototypeOf;
 
 @ApiTags('user/order')
 @Controller('api/user/order')
 export class UserOrderController {
-  @Inject() private readonly od_service: OrderService;
+  @Inject() private readonly order_service: OrderService;
   @Inject() private readonly util_service: UtilService;
 
   @Post()
@@ -24,11 +25,11 @@ export class UserOrderController {
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async upload_order(
-    @Headers('authorization') token,
+    @Headers() header: Header,
     @Body(new ValidationPipe()) payload: DtoUploadOrder,
-  ) {
+  ): Promise<void> {
     try {
-      return this.od_service.upload(this.util_service.get_token_body(token), payload);
+      return this.order_service.upload(this.util_service.get_token_body(header), payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -38,11 +39,11 @@ export class UserOrderController {
   @HttpCode(200)
   @ApiOperation({ summary: '주문 조회' })
   @ApiHeader({ name: 'Authorization' })
-  @ApiOkResponse({type: [ResGetOrderListByUser]})
+  @ApiOkResponse({ type: [ResGetOrderListByUser] })
   @ApiForbiddenResponse()
-  public async get_orders(@Headers('authorization') token) {
+  public async get_orders(@Headers() header: Header): Promise<ResGetOrderListByUser[]> {
     try {
-      return this.od_service.get_list_by_user(this.util_service.get_token_body(token));
+      return this.order_service.get_list_by_user(this.util_service.get_token_body(header));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }

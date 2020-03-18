@@ -13,34 +13,34 @@ export class OrderService {
 
   public async upload(token: string, payload: DtoUploadOrder): Promise<void> {
     const email: string = this.util_service.get_email_by_token(token);
-    const f_u: User = await this.db_service.find_user_by_email(email);
+    const f_user: User = await this.db_service.find_user_by_email(email);
 
-    const o: Order = new Order();
-    o.detail = [];
-    Object.assign(o, { ...payload, user: f_u });
-    for (const e_m of payload.m) {
+    const option: Order = new Order();
+    option.detail = [];
+    Object.assign(option, { ...payload, user: f_user });
+    for (const e_m of payload.menu) {
       let sub_price: number = e_m.price;
-      if (e_m.g) {
-        for (const e_g of e_m.g) {
-          for (const e_o of e_g.o) {
+      if (e_m.group) {
+        for (const e_g of e_m.group) {
+          for (const e_o of e_g.option) {
             sub_price += e_o.price;
           }
         }
       }
-      o.detail.push(plainToClass(OrderDetail, { ...e_m, sub_price }));
+      option.detail.push(plainToClass(OrderDetail, { ...e_m, sub_price }));
     }
-    await this.db_service.insert_order(o);
+    await this.db_service.insert_order(option);
   }
 
   public async get_list_by_user(token: string): Promise<ResGetOrderListByUser[]> {
     const res: ResGetOrderListByUser[] = [];
 
     const email: string = this.util_service.get_email_by_token(token);
-    const f_u: User = await this.db_service.find_user_by_email(email);
+    const f_user: User = await this.db_service.find_user_by_email(email);
 
-    const f_od_list: Order[] = await this.db_service.find_orders_by_user(f_u);
+    const f_orders: Order[] = await this.db_service.find_orders_by_user(f_user);
 
-    for (const e_od of f_od_list) {
+    for (const e_od of f_orders) {
       res.push(plainToClass(ResGetOrderListByUser,
         { ...e_od, create_time: e_od.od_id.getTimestamp() }));
     }
@@ -52,11 +52,11 @@ export class OrderService {
     const res: ResGetOrderListByRestaurant[] = [];
 
     const email: string = this.util_service.get_email_by_token(token);
-    const f_r: Restaurant = await this.db_service.find_restaurant_by_email(email);
+    const f_restaurant: Restaurant = await this.db_service.find_restaurant_by_email(email);
 
-    const f_od_list: Order[] = await this.db_service.find_orders_by_restaurant(f_r);
+    const f_orders: Order[] = await this.db_service.find_orders_by_restaurant(f_restaurant);
 
-    for (const e_od of f_od_list) {
+    for (const e_od of f_orders) {
       res.push(plainToClass(ResGetOrderListByRestaurant,
         { ...e_od, create_time: e_od.od_id.getTimestamp() }));
     }

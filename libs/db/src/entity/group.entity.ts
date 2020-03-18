@@ -7,10 +7,10 @@ export class Group {
   @PrimaryGeneratedColumn()
   public readonly g_id: number;
   @Column() public max_count: number;
-  @ManyToOne(() => Menu, (menu: Menu) => menu.g, { nullable: false })
+  @ManyToOne(() => Menu, (menu: Menu) => menu.group, { nullable: false })
   @JoinColumn({ name: 'm_id' })
-  public m: Menu;
+  public menu: Menu;
   @Column() public name: string;
-  @OneToMany(() => Option, (option: Option) => option.g)
-  public o: Option[];
+  @OneToMany(() => Option, (option: Option) => option.group)
+  public option: Option[];
 }

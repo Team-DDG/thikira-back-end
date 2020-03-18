@@ -1,5 +1,6 @@
 import { createHash, randomBytes } from 'crypto';
 import { sign, verify } from 'jsonwebtoken';
+import { Header } from '@app/type/etc';
 import { Injectable } from '@nestjs/common';
 import { TokenTypeEnum } from './token-type.enum';
 import { config } from '@app/config';
@@ -30,7 +31,14 @@ export class UtilService {
     return sign({ id: email }, this.secret, { expiresIn: expires_in });
   }
 
-  public get_token_body(token: string): string {
+  public get_token_body(header: Header): string {
+    let token: string;
+    if (header.authorization) {
+      token = header.authorization;
+    } else {
+      token = header['x-refresh-token'];
+    }
+
     if (this.token_reg_exp.test(token)) {
       return token.split(' ', 2)[1];
     } else {

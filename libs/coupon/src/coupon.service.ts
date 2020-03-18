@@ -12,49 +12,49 @@ export class CouponService {
 
   public async upload(token: string, payload: DtoUploadCoupon): Promise<void> {
     const email: string = this.util_service.get_email_by_token(token);
-    const f_r: Restaurant = await this.db_service.find_restaurant_by_email(email);
-    const f_c: Coupon = await this.db_service.find_coupon_by_restaurant(f_r);
-    if (!f_c) {
+    const f_restaurant: Restaurant = await this.db_service.find_restaurant_by_email(email);
+    const f_coupon: Coupon = await this.db_service.find_coupon_by_restaurant(f_restaurant);
+    if (!f_coupon) {
       throw new ConflictException();
     }
 
-    const c: Coupon = new Coupon();
-    Object.assign(c, { ...payload, r: f_r });
-    await this.db_service.insert_coupon(c);
+    const coupon: Coupon = new Coupon();
+    Object.assign(coupon, { ...payload, restaurant: f_restaurant });
+    await this.db_service.insert_coupon(coupon);
   }
 
   public async get_list(token: string): Promise<ResGetCouponList[]> {
     const res: ResGetCouponList[] = [];
     const email: string = this.util_service.get_email_by_token(token);
-    const f_r: Restaurant = await this.db_service.find_restaurant_by_email(email);
-    const f_c_list: Coupon[] = await this.db_service.find_coupons_by_restaurant(f_r);
+    const f_restaurant: Restaurant = await this.db_service.find_restaurant_by_email(email);
+    const f_coupons: Coupon[] = await this.db_service.find_coupons_by_restaurant(f_restaurant);
 
-    if (1 > f_c_list.length) {
+    if (1 > f_coupons.length) {
       throw new NotFoundException();
     }
 
-    for (const e_c of f_c_list) {
+    for (const e_c of f_coupons) {
       res.push(plainToClass(ResGetCouponList, e_c));
     }
     return res;
   }
 
   public async get(param: string | QueryGetCoupon): Promise<ResGetCoupon> {
-    let f_r: Restaurant;
+    let f_restaurant: Restaurant;
     if ('string' === typeof param) {
       const email: string = this.util_service.get_email_by_token(param);
-      f_r = await this.db_service.find_restaurant_by_email(email);
+      f_restaurant = await this.db_service.find_restaurant_by_email(email);
     } else {
-      f_r = await this.db_service.find_restaurant_by_id(parseInt(param.r_id));
+      f_restaurant = await this.db_service.find_restaurant_by_id(parseInt(param.r_id));
     }
-    if (!f_r) {
+    if (!f_restaurant) {
       throw new ForbiddenException();
     }
-    const f_c: Coupon = await this.db_service.find_coupon_by_restaurant(f_r);
-    if (!f_c) {
+    const f_coupon: Coupon = await this.db_service.find_coupon_by_restaurant(f_restaurant);
+    if (!f_coupon) {
       throw new NotFoundException();
     }
-    return plainToClass(ResGetCoupon, f_c);
+    return plainToClass(ResGetCoupon, f_coupon);
   }
 
   // only use in test

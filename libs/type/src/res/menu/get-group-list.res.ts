@@ -5,5 +5,5 @@ export class ResGetGroupList {
   @ApiProperty() public readonly g_id: number;
   @ApiProperty() public readonly max_count: number;
   @ApiProperty() public readonly name: string;
-  @ApiProperty() public readonly o?: ResGetOptionList[];
+  @ApiProperty() public readonly option?: ResGetOptionList[];
 }

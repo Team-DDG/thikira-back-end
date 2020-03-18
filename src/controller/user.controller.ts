@@ -11,13 +11,12 @@ import {
   Patch, Post, Query, ValidationPipe,
 } from '@nestjs/common';
 import {
-  DtoCheckPassword, DtoCreateUser,
-  DtoEditAddress, DtoEditPassword, DtoEditUserInfo,
-  DtoSignIn, EnumSortOption,
+  DtoCheckPassword, DtoCreateUser, DtoEditAddress,
+  DtoEditPassword, DtoEditUserInfo, DtoSignIn, EnumSortOption,
   QueryCheckEmail, QueryGetRestaurantList,
 } from '@app/type/req';
 import { ResGetRestaurantList, ResLoadUser, ResRefresh, ResSignIn } from '@app/type/res';
-import { CouponService } from '@app/coupon';
+import { Header } from '@app/type/etc';
 import { RestaurantService } from '@app/restaurant';
 import { UserService } from '@app/user';
 import { UtilService } from '@app/util';
@@ -26,9 +25,8 @@ import getPrototypeOf = Reflect.getPrototypeOf;
 @ApiTags('user')
 @Controller('api/user')
 export class UserController {
-  @Inject() private readonly c_service: CouponService;
-  @Inject() private readonly r_service: RestaurantService;
-  @Inject() private readonly u_service: UserService;
+  @Inject() private readonly restaurant_service: RestaurantService;
+  @Inject() private readonly user_service: UserService;
   @Inject() private readonly util_service: UtilService;
 
   @Get('auth/email')
@@ -37,9 +35,9 @@ export class UserController {
   @ApiQuery({ name: 'email' })
   @ApiOkResponse()
   @ApiConflictResponse()
-  public async check_email(@Query(new ValidationPipe()) query: QueryCheckEmail) {
+  public async check_email(@Query(new ValidationPipe()) query: QueryCheckEmail): Promise<void> {
     try {
-      return this.u_service.check_email(query);
+      return this.user_service.check_email(query);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -49,9 +47,9 @@ export class UserController {
   @HttpCode(200)
   @ApiOperation({ summary: '회원가입' })
   @ApiOkResponse()
-  public async create(@Body(new ValidationPipe()) payload: DtoCreateUser) {
+  public async create(@Body(new ValidationPipe()) payload: DtoCreateUser): Promise<void> {
     try {
-      return this.u_service.create(payload);
+      return this.user_service.create(payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -62,9 +60,9 @@ export class UserController {
   @ApiOperation({ summary: '로그인' })
   @ApiOkResponse({ type: ResSignIn })
   @ApiNotFoundResponse()
-  public async sign_in(@Body(new ValidationPipe()) payload: DtoSignIn) {
+  public async sign_in(@Body(new ValidationPipe()) payload: DtoSignIn): Promise<ResSignIn> {
     try {
-      return this.u_service.sign_in(payload);
+      return this.user_service.sign_in(payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -76,12 +74,8 @@ export class UserController {
   @ApiHeader({ name: 'X-Refresh-Token' })
   @ApiOkResponse({ type: ResRefresh })
   @ApiForbiddenResponse()
-  public async refresh(@Headers('x-refresh-token') token) {
-    try {
-      return this.u_service.refresh(this.util_service.get_token_body(token));
-    } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
-    }
+  public refresh(@Headers() header: Header): ResRefresh {
+    return this.user_service.refresh(this.util_service.get_token_body(header));
   }
 
   @Delete('leave')
@@ -90,9 +84,9 @@ export class UserController {
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse()
   @ApiForbiddenResponse()
-  public async leave(@Headers('authorization') token) {
+  public async leave(@Headers() header: Header): Promise<void> {
     try {
-      return this.u_service.leave(this.util_service.get_token_body(token));
+      return this.user_service.leave(this.util_service.get_token_body(header));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -104,7 +98,7 @@ export class UserController {
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse()
   @ApiForbiddenResponse()
-  public auth() {
+  public auth(): void {
     return null;
   }
 
@@ -116,11 +110,11 @@ export class UserController {
   @ApiForbiddenResponse()
   @ApiUnauthorizedResponse()
   public async check_password(
-    @Headers('authorization') token,
+    @Headers() header: Header,
     @Body(new ValidationPipe()) payload: DtoCheckPassword,
-  ) {
+  ): Promise<void> {
     try {
-      return this.u_service.check_password(this.util_service.get_token_body(token), payload);
+      return this.user_service.check_password(this.util_service.get_token_body(header), payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -133,11 +127,11 @@ export class UserController {
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_password(
-    @Headers('authorization') token,
+    @Headers() header: Header,
     @Body(new ValidationPipe()) payload: DtoEditPassword,
-  ) {
+  ): Promise<void> {
     try {
-      return this.u_service.edit(this.util_service.get_token_body(token.authorization), payload);
+      return this.user_service.edit(this.util_service.get_token_body(header), payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -150,11 +144,11 @@ export class UserController {
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_profile(
-    @Headers('authorization') token,
+    @Headers() header: Header,
     @Body(new ValidationPipe()) payload: DtoEditUserInfo,
-  ) {
+  ): Promise<void> {
     try {
-      return this.u_service.edit(this.util_service.get_token_body(token), payload);
+      return this.user_service.edit(this.util_service.get_token_body(header), payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -167,11 +161,11 @@ export class UserController {
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_address(
-    @Headers('authorization') token,
+    @Headers() header: Header,
     @Body(new ValidationPipe()) payload: DtoEditAddress,
-  ) {
+  ): Promise<void> {
     try {
-      return this.u_service.edit(this.util_service.get_token_body(token), payload);
+      return this.user_service.edit(this.util_service.get_token_body(header), payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -183,9 +177,9 @@ export class UserController {
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse({ type: ResLoadUser })
   @ApiNotFoundResponse()
-  public async get(@Headers('authorization') header) {
+  public async get(@Headers('authorization') header: Header): Promise<ResLoadUser> {
     try {
-      return this.u_service.get(this.util_service.get_token_body(header));
+      return this.user_service.get(this.util_service.get_token_body(header));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -200,11 +194,11 @@ export class UserController {
   @ApiQuery({ enum: EnumSortOption, name: 'sort_option', type: 'enum' })
   @ApiNotFoundResponse()
   public async get_restaurant_list(
-    @Headers('authorization') token,
+    @Headers() token: Header,
     @Query(new ValidationPipe()) query: QueryGetRestaurantList,
-  ) {
+  ): Promise<ResGetRestaurantList[]> {
     try {
-      return this.r_service.get_list(query);
+      return this.restaurant_service.get_list(query);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }

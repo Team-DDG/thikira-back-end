@@ -9,7 +9,7 @@ export class Coupon {
   public c_id: number;
   @Column()
   public discount_amount: number;
-  @ManyToOne(() => Restaurant, (restaurant: Restaurant) => restaurant.c)
+  @ManyToOne(() => Restaurant, (restaurant: Restaurant) => restaurant.coupon)
   @JoinColumn({ name: 'r_id' })
-  public r: Restaurant;
+  public restaurant: Restaurant;
 }

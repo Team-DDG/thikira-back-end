@@ -11,10 +11,10 @@ import {
   QueryGetGroupList, QueryGetMenuList, QueryGetOptionList,
 } from '@app/type/req';
 import {
-  ResGetGroupList,
-  ResGetMenuCategoryList, ResGetMenuList, ResGetOptionList,
+  ResGetGroupList, ResGetMenuCategoryList, ResGetMenuList, ResGetOptionList,
   ResUploadGroup, ResUploadMenu, ResUploadMenuCategory, ResUploadOption,
 } from '@app/type/res';
+import { Header } from '@app/type/etc';
 import { MenuService } from '@app/menu';
 import { UtilService } from '@app/util';
 import getPrototypeOf = Reflect.getPrototypeOf;
@@ -22,7 +22,7 @@ import getPrototypeOf = Reflect.getPrototypeOf;
 @ApiTags('restaurant/menu')
 @Controller('api/restaurant/menu')
 export class RestaurantMenuController {
-  @Inject() private readonly m_service: MenuService;
+  @Inject() private readonly menu_service: MenuService;
   @Inject() private readonly util_service: UtilService;
 
   @Post('category')
@@ -33,11 +33,11 @@ export class RestaurantMenuController {
   @ApiForbiddenResponse()
   @ApiConflictResponse()
   public async upload_menu_category(
-    @Headers('authorization') token,
+    @Headers() header: Header,
     @Body(new ValidationPipe()) payload: DtoUploadMenuCategory,
-  ) {
+  ): Promise<ResUploadMenuCategory> {
     try {
-      return this.m_service.upload_menu_category(this.util_service.get_token_body(token), payload);
+      return this.menu_service.upload_menu_category(this.util_service.get_token_body(header), payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -49,9 +49,9 @@ export class RestaurantMenuController {
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse({ type: [ResGetMenuCategoryList] })
   @ApiForbiddenResponse()
-  public async get_menu_category_list(@Headers('authorization') token) {
+  public async get_menu_category_list(@Headers() header: Header): Promise<ResGetMenuCategoryList[]> {
     try {
-      return this.m_service.get_menu_category_list(this.util_service.get_token_body(token));
+      return this.menu_service.get_menu_category_list(this.util_service.get_token_body(header));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -65,11 +65,11 @@ export class RestaurantMenuController {
   @ApiForbiddenResponse()
   @ApiConflictResponse()
   public async edit_menu_category(
-    @Headers('authorization') token,
+    @Headers() header: Header,
     @Body(new ValidationPipe()) payload: DtoEditMenuCategory,
-  ) {
+  ): Promise<void> {
     try {
-      return this.m_service.edit_menu_category(payload);
+      return this.menu_service.edit_menu_category(payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -82,11 +82,12 @@ export class RestaurantMenuController {
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async remove_menu_category(
-    @Headers('authorization') token,
+    @Headers() header: Header,
     @Param(new ValidationPipe()) param: ParamRemoveMenuCategory,
-  ) {
+  ): Promise<void> {
     try {
-      return this.m_service.remove_menu_category(UtilService.parse_ids(param.mc_id));
+
+      return this.menu_service.remove_menu_category(UtilService.parse_ids(param.mc_id));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -100,11 +101,11 @@ export class RestaurantMenuController {
   @ApiForbiddenResponse()
   @ApiConflictResponse()
   public async upload_menu(
-    @Headers('authorization') token,
+    @Headers() header: Header,
     @Body(new ValidationPipe()) payload: DtoUploadMenu,
-  ) {
+  ): Promise<ResUploadMenu> {
     try {
-      return this.m_service.upload_menu(payload);
+      return this.menu_service.upload_menu(payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -118,11 +119,11 @@ export class RestaurantMenuController {
   @ApiOkResponse({ type: [ResGetMenuList] })
   @ApiForbiddenResponse()
   public async get_menu_list(
-    @Headers('authorization') token,
+    @Headers() header: Header,
     @Query(new ValidationPipe()) query: QueryGetMenuList,
-  ) {
+  ): Promise<ResGetMenuList[]> {
     try {
-      return this.m_service.get_menu_list(query);
+      return this.menu_service.get_menu_list(query);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -135,11 +136,11 @@ export class RestaurantMenuController {
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_menu(
-    @Headers('authorization') token,
+    @Headers() header: Header,
     @Body(new ValidationPipe()) payload: DtoEditMenu,
-  ) {
+  ): Promise<void> {
     try {
-      return this.m_service.edit_menu(payload);
+      return this.menu_service.edit_menu(payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -152,11 +153,11 @@ export class RestaurantMenuController {
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async remove_menu(
-    @Headers('authorization') token,
+    @Headers() header: Header,
     @Param(new ValidationPipe()) param: ParamRemoveMenu,
-  ) {
+  ): Promise<void> {
     try {
-      return this.m_service.remove_menu(UtilService.parse_ids(param.m_id));
+      return this.menu_service.remove_menu(UtilService.parse_ids(param.m_id));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -170,11 +171,11 @@ export class RestaurantMenuController {
   @ApiForbiddenResponse()
   @ApiConflictResponse()
   public async upload_group(
-    @Headers('authorization') token,
+    @Headers() header: Header,
     @Body(new ValidationPipe()) payload: DtoUploadGroup,
-  ) {
+  ): Promise<ResUploadGroup> {
     try {
-      return this.m_service.upload_group(payload);
+      return this.menu_service.upload_group(payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -188,11 +189,11 @@ export class RestaurantMenuController {
   @ApiOkResponse({ type: [ResGetGroupList] })
   @ApiForbiddenResponse()
   public async get_group_list(
-    @Headers('authorization') token,
+    @Headers() header: Header,
     @Query(new ValidationPipe()) query: QueryGetGroupList,
-  ) {
+  ): Promise<ResGetGroupList[]> {
     try {
-      return this.m_service.get_group_list(query);
+      return this.menu_service.get_group_list(query);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -205,11 +206,11 @@ export class RestaurantMenuController {
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_group(
-    @Headers('authorization') token,
+    @Headers() header: Header,
     @Body(new ValidationPipe()) payload: DtoEditGroup,
-  ) {
+  ): Promise<void> {
     try {
-      return this.m_service.edit_group(payload);
+      return this.menu_service.edit_group(payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -222,11 +223,11 @@ export class RestaurantMenuController {
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async remove_group(
-    @Headers('authorization') token,
+    @Headers() header: Header,
     @Param(new ValidationPipe()) param: ParamRemoveGroup,
-  ) {
+  ): Promise<void> {
     try {
-      return this.m_service.remove_group(UtilService.parse_ids(param.g_id));
+      return this.menu_service.remove_group(UtilService.parse_ids(param.g_id));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -240,11 +241,11 @@ export class RestaurantMenuController {
   @ApiForbiddenResponse()
   @ApiConflictResponse()
   public async upload_option(
-    @Headers('authorization') token,
+    @Headers() header: Header,
     @Body(new ValidationPipe()) payload: DtoUploadOption,
-  ) {
+  ): Promise<ResUploadOption> {
     try {
-      return this.m_service.upload_option(payload);
+      return this.menu_service.upload_option(payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -258,11 +259,11 @@ export class RestaurantMenuController {
   @ApiOkResponse({ type: [ResGetOptionList] })
   @ApiForbiddenResponse()
   public async get_option_list(
-    @Headers('authorization') token,
+    @Headers() header: Header,
     @Query(new ValidationPipe()) query: QueryGetOptionList,
-  ) {
+  ): Promise<ResGetOptionList[]> {
     try {
-      return this.m_service.get_option_list(query);
+      return this.menu_service.get_option_list(query);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -275,11 +276,11 @@ export class RestaurantMenuController {
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_option(
-    @Headers('authorization') token,
+    @Headers() header: Header,
     @Body(new ValidationPipe()) payload: DtoEditOption,
-  ) {
+  ): Promise<void> {
     try {
-      return this.m_service.edit_option(payload);
+      return this.menu_service.edit_option(payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -292,11 +293,11 @@ export class RestaurantMenuController {
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async remove_option(
-    @Headers('authorization') token,
+    @Headers() header: Header,
     @Param(new ValidationPipe()) param: ParamRemoveOption,
-  ) {
+  ): Promise<void> {
     try {
-      return this.m_service.remove_option(UtilService.parse_ids(param.o_id));
+      return this.menu_service.remove_option(UtilService.parse_ids(param.o_id));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }

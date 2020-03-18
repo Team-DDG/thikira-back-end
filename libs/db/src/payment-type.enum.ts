@@ -1,3 +1,3 @@
 export enum EnumPaymentType {
-  ONLINE = 'ONLINE', OFFLINE ='OFFLINE'
+  OFFLINE ='OFFLINE', ONLINE = 'ONLINE'
 }

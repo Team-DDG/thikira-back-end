@@ -12,15 +12,15 @@ export class UserService {
   @Inject() private readonly util_service: UtilService;
 
   public async check_email(query: QueryCheckEmail): Promise<void> {
-    const f_u: User = await this.db_service.find_user_by_email(query.email);
-    if (f_u) {
+    const f_user: User = await this.db_service.find_user_by_email(query.email);
+    if (f_user) {
       throw new ConflictException();
     }
   }
 
   public async create(payload: DtoCreateUser): Promise<void> {
-    const f_u: User = await this.db_service.find_user_by_nickname(payload.nickname);
-    if (f_u) {
+    const f_user: User = await this.db_service.find_user_by_nickname(payload.nickname);
+    if (f_user) {
       throw new ConflictException();
     }
 
@@ -30,9 +30,9 @@ export class UserService {
   }
 
   public async sign_in(payload: DtoSignIn): Promise<ResSignIn> {
-    const f_u: User = await this.db_service.find_user_by_email(payload.email);
-    if (!f_u ||
-      f_u.password !== this.util_service.encode(payload.password)) {
+    const f_user: User = await this.db_service.find_user_by_email(payload.email);
+    if (!f_user ||
+      f_user.password !== this.util_service.encode(payload.password)) {
       throw new NotFoundException();
     }
 
@@ -49,11 +49,11 @@ export class UserService {
 
   public async leave(token: string): Promise<void> {
     const email: string = this.util_service.get_email_by_token(token);
-    const f_u: User = await this.db_service.find_user_by_email(email);
+    const f_user: User = await this.db_service.find_user_by_email(email);
 
-    const f_od_list: Order[] = await this.db_service.find_orders_by_user(f_u);
+    const f_orders: Order[] = await this.db_service.find_orders_by_user(f_user);
     const od_ids: ObjectID[] = [];
-    for (const e_od of f_od_list) {
+    for (const e_od of f_orders) {
       od_ids.push(e_od.od_id);
     }
     await this.db_service.delete_order(od_ids);
@@ -62,8 +62,8 @@ export class UserService {
 
   public async check_password(token: string, payload: DtoCheckPassword): Promise<void> {
     const email: string = this.util_service.get_email_by_token(token);
-    const f_u: User = await this.db_service.find_user_by_email(email);
-    if (this.util_service.encode(payload.password) !== f_u.password) {
+    const f_user: User = await this.db_service.find_user_by_email(email);
+    if (this.util_service.encode(payload.password) !== f_user.password) {
       throw new UnauthorizedException();
     }
   }
@@ -75,10 +75,10 @@ export class UserService {
 
   public async get(token: string): Promise<ResLoadUser> {
     const email: string = this.util_service.get_email_by_token(token);
-    const f_u: User = await this.db_service.find_user_by_email(email);
-    ['u_id', 'email', 'password'].map((e) => {
-      Reflect.deleteProperty(f_u, e);
+    const f_user: User = await this.db_service.find_user_by_email(email);
+    ['u_id', 'email', 'password'].map((e: string) => {
+      Reflect.deleteProperty(f_user, e);
     });
-    return f_u;
+    return f_user;
   }
 }

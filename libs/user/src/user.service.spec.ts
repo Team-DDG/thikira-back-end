@@ -77,11 +77,11 @@ describe('UserService', () => {
       phone: '01012345679',
     };
     await service.edit(access_token, edit_data);
-    const f_u: ResLoadUser = await service.get(access_token);
-    ['add_parcel', 'add_street', 'create_time'].map((e) => {
-      Reflect.deleteProperty(f_u, e);
+    const f_user: ResLoadUser = await service.get(access_token);
+    ['add_parcel', 'add_street', 'create_time'].map((e: string) => {
+      Reflect.deleteProperty(f_user, e);
     });
-    expect(classToPlain(f_u)).toStrictEqual(classToPlain(edit_data));
+    expect(classToPlain(f_user)).toStrictEqual(classToPlain(edit_data));
   });
 
   it('Should success edit_address()', async () => {
@@ -90,9 +90,9 @@ describe('UserService', () => {
       add_street: '경기도 어딘가',
     };
     await service.edit(access_token, edit_data);
-    const f_u: ResLoadUser = await service.get(access_token);
-    if (edit_data.add_street !== f_u.add_street ||
-      edit_data.add_parcel !== f_u.add_parcel) {
+    const f_user: ResLoadUser = await service.get(access_token);
+    if (edit_data.add_street !== f_user.add_street ||
+      edit_data.add_parcel !== f_user.add_parcel) {
       throw new Error();
     }
   });

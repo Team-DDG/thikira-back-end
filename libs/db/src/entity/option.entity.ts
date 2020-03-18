@@ -3,9 +3,9 @@ import { Group } from './group.entity';
 
 @Entity()
 export class Option {
-  @ManyToOne(() => Group, (group: Group) => group.o, { nullable: false })
+  @ManyToOne(() => Group, (group: Group) => group.option, { nullable: false })
   @JoinColumn({ name: 'g_id' })
-  public g: Group;
+  public group: Group;
   @PrimaryGeneratedColumn()
   public o_id: number;
   @Column()

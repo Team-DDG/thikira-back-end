@@ -10,5 +10,5 @@ export class DtoUploadGroup {
   @ApiProperty() @IsString()
   public readonly name: string;
   @ApiProperty() @IsArray() @IsOptional()
-  public readonly o?: UploadOptionClass[];
+  public readonly option?: UploadOptionClass[];
 }

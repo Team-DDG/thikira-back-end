@@ -5,7 +5,8 @@ import {
   ApiTags, ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import {
-  Body, Controller, Delete, Get, Headers, HttpCode, HttpException, Inject, InternalServerErrorException,
+  Body, Controller, Delete, Get, Headers, HttpCode,
+  HttpException, Inject, InternalServerErrorException,
   Patch, Post, Query, ValidationPipe,
 } from '@nestjs/common';
 import {
@@ -14,7 +15,7 @@ import {
   QueryCheckEmail,
 } from '@app/type/req';
 import { ResLoadRestaurant, ResRefresh, ResSignIn } from '@app/type/res';
-import { MenuService } from '@app/menu';
+import { Header } from '@app/type/etc';
 import { RestaurantService } from '@app/restaurant';
 import { UtilService } from '@app/util';
 import getPrototypeOf = Reflect.getPrototypeOf;
@@ -22,8 +23,7 @@ import getPrototypeOf = Reflect.getPrototypeOf;
 @ApiTags('restaurant')
 @Controller('api/restaurant')
 export class RestaurantController {
-  @Inject() private readonly m_service: MenuService;
-  @Inject() private readonly r_service: RestaurantService;
+  @Inject() private readonly restaurant_service: RestaurantService;
   @Inject() private readonly util_service: UtilService;
 
   @Get('auth/email')
@@ -32,9 +32,9 @@ export class RestaurantController {
   @ApiQuery({ name: 'email' })
   @ApiOkResponse()
   @ApiConflictResponse()
-  public async check_email(@Query(new ValidationPipe()) query: QueryCheckEmail) {
+  public async check_email(@Query(new ValidationPipe()) query: QueryCheckEmail): Promise<void> {
     try {
-      return this.r_service.check_email(query);
+      return this.restaurant_service.check_email(query);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -44,9 +44,10 @@ export class RestaurantController {
   @HttpCode(200)
   @ApiOperation({ summary: '업체 회원가입' })
   @ApiOkResponse()
-  public async create(@Body(new ValidationPipe()) payload: DtoCreateRestaurant) {
+  @ApiConflictResponse()
+  public async create(@Body(new ValidationPipe()) payload: DtoCreateRestaurant): Promise<void> {
     try {
-      return this.r_service.create(payload);
+      return this.restaurant_service.create(payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -57,9 +58,9 @@ export class RestaurantController {
   @ApiOperation({ summary: '업체 로그인' })
   @ApiOkResponse({ type: ResSignIn })
   @ApiNotFoundResponse()
-  public async sign_in(@Body(new ValidationPipe()) payload: DtoSignIn) {
+  public async sign_in(@Body(new ValidationPipe()) payload: DtoSignIn): Promise<ResSignIn> {
     try {
-      return this.r_service.sign_in(payload);
+      return this.restaurant_service.sign_in(payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -71,12 +72,8 @@ export class RestaurantController {
   @ApiHeader({ name: 'X-Refresh-Token' })
   @ApiOkResponse({ type: ResRefresh })
   @ApiForbiddenResponse()
-  public async refresh(@Headers('x-refresh-token') token) {
-    try {
-      return this.r_service.refresh(this.util_service.get_token_body(token));
-    } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
-    }
+  public refresh(@Headers() token: Header): ResRefresh {
+    return this.restaurant_service.refresh(this.util_service.get_token_body(token));
   }
 
   @Delete('leave')
@@ -85,9 +82,10 @@ export class RestaurantController {
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse()
   @ApiForbiddenResponse()
-  public async leave(@Headers('authorization') token) {
+  public async leave(@Headers() token: Header): Promise<void> {
     try {
-      return this.r_service.leave(this.util_service.get_token_body(token));
+      return this.restaurant_service.leave(
+        this.util_service.get_token_body(token));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -99,7 +97,7 @@ export class RestaurantController {
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse()
   @ApiForbiddenResponse()
-  public auth() {
+  public auth(): void {
 
   }
 
@@ -111,11 +109,11 @@ export class RestaurantController {
   @ApiForbiddenResponse()
   @ApiUnauthorizedResponse()
   public async check_password(
-    @Headers('authorization') token,
+    @Headers() header: Header,
     @Body(new ValidationPipe()) payload: DtoCheckPassword,
-  ) {
+  ): Promise<void> {
     try {
-      return this.r_service.check_password(this.util_service.get_token_body(token), payload);
+      return this.restaurant_service.check_password(this.util_service.get_token_body(header), payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -128,11 +126,11 @@ export class RestaurantController {
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_password(
-    @Headers('authorization') token,
+    @Headers() header: Header,
     @Body(new ValidationPipe()) payload: DtoEditPassword,
-  ) {
+  ): Promise<void> {
     try {
-      return this.r_service.edit(this.util_service.get_token_body(token), payload);
+      return this.restaurant_service.edit(this.util_service.get_token_body(header), payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -145,11 +143,11 @@ export class RestaurantController {
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_info(
-    @Headers('authorization') token,
+    @Headers() header: Header,
     @Body(new ValidationPipe()) payload: DtoEditRestaurantInfo,
-  ) {
+  ): Promise<void> {
     try {
-      return this.r_service.edit(this.util_service.get_token_body(token), payload);
+      return this.restaurant_service.edit(this.util_service.get_token_body(header), payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -162,11 +160,11 @@ export class RestaurantController {
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_address(
-    @Headers('authorization') token,
+    @Headers() header: Header,
     @Body(new ValidationPipe()) payload: DtoEditAddress,
-  ) {
+  ): Promise<void> {
     try {
-      return this.r_service.edit(this.util_service.get_token_body(token), payload);
+      return this.restaurant_service.edit(this.util_service.get_token_body(header), payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -178,9 +176,9 @@ export class RestaurantController {
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse({ type: ResLoadRestaurant })
   @ApiNotFoundResponse()
-  public async get(@Headers('authorization') token) {
+  public async get(@Headers() header: Header): Promise<ResLoadRestaurant> {
     try {
-      return this.r_service.get(this.util_service.get_token_body(token));
+      return this.restaurant_service.get(this.util_service.get_token_body(header));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }

@@ -75,8 +75,8 @@ describe('RestaurantService', () => {
     refresh_token = res.refresh_token;
   });
 
-  it('Should success refresh()', async () => {
-    const res: ResRefresh = await service.refresh(refresh_token);
+  it('Should success refresh()', () => {
+    const res: ResRefresh = service.refresh(refresh_token);
     access_token = res.access_token;
   });
 
@@ -95,11 +95,11 @@ describe('RestaurantService', () => {
       phone: '01012345679',
     };
     await service.edit(access_token, edit_data);
-    const f_r: ResLoadRestaurant = await service.get(access_token);
-    ['add_parcel', 'add_street', 'category', 'create_time'].forEach((key) => {
-      Reflect.deleteProperty(f_r, key);
+    const f_restaurant: ResLoadRestaurant = await service.get(access_token);
+    ['add_parcel', 'add_street', 'category', 'create_time'].forEach((e: string) => {
+      Reflect.deleteProperty(f_restaurant, e);
     });
-    expect(classToPlain(f_r)).toStrictEqual(classToPlain(edit_data));
+    expect(classToPlain(f_restaurant)).toStrictEqual(classToPlain(edit_data));
   });
 
   it('Should success edit_address()', async () => {
@@ -108,9 +108,9 @@ describe('RestaurantService', () => {
       add_street: '경기도 어딘가',
     };
     await service.edit(access_token, edit_data);
-    const f_r: ResLoadRestaurant = await service.get(access_token);
-    if (edit_data.add_street !== f_r.add_street ||
-      edit_data.add_parcel !== f_r.add_parcel) {
+    const f_restaurant: ResLoadRestaurant = await service.get(access_token);
+    if (edit_data.add_street !== f_restaurant.add_street ||
+      edit_data.add_parcel !== f_restaurant.add_parcel) {
       throw new Error();
     }
   });

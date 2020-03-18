@@ -5,15 +5,16 @@ import {
   InternalServerErrorException, Patch, ValidationPipe,
 } from '@nestjs/common';
 import { DtoEditOrderStatus } from '@app/type/req';
+import { Header } from '@app/type/etc';
 import { OrderService } from '@app/order';
 import { ResGetOrderListByRestaurant } from '@app/type/res';
-import getPrototypeOf = Reflect.getPrototypeOf;
 import { UtilService } from '@app/util';
+import getPrototypeOf = Reflect.getPrototypeOf;
 
 @ApiTags('restaurant/order')
 @Controller('api/restaurant/order')
 export class RestaurantOrderController {
-  @Inject() private readonly od_service: OrderService;
+  @Inject() private readonly order_service: OrderService;
   @Inject() private readonly util_service: UtilService;
 
   @Get()
@@ -22,9 +23,9 @@ export class RestaurantOrderController {
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse({ type: [ResGetOrderListByRestaurant] })
   @ApiForbiddenResponse()
-  public async get_orders(@Headers('authorization') token) {
+  public async get_orders(@Headers() header: Header): Promise<ResGetOrderListByRestaurant[]> {
     try {
-      return this.od_service.get_list_by_restaurant(this.util_service.get_token_body(token));
+      return this.order_service.get_list_by_restaurant(this.util_service.get_token_body(header));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -37,11 +38,11 @@ export class RestaurantOrderController {
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_order_status(
-    @Headers('authorization') token,
+    @Headers('authorization') header: Header,
     @Body(new ValidationPipe()) payload: DtoEditOrderStatus,
-  ) {
+  ): Promise<void> {
     try {
-      return this.od_service.edit_order_status(payload);
+      return this.order_service.edit_order_status(payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }

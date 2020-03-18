@@ -4,29 +4,29 @@ import { EnumPaymentType } from '@app/db';
 
 export class DtoOrderOption {
   @ApiProperty() @IsString()
-  readonly name: string;
+  public readonly name: string;
   @ApiProperty() @IsNumber()
-  readonly price: number;
+  public readonly price: number;
 }
 
 export class DtoOrderGroup {
   @ApiProperty() @IsString()
-  readonly name: string;
+  public readonly name: string;
   @ApiProperty({ type: [DtoOrderOption] })
   @IsArray() @IsOptional()
-  readonly o?: DtoOrderOption[];
+  public readonly option?: DtoOrderOption[];
 }
 
 export class DtoOrderMenu {
   @ApiProperty() @IsNumber()
-  readonly quantity: number;
+  public readonly quantity: number;
   @ApiProperty() @IsString()
-  readonly name: string;
+  public readonly name: string;
   @ApiProperty() @IsNumber()
-  readonly price: number;
+  public readonly price: number;
   @ApiProperty({ type: [DtoOrderGroup] })
   @IsArray() @IsOptional()
-  readonly g?: DtoOrderGroup[];
+  public readonly group?: DtoOrderGroup[];
 }
 
 export class DtoUploadOrder {
@@ -34,7 +34,7 @@ export class DtoUploadOrder {
   public readonly discount_amount: number;
   @ApiProperty({ type: [DtoOrderMenu] })
   @IsArray() @IsOptional()
-  public readonly m?: DtoOrderMenu[];
+  public readonly menu?: DtoOrderMenu[];
   @ApiProperty() @IsNumber()
   public readonly quantity: number;
   @ApiProperty({ enum: EnumPaymentType, type: 'enum' })

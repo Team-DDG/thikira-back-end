@@ -16,16 +16,20 @@ export class OrderDetailGroup {
   public name: string;
   @ApiProperty({ type: [OrderDetailOption] })
   @IsArray() @IsOptional()
-  public o?: OrderDetailOption[];
+  public option?: OrderDetailOption[];
 }
 
 export class OrderDetail {
-  @ApiProperty() public name: string;
-  @ApiProperty() public price: number;
-  @ApiProperty() public quantity: number;
-  @ApiProperty() public sub_price: number;
+  @ApiProperty()
+  public name: string;
+  @ApiProperty()
+  public price: number;
+  @ApiProperty()
+  public quantity: number;
+  @ApiProperty()
+  public sub_price: number;
   @ApiProperty({ type: [OrderDetailGroup] })
-  public g: OrderDetailGroup[];
+  public group: OrderDetailGroup[];
 }
 
 @Entity()

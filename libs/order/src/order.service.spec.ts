@@ -35,10 +35,10 @@ describe('OrderService', () => {
   };
   let test_req: DtoUploadOrder = {
     discount_amount: 500,
-    m: [{
-      g: [{
+    menu: [{
+      group: [{
         name: '치킨 유형',
-        o: [{
+        option: [{
           name: '순살',
           price: 1000,
         }],
@@ -117,15 +117,15 @@ describe('OrderService', () => {
   });
 
   it('200 edit_order_status', async () => {
-    let f_od: Order = await service.get_order(test_req.r_id);
+    let f_order: Order = await service.get_order(test_req.r_id);
 
-    await service.edit_order_status({ od_id: f_od.od_id.toString(), status: EnumOrderStatus.DONE });
+    await service.edit_order_status({ od_id: f_order.od_id.toString(), status: EnumOrderStatus.DONE });
 
-    f_od = await service.get_order(test_req.r_id);
-    if (EnumOrderStatus.DONE !== f_od.status) {
+    f_order = await service.get_order(test_req.r_id);
+    if (EnumOrderStatus.DONE !== f_order.status) {
       throw Error();
     }
 
-    await service.remove_order(f_od.od_id);
+    await service.remove_order(f_order.od_id);
   });
 });

@@ -3,10 +3,10 @@ import { AppModule } from './app.module';
 import { NestFactory } from '@nestjs/core';
 import { config } from '@app/config';
 
-(async () => {
+(async (): Promise<void> => {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
-    origin: '*'
+    origin: '*',
   });
 
   const options = new DocumentBuilder()

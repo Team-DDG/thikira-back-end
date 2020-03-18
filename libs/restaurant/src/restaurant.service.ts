@@ -14,15 +14,16 @@ export class RestaurantService {
   @Inject() private readonly util_service: UtilService;
 
   public async check_email(query: QueryCheckEmail): Promise<void> {
-    const f_r: Restaurant = await this.db_service.find_restaurant_by_email(query.email);
-    if (f_r) {
+    const f_restaurant: Restaurant = await this.db_service.find_restaurant_by_email(query.email);
+    if (f_restaurant) {
+      console.log(f_restaurant);
       throw new ConflictException();
     }
   }
 
   public async create(payload: DtoCreateRestaurant): Promise<void> {
-    const f_r: Restaurant = await this.db_service.find_restaurant_by_name(payload.name);
-    if (f_r) {
+    const f_restaurant: Restaurant = await this.db_service.find_restaurant_by_name(payload.name);
+    if (f_restaurant) {
       throw new ConflictException();
     }
 
@@ -32,8 +33,8 @@ export class RestaurantService {
   }
 
   public async sign_in(payload: DtoSignIn): Promise<ResSignIn> {
-    const f_r: Restaurant = await this.db_service.find_restaurant_by_email(payload.email);
-    if (!f_r || f_r.password !== this.util_service.encode(payload.password)) {
+    const f_restaurant: Restaurant = await this.db_service.find_restaurant_by_email(payload.email);
+    if (!f_restaurant || f_restaurant.password !== this.util_service.encode(payload.password)) {
       throw new NotFoundException();
     }
 
@@ -50,32 +51,32 @@ export class RestaurantService {
 
   public async leave(token: string): Promise<void> {
     const email: string = this.util_service.get_email_by_token(token);
-    const f_r: Restaurant = await this.db_service.find_restaurant_by_email(email);
-    if (!f_r) {
+    const f_restaurant: Restaurant = await this.db_service.find_restaurant_by_email(email);
+    if (!f_restaurant) {
       throw new ForbiddenException();
     }
 
-    const f_c_list: Coupon[] = await this.db_service.find_coupons_by_restaurant(f_r);
-    for (const e_c of f_c_list) {
+    const f_coupons: Coupon[] = await this.db_service.find_coupons_by_restaurant(f_restaurant);
+    for (const e_c of f_coupons) {
       await this.db_service.delete_coupon(e_c.c_id);
     }
 
-    const f_m_categories: MenuCategory[] = await this.db_service.find_menu_categories_by_restaurant(f_r, true);
+    const f_m_categories: MenuCategory[] = await this.db_service.find_menu_categories_by_restaurant(f_restaurant, true);
     if (f_m_categories.length > 0) {
       const mc_ids: number[] = [];
       for (const e_mc of f_m_categories) {
         mc_ids.push(e_mc.mc_id);
-        if (e_mc.m.length > 0) {
+        if (e_mc.menu.length > 0) {
           const m_ids: number[] = [];
-          for (const e_m of e_mc.m) {
+          for (const e_m of e_mc.menu) {
             m_ids.push(e_m.m_id);
-            if (e_m.g.length > 0) {
+            if (e_m.group.length > 0) {
               const g_ids: number[] = [];
-              for (const e_g of e_m.g) {
+              for (const e_g of e_m.group) {
                 g_ids.push(e_g.g_id);
-                if (e_g.o.length > 0) {
+                if (e_g.option.length > 0) {
                   const o_ids: number[] = [];
-                  for (const e_o of e_g.o) {
+                  for (const e_o of e_g.option) {
                     o_ids.push(e_o.o_id);
                   }
                   await this.db_service.delete_option(o_ids);
@@ -94,8 +95,8 @@ export class RestaurantService {
 
   public async check_password(token: string, payload: DtoCheckPassword): Promise<void> {
     const email: string = this.util_service.get_email_by_token(token);
-    const f_r: Restaurant = await this.db_service.find_restaurant_by_email(email);
-    if (this.util_service.encode(payload.password) !== f_r.password) {
+    const f_restaurant: Restaurant = await this.db_service.find_restaurant_by_email(email);
+    if (this.util_service.encode(payload.password) !== f_restaurant.password) {
       throw new UnauthorizedException();
     }
   }
@@ -107,17 +108,17 @@ export class RestaurantService {
 
   public async get(token: string): Promise<ResLoadRestaurant> {
     const email: string = this.util_service.get_email_by_token(token);
-    const f_r: Restaurant = await this.db_service.find_restaurant_by_email(email);
-    ['c', 'email', 'password', 'r_id'].map((e) => {
-      Reflect.deleteProperty(f_r, e);
+    const f_restaurant: Restaurant = await this.db_service.find_restaurant_by_email(email);
+    ['coupon', 'email', 'password', 'r_id'].map((e: string) => {
+      Reflect.deleteProperty(f_restaurant, e);
     });
-    return f_r;
+    return f_restaurant;
   }
 
   public async get_list(param: QueryGetRestaurantList): Promise<ResGetRestaurantList[]> {
-    const f_r: Restaurant[] = await this.db_service.find_restaurants_by_category(param.category);
+    const f_restaurant: Restaurant[] = await this.db_service.find_restaurants_by_category(param.category);
     const res: ResGetRestaurantList[] = [];
-    for (const e_o of f_r) {
+    for (const e_o of f_restaurant) {
       res.push(plainToClass(ResGetRestaurantList, e_o));
     }
     return res;

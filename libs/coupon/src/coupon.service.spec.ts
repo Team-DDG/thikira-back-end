@@ -17,11 +17,11 @@ describe('CouponService', () => {
   const test_r: DtoCreateRestaurant = {
     add_parcel: 'a',
     add_street: 'b',
-    area: 'c',
+    area: 'coupon',
     category: 'coupon_test',
     close_time: 'e',
     day_off: 'f',
-    description: 'g',
+    description: 'group',
     email: 'coupon_test@gmail.com',
     image: 'image.url',
     min_price: 10000,
@@ -80,8 +80,8 @@ describe('CouponService', () => {
   });
 
   it('Should success get()', async () => {
-    const f_c: ResGetCoupon = await service.get(r_token);
-    if (test_req.discount_amount !== f_c.discount_amount) {
+    const f_coupon: ResGetCoupon = await service.get(r_token);
+    if (test_req.discount_amount !== f_coupon.discount_amount) {
       throw Error();
     }
   });

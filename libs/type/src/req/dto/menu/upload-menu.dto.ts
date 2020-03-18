@@ -14,5 +14,5 @@ export class DtoUploadMenu {
   @ApiProperty() @IsNumber()
   public readonly price: number;
   @ApiProperty()  @IsArray()  @IsOptional()
-  public readonly g?: UploadGroupClass[];
+  public readonly group?: UploadGroupClass[];
 }

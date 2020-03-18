@@ -1,6 +1,7 @@
 import { IsEnum, IsNumberString, IsOptional, IsString, validateSync } from 'class-validator';
 import { Injectable } from '@nestjs/common';
 import { NodeEnv } from './node-env.enum';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { fileExistsSync } from 'tsconfig-paths/lib/filesystem';
 import { parse } from 'dotenv';
 import { readFileSync } from 'fs';
@@ -40,10 +41,10 @@ export class ConfigService {
   public readonly JWT_SECRET?: string;
   @IsString()
   public readonly ENCIPHERMENT: string;
-  public readonly mysql_config;
-  public readonly mongodb_config;
+  public readonly mysql_config: TypeOrmModuleOptions;
+  public readonly mongodb_config: TypeOrmModuleOptions;
 
-  constructor(file_path?: string, custom_config?: Config) {
+  public constructor(file_path?: string, custom_config?: Config) {
     Object.assign(this, {
       NODE_ENV: NodeEnv.development,
       ...process.env,
