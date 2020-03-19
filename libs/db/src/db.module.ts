@@ -5,11 +5,11 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UtilModule } from '@app/util';
 
-export const mongodb_entities = [
+export const mongodb_entities: Function[] = [
   Order,
 ];
 
-export const mysql_entities = [
+export const mysql_entities: Function[] = [
   Coupon, Group, Menu, MenuCategory, Option, Restaurant, User,
 ];
 

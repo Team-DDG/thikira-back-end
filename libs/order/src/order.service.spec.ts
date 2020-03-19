@@ -7,6 +7,7 @@ import { UserModule, UserService } from '@app/user';
 import { MenuModule } from '@app/menu';
 import { OrderModule } from './order.module';
 import { OrderService } from './order.service';
+import { ResGetRestaurantList } from '@app/type';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UtilModule } from '@app/util';
 import { getConnection } from 'typeorm';
@@ -94,10 +95,10 @@ describe('OrderService', () => {
       password: test_r.password,
     })).access_token;
 
-    const r_id = (await r_service.get_list({
+    const { r_id }: ResGetRestaurantList = (await r_service.get_list({
       category: test_r.category,
       sort_option: EnumSortOption.NEARNESS,
-    }))[0].r_id;
+    }))[0];
     test_req = { ...test_req, r_id };
 
     await u_service.create(test_u);

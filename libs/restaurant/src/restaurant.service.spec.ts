@@ -1,6 +1,6 @@
 import { ConfigModule, config } from '@app/config';
 import { DBModule, mongodb_entities, mysql_entities } from '@app/db';
-import { DtoEditAddress, DtoEditRestaurantInfo } from '@app/type';
+import { DtoCreateRestaurant, DtoEditAddress, DtoEditRestaurantInfo } from '@app/type';
 import { ResLoadRestaurant, ResRefresh, ResSignIn } from '@app/type/res';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RestaurantModule } from './restaurant.module';
@@ -14,7 +14,7 @@ describe('RestaurantService', () => {
   let access_token: string;
   let refresh_token: string;
   let service: RestaurantService;
-  const test_req = {
+  const test_req: DtoCreateRestaurant = {
     add_parcel: '경기도 이천시 증포동 404-9',
     add_street: '경기 이천시 아리역로 25 남구빌딩',
     area: '증포동, 창전동',

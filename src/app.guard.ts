@@ -7,11 +7,11 @@ export class AppGuard implements CanActivate {
   private readonly util: UtilService;
 
   public canActivate(context: ExecutionContext): boolean {
-    const token = this.util.get_token_body(context.switchToHttp().getRequest());
+    const token: string = this.util.get_token_body(context.switchToHttp().getRequest());
     if (!token) {
       return true;
     }
-    const email = this.util.get_email_by_token(token);
+    const email: string = this.util.get_email_by_token(token);
     return email.length > 0;
   }
 }

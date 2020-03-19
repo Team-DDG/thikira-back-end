@@ -2,6 +2,7 @@ import { IsEnum, IsNumberString, IsOptional, IsString, validateSync } from 'clas
 import { Injectable } from '@nestjs/common';
 import { NodeEnv } from './node-env.enum';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { ValidationError } from 'class-validator/validation/ValidationError';
 import { fileExistsSync } from 'tsconfig-paths/lib/filesystem';
 import { parse } from 'dotenv';
 import { readFileSync } from 'fs';
@@ -11,8 +12,12 @@ export type Config = Record<string, string>;
 
 @Injectable()
 export class ConfigService {
-  @IsEnum(NodeEnv)
-  public readonly NODE_ENV: NodeEnv;
+  @IsString()
+  public readonly ENCIPHERMENT: string;
+  @IsOptional() @IsString()
+  public readonly HOST?: string;
+  @IsOptional() @IsString()
+  public readonly JWT_SECRET?: string;
   @IsString()
   public readonly MONGODB_HOST: string;
   @IsString()
@@ -33,14 +38,10 @@ export class ConfigService {
   public readonly MYSQL_SCHEMA: string;
   @IsString()
   public readonly MYSQL_USER: string;
+  @IsEnum(NodeEnv)
+  public readonly NODE_ENV: NodeEnv;
   @IsOptional() @IsNumberString()
   public readonly PORT?: string;
-  @IsOptional() @IsString()
-  public readonly HOST?: string;
-  @IsOptional() @IsString()
-  public readonly JWT_SECRET?: string;
-  @IsString()
-  public readonly ENCIPHERMENT: string;
   public readonly mysql_config: TypeOrmModuleOptions;
   public readonly mongodb_config: TypeOrmModuleOptions;
 
@@ -52,7 +53,7 @@ export class ConfigService {
       ...custom_config,
     });
 
-    const errors = validateSync(this);
+    const errors: ValidationError[] = validateSync(this);
     if (errors.length > 0) {
       throw new Error(errors[0].toString());
     }
