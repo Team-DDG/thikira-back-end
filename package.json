@@ -23,6 +23,7 @@
     "fastify-swagger": "^2.5.0",
     "mongodb": "^3.5.4",
     "mysql2": "^2.1.0",
+    "node": "^13.10.1",
     "passport-jwt": "^4.0.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.0",
