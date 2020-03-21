@@ -78,9 +78,9 @@ describe('UserService', () => {
     };
     await service.edit(access_token, edit_data);
     const f_user: ResLoadUser = await service.get(access_token);
-    ['add_parcel', 'add_street', 'create_time'].map((e: string) => {
+    for (const e of ['add_parcel', 'add_street', 'create_time']) {
       Reflect.deleteProperty(f_user, e);
-    });
+    }
     expect(classToPlain(f_user)).toStrictEqual(classToPlain(edit_data));
   });
 

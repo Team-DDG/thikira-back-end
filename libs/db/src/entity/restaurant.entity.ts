@@ -4,8 +4,8 @@ import { MenuCategory } from './menu-category.entity';
 
 @Entity()
 export class Restaurant {
-  @OneToMany(() => Coupon, (coupon: Coupon) => coupon.restaurant)
-  public coupon: Coupon[];
+  @PrimaryGeneratedColumn()
+  public r_id: number;
   @Column()
   public area: string;
   @Column()
@@ -16,10 +16,12 @@ export class Restaurant {
   public category: string;
   @Column()
   public close_time: string;
+  @CreateDateColumn()
+  public create_time: Date;
+  @Column()
+  public description: string;
   @Column()
   public email: string;
-  @PrimaryGeneratedColumn()
-  public r_id: number;
   @Column()
   public name: string;
   @Column()
@@ -33,18 +35,13 @@ export class Restaurant {
   @Column()
   public offline_payment: boolean;
   @Column()
-  public password: string;
-  @Column()
   public open_time: string;
   @Column()
-  public description: string;
+  public password: string;
   @Column()
   public image: string;
-  @CreateDateColumn()
-  public create_time: Date;
-  @OneToMany(
-    () => MenuCategory,
-    (menu_category: MenuCategory) => menu_category.restaurant,
-  )
+  @OneToMany(() => Coupon, (coupon: Coupon) => coupon.restaurant)
+  public coupon: Coupon[];
+  @OneToMany(() => MenuCategory, (menu_category: MenuCategory) => menu_category.restaurant)
   public menu_category: MenuCategory[];
 }

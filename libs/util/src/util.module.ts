@@ -7,4 +7,5 @@ import { UtilService } from './util.service';
   imports: [ConfigModule],
   providers: [UtilService],
 })
-export class UtilModule {}
+export class UtilModule {
+}

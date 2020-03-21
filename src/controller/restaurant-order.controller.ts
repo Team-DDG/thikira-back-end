@@ -38,7 +38,7 @@ export class RestaurantOrderController {
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_order_status(
-    @Headers('authorization') header: Header,
+    @Headers() header: Header,
     @Body(new ValidationPipe()) payload: DtoEditOrderStatus,
   ): Promise<void> {
     try {

@@ -23,7 +23,7 @@ export class UserMenuController {
     @Query(new ValidationPipe()) query: QueryGetMenuCategoryList,
   ): Promise<ResGetMenuCategoryList[]> {
     try {
-      return await this.menu_service.get_menu_category_list(query);
+      return this.menu_service.get_menu_category_list(query);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -41,7 +41,7 @@ export class UserMenuController {
     @Query(new ValidationPipe()) query: QueryGetMenuList,
   ): Promise<ResGetMenuList[]> {
     try {
-      return await this.menu_service.get_menu_list(query);
+      return this.menu_service.get_menu_list(query);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }

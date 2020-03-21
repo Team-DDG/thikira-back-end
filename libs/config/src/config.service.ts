@@ -54,7 +54,7 @@ export class ConfigService {
     });
 
     const errors: ValidationError[] = validateSync(this);
-    if (errors.length > 0) {
+    if (0 < errors.length) {
       throw new Error(errors[0].toString());
     }
 

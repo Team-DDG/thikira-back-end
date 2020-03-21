@@ -5,7 +5,7 @@ import { Option } from './option.entity';
 @Entity()
 export class Group {
   @PrimaryGeneratedColumn()
-  public readonly g_id: number;
+  public g_id: number;
   @Column() public max_count: number;
   @ManyToOne(() => Menu, (menu: Menu) => menu.group, { nullable: false })
   @JoinColumn({ name: 'm_id' })

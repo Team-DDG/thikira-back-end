@@ -10,22 +10,22 @@ import { UtilService } from '@app/util';
 
 @Injectable()
 export class DBService {
-  @InjectRepository(Restaurant, 'mysql')
-  private readonly r_repo: Repository<Restaurant>;
-  @InjectRepository(User, 'mysql')
-  private readonly u_repo: Repository<User>;
+  @InjectRepository(Coupon, 'mysql')
+  private readonly c_repo: Repository<Coupon>;
+  @InjectRepository(Group, 'mysql')
+  private readonly g_repo: Repository<Group>;
   @InjectRepository(Menu, 'mysql')
   private readonly m_repo: Repository<Menu>;
   @InjectRepository(MenuCategory, 'mysql')
   private readonly mc_repo: Repository<MenuCategory>;
-  @InjectRepository(Option, 'mysql')
-  private readonly o_repo: Repository<Option>;
-  @InjectRepository(Group, 'mysql')
-  private readonly g_repo: Repository<Group>;
-  @InjectRepository(Coupon, 'mysql')
-  private readonly c_repo: Repository<Coupon>;
   @InjectRepository(Order, 'mongodb')
   private readonly od_repo: MongoRepository<Order>;
+  @InjectRepository(Option, 'mysql')
+  private readonly o_repo: Repository<Option>;
+  @InjectRepository(Restaurant, 'mysql')
+  private readonly r_repo: Repository<Restaurant>;
+  @InjectRepository(User, 'mysql')
+  private readonly u_repo: Repository<User>;
   @Inject()
   private readonly util_service: UtilService;
 
@@ -68,12 +68,16 @@ export class DBService {
     await this.u_repo.insert({ ...user, password: this.util_service.encode(user.password) });
   }
 
+  public async find_user_by_email(email: string): Promise<User> {
+    return this.u_repo.findOne({ email });
+  }
+
   public async find_user_by_nickname(nickname: string): Promise<User> {
     return this.u_repo.findOne({ nickname });
   }
 
-  public async find_user_by_email(email: string): Promise<User> {
-    return this.u_repo.findOne({ email });
+  public async find_user_by_id(id: number): Promise<User> {
+    return this.u_repo.findOne(id);
   }
 
   public async update_user(email: string, payload: EditUserClass): Promise<void> {
@@ -242,7 +246,7 @@ export class DBService {
   public async find_orders_by_user(user: User): Promise<Order[]> {
     const res: Order[] = [];
     const f_orders: Order[] = await this.od_repo.find({ u_id: user.u_id });
-    if (0 === f_orders.length) {
+    if (0 < f_orders.length) {
       for (const e_od of f_orders) {
         res.push(new Order(e_od));
       }
@@ -254,13 +258,17 @@ export class DBService {
   public async find_orders_by_restaurant(restaurant: Restaurant): Promise<Order[]> {
     const res: Order[] = [];
     const f_orders: Order[] = await this.od_repo.find({ r_id: restaurant.r_id });
-    if (0 === f_orders.length) {
+    if (f_orders) {
       for (const e_od of f_orders) {
         res.push(new Order(e_od));
       }
       return res;
     }
     return null;
+  }
+
+  public async find_orders_by_restaurant_user(restaurant: Restaurant, user: User): Promise<Order[]> {
+    return this.od_repo.find({ r_id: restaurant.r_id, u_id: user.u_id });
   }
 
   public async find_order_by_restaurant_id(id: number): Promise<Order> {

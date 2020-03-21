@@ -12,10 +12,11 @@ import {
 } from '@nestjs/common';
 import {
   DtoCheckPassword, DtoCreateUser, DtoEditAddress,
-  DtoEditPassword, DtoEditUserInfo, DtoSignIn, EnumSortOption,
+  DtoEditPassword, DtoEditUserInfo, DtoSignIn,
   QueryCheckEmail, QueryGetRestaurantList,
 } from '@app/type/req';
 import { ResGetRestaurantList, ResLoadUser, ResRefresh, ResSignIn } from '@app/type/res';
+import { EnumSortOption } from '@app/type';
 import { Header } from '@app/type/etc';
 import { RestaurantService } from '@app/restaurant';
 import { UserService } from '@app/user';
@@ -177,7 +178,7 @@ export class UserController {
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse({ type: ResLoadUser })
   @ApiNotFoundResponse()
-  public async get(@Headers('authorization') header: Header): Promise<ResLoadUser> {
+  public async get(@Headers() header: Header): Promise<ResLoadUser> {
     try {
       return this.user_service.get(this.util_service.get_token_body(header));
     } catch (e) {

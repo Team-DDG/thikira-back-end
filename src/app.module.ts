@@ -22,8 +22,8 @@ import { UserModule } from '@app/user';
   controllers: [
     RestaurantController, RestaurantMenuController,
     RestaurantCouponController, RestaurantOrderController,
-    UserController, UserCouponController, UserMenuController,
-    UserOrderController,
+    UserController, UserCouponController,
+    UserMenuController, UserOrderController,
   ],
   imports: [
     CouponModule, DBModule, MenuModule, OrderModule,

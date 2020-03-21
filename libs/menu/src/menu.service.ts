@@ -13,8 +13,10 @@ import { UtilService } from '@app/util';
 
 @Injectable()
 export class MenuService {
-  @Inject() private readonly db_service: DBService;
-  @Inject() private readonly util_service: UtilService;
+  @Inject()
+  private readonly db_service: DBService;
+  @Inject()
+  private readonly util_service: UtilService;
 
   // menu_category
 
@@ -34,7 +36,7 @@ export class MenuService {
 
   public async get_menu_category_list(param: string | QueryGetMenuCategoryList): Promise<ResGetMenuCategoryList[]> {
     let f_restaurant: Restaurant;
-    if (typeof param === 'string') {
+    if ('string' === typeof param) {
       const email: string = this.util_service.get_email_by_token(param);
       f_restaurant = await this.db_service.find_restaurant_by_email(email);
     } else {
@@ -43,7 +45,7 @@ export class MenuService {
 
     const f_menu_categories: MenuCategory[] = await this.db_service.find_menu_categories_by_restaurant(f_restaurant, false);
 
-    if (f_menu_categories.length < 1) {
+    if (1 > f_menu_categories.length) {
       throw new NotFoundException();
     }
 
@@ -62,7 +64,7 @@ export class MenuService {
       for (const e_g of f_menus) {
         m_ids.push(e_g.m_id);
       }
-      if (m_ids.length > 0) {
+      if (0 < m_ids.length) {
         await this.remove_menu(m_ids);
       }
     }
@@ -82,7 +84,9 @@ export class MenuService {
     }
 
     const menu: Menu = new Menu();
-    Reflect.deleteProperty(menu, 'mc_id');
+    for (const e of ['mc_id']) {
+      Reflect.deleteProperty(menu, e);
+    }
     Object.assign(menu, { ...payload, menu_category: f_menu_category });
     await this.db_service.insert_menu(menu);
 
@@ -111,7 +115,7 @@ export class MenuService {
       throw new NotFoundException();
     }
     const f_menus: Menu[] = await this.db_service.find_menus_by_menu_category(f_menu_category);
-    if (f_menus.length < 1) {
+    if (1 > f_menus.length) {
       throw new NotFoundException();
     }
     return f_menus;
@@ -129,7 +133,7 @@ export class MenuService {
       for (const e_g of f_groups) {
         g_ids.push(e_g.g_id);
       }
-      if (g_ids.length > 0) {
+      if (0 < g_ids.length) {
         await this.remove_group(g_ids);
       }
     }
@@ -146,7 +150,9 @@ export class MenuService {
     }
 
     const group: Group = new Group();
-    Reflect.deleteProperty(payload, 'm_id');
+    for (const e of ['m_id']) {
+      Reflect.deleteProperty(payload, e);
+    }
     Object.assign(group, { ...payload, menu: f_menu });
 
     await this.db_service.insert_group(group);
@@ -166,7 +172,7 @@ export class MenuService {
   public async get_group_list(query: QueryGetGroupList): Promise<ResGetGroupList[]> {
     const f_menu: Menu = await this.db_service.find_menu_by_id(parseInt(query.m_id));
     const f_groups: Group[] = await this.db_service.find_groups_by_menu(f_menu);
-    if (f_groups.length < 1) {
+    if (1 > f_groups.length) {
       throw new NotFoundException();
     }
     return f_groups;
@@ -184,7 +190,7 @@ export class MenuService {
       for (const e_o of f_options) {
         o_ids.push(e_o.o_id);
       }
-      if (o_ids.length > 0) {
+      if (0 < o_ids.length) {
         await this.remove_option(o_ids);
       }
     }
@@ -201,7 +207,9 @@ export class MenuService {
     }
 
     const option: Option = new Option();
-    Reflect.deleteProperty(payload, 'g_id');
+    for (const e of ['g_id']) {
+      Reflect.deleteProperty(payload, e);
+    }
     Object.assign(option, { ...payload, group: f_group });
     await this.db_service.insert_option(option);
 
@@ -211,7 +219,7 @@ export class MenuService {
   public async get_option_list(query: QueryGetOptionList): Promise<ResGetOptionList[]> {
     const f_group: Group = await this.db_service.find_group_by_id(parseInt(query.g_id));
     const f_options: Option[] = await this.db_service.find_options_by_group(f_group);
-    if (f_options.length < 1) {
+    if (1 > f_options.length) {
       throw new NotFoundException();
     }
     return f_options;

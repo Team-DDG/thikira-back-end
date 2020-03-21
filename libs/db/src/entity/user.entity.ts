@@ -3,19 +3,19 @@ import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeor
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  public readonly u_id: number;
-  @Column()
-  public email: string;
-  @Column()
-  public phone: string;
+  public u_id: number;
   @Column({ nullable: true })
   public add_street: string = null;
   @Column({ nullable: true })
   public add_parcel: string = null;
   @Column()
+  public email: string;
+  @Column()
+  public phone: string;
+  @Column()
   public password: string;
   @Column()
   public nickname: string;
   @CreateDateColumn()
-  public readonly create_time: Date;
+  public create_time: Date;
 }

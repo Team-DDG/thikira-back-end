@@ -1,4 +1,4 @@
-import { ConflictException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { DtoCheckPassword, DtoCreateUser, DtoEditAddress, DtoEditPassword, DtoEditUserInfo, DtoSignIn, QueryCheckEmail } from '@app/type/req';
 import { Order, User } from '@app/db';
 import { ResLoadUser, ResRefresh, ResSignIn } from '@app/type/res';
@@ -47,24 +47,12 @@ export class UserService {
     return { access_token: this.util_service.create_token(email, TokenTypeEnum.access) };
   }
 
-  public async leave(token: string): Promise<void> {
-    const email: string = this.util_service.get_email_by_token(token);
-    const f_user: User = await this.db_service.find_user_by_email(email);
-
-    const f_orders: Order[] = await this.db_service.find_orders_by_user(f_user);
-    const od_ids: ObjectID[] = [];
-    for (const e_od of f_orders) {
-      od_ids.push(e_od.od_id);
-    }
-    await this.db_service.delete_order(od_ids);
-    await this.db_service.delete_user(email);
-  }
-
   public async check_password(token: string, payload: DtoCheckPassword): Promise<void> {
     const email: string = this.util_service.get_email_by_token(token);
     const f_user: User = await this.db_service.find_user_by_email(email);
-    if (this.util_service.encode(payload.password) !== f_user.password) {
-      throw new UnauthorizedException();
+
+    if (!f_user || this.util_service.encode(payload.password) !== f_user.password) {
+      throw new ForbiddenException();
     }
   }
 
@@ -76,9 +64,32 @@ export class UserService {
   public async get(token: string): Promise<ResLoadUser> {
     const email: string = this.util_service.get_email_by_token(token);
     const f_user: User = await this.db_service.find_user_by_email(email);
-    ['u_id', 'email', 'password'].map((e: string) => {
+    if (!f_user) {
+      throw new ForbiddenException();
+    }
+    for (const e of ['u_id', 'email', 'password']) {
       Reflect.deleteProperty(f_user, e);
-    });
+    }
     return f_user;
+  }
+
+  public async leave(token: string): Promise<void> {
+    const email: string = this.util_service.get_email_by_token(token);
+    const f_user: User = await this.db_service.find_user_by_email(email);
+    if (!f_user) {
+      throw new ForbiddenException();
+    }
+
+    const f_orders: Order[] = await this.db_service.find_orders_by_user(f_user);
+
+    if (f_orders) {
+      const od_ids: ObjectID[] = [];
+      for (const e_od of f_orders) {
+        od_ids.push(e_od.od_id);
+      }
+      await this.db_service.delete_order(od_ids);
+    }
+
+    await this.db_service.delete_user(email);
   }
 }

@@ -1,8 +1,7 @@
 import {
   ApiConflictResponse, ApiForbiddenResponse,
   ApiHeader, ApiNotFoundResponse,
-  ApiOkResponse, ApiOperation, ApiQuery,
-  ApiTags, ApiUnauthorizedResponse,
+  ApiOkResponse, ApiOperation, ApiQuery, ApiTags,
 } from '@nestjs/swagger';
 import {
   Body, Controller, Delete, Get, Headers, HttpCode,
@@ -107,7 +106,6 @@ export class RestaurantController {
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse()
   @ApiForbiddenResponse()
-  @ApiUnauthorizedResponse()
   public async check_password(
     @Headers() header: Header,
     @Body(new ValidationPipe()) payload: DtoCheckPassword,

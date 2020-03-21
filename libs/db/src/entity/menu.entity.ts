@@ -4,14 +4,18 @@ import { MenuCategory } from './menu-category.entity';
 
 @Entity()
 export class Menu {
-  @Column()
-  public description: string;
-  @OneToMany(() => Group, (group: Group) => group.menu)
-  public group: Group[];
-  @Column()
-  public image: string;
   @PrimaryGeneratedColumn()
   public m_id: number;
+  @Column()
+  public description: string;
+  @Column()
+  public image: string;
+  @Column()
+  public name: string;
+  @Column()
+  public price: number;
+  @OneToMany(() => Group, (group: Group) => group.menu)
+  public group: Group[];
   @ManyToOne(
     () => MenuCategory,
     (menu_category: MenuCategory) => menu_category.menu,
@@ -19,8 +23,4 @@ export class Menu {
   )
   @JoinColumn({ name: 'mc_id' })
   public menu_category: MenuCategory;
-  @Column()
-  public name: string;
-  @Column()
-  public price: number;
 }

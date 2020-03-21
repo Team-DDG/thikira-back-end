@@ -12,6 +12,6 @@ export class AppGuard implements CanActivate {
       return true;
     }
     const email: string = this.util.get_email_by_token(token);
-    return email.length > 0;
+    return 0 < email.length;
   }
 }

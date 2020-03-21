@@ -14,6 +14,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from '@app/user';
 import { UtilModule } from '@app/util';
 import { classToPlain } from 'class-transformer';
+import { getConnection } from 'typeorm';
 
 describe('MenuService', () => {
   let r_token: string;
@@ -197,6 +198,9 @@ describe('MenuService', () => {
     await expect(service.get_menu_category_list(r_token)).rejects.toThrow();
 
     await r_service.leave(r_token);
+
+    await getConnection('mysql').close();
+    await getConnection('mongodb').close();
   });
 
   it('should success edit_menu_category()', async () => {

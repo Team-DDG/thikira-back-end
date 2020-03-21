@@ -96,9 +96,9 @@ describe('RestaurantService', () => {
     };
     await service.edit(access_token, edit_data);
     const f_restaurant: ResLoadRestaurant = await service.get(access_token);
-    ['add_parcel', 'add_street', 'category', 'create_time'].forEach((e: string) => {
+    for (const e of ['add_parcel', 'add_street', 'category', 'create_time']) {
       Reflect.deleteProperty(f_restaurant, e);
-    });
+    }
     expect(classToPlain(f_restaurant)).toStrictEqual(classToPlain(edit_data));
   });
 

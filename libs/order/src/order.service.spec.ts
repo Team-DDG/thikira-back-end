@@ -1,20 +1,20 @@
 import { ConfigModule, config } from '@app/config';
 import { DBModule, EnumOrderStatus, EnumPaymentType, Order, mongodb_entities, mysql_entities } from '@app/db';
-import { DtoCreateRestaurant, DtoCreateUser, DtoUploadOrder, EnumSortOption } from '@app/type/req';
+import { DtoCreateRestaurant, DtoCreateUser, DtoUploadOrder } from '@app/type/req';
+import { EnumSortOption, ResGetRestaurantList } from '@app/type';
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserModule, UserService } from '@app/user';
 import { MenuModule } from '@app/menu';
 import { OrderModule } from './order.module';
 import { OrderService } from './order.service';
-import { ResGetRestaurantList } from '@app/type';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UtilModule } from '@app/util';
 import { getConnection } from 'typeorm';
 
 describe('OrderService', () => {
   let r_service: RestaurantService;
-  let restaurant_token: string;
+  let r_token: string;
   let service: OrderService;
   const test_r: DtoCreateRestaurant = {
     add_parcel: 'a',
@@ -53,7 +53,6 @@ describe('OrderService', () => {
       quantity: 3,
     }],
     payment_type: EnumPaymentType.ONLINE,
-    quantity: 0,
     r_id: 0,
   };
   const test_u: DtoCreateUser = {
@@ -63,7 +62,7 @@ describe('OrderService', () => {
     phone: '01012345678',
   };
   let u_service: UserService;
-  let user_token: string;
+  let u_token: string;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -90,7 +89,7 @@ describe('OrderService', () => {
     u_service = module.get<UserService>(UserService);
 
     await r_service.create(test_r);
-    restaurant_token = (await r_service.sign_in({
+    r_token = (await r_service.sign_in({
       email: test_r.email,
       password: test_r.password,
     })).access_token;
@@ -102,17 +101,18 @@ describe('OrderService', () => {
     test_req = { ...test_req, r_id };
 
     await u_service.create(test_u);
-    user_token = (await u_service.sign_in({
+    u_token = (await u_service.sign_in({
       email: test_u.email,
       password: test_u.password,
     })).access_token;
 
-    await service.upload(user_token, test_req);
+    await service.upload(u_token, test_req);
   });
 
   afterAll(async () => {
-    await r_service.leave(restaurant_token);
-    await u_service.leave(user_token);
+    await r_service.leave(r_token);
+    await u_service.leave(u_token);
+
     await getConnection('mysql').close();
     await getConnection('mongodb').close();
   });

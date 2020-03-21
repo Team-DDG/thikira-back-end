@@ -3,12 +3,12 @@ import { ApiProperty } from '@nestjs/swagger';
 import { UploadGroupClass } from '@app/type/etc';
 
 export class DtoUploadMenu {
+  @ApiProperty() @IsNumber()
+  public readonly mc_id: number;
   @ApiProperty() @IsString()
   public readonly description: string;
   @ApiProperty() @IsUrl()
   public readonly image: string;
-  @ApiProperty() @IsNumber()
-  public readonly mc_id: number;
   @ApiProperty() @IsString()
   public readonly name: string;
   @ApiProperty() @IsNumber()
