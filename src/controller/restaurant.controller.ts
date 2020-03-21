@@ -176,7 +176,7 @@ export class RestaurantController {
   @ApiNotFoundResponse()
   public async get(@Headers() header: Header): Promise<ResLoadRestaurant> {
     try {
-      return this.r_service.get(this.util_service.get_token_body(header));
+      return this.r_service.load(this.util_service.get_token_body(header));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
