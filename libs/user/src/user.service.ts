@@ -61,7 +61,7 @@ export class UserService {
     await this.db_service.update_user(email, payload);
   }
 
-  public async get(token: string): Promise<ResLoadUser> {
+  public async load(token: string): Promise<ResLoadUser> {
     const email: string = this.util_service.get_email_by_token(token);
     const f_user: User = await this.db_service.find_user_by_email(email);
     if (!f_user) {
@@ -91,5 +91,13 @@ export class UserService {
     }
 
     await this.db_service.delete_user(email);
+  }
+
+
+  // use only in test
+
+  public async get(token: string): Promise<User> {
+    const email: string = this.util_service.get_email_by_token(token);
+    return this.db_service.find_user_by_email(email);
   }
 }

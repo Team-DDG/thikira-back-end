@@ -180,7 +180,7 @@ export class UserController {
   @ApiNotFoundResponse()
   public async get(@Headers() header: Header): Promise<ResLoadUser> {
     try {
-      return this.u_service.get(this.util_service.get_token_body(header));
+      return this.u_service.load(this.util_service.get_token_body(header));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }

@@ -77,7 +77,7 @@ describe('UserService', () => {
       phone: '01012345679',
     };
     await service.edit(access_token, edit_data);
-    const f_user: ResLoadUser = await service.get(access_token);
+    const f_user: ResLoadUser = await service.load(access_token);
     for (const e of ['add_parcel', 'add_street', 'create_time']) {
       Reflect.deleteProperty(f_user, e);
     }
@@ -90,7 +90,7 @@ describe('UserService', () => {
       add_street: '경기도 어딘가',
     };
     await service.edit(access_token, edit_data);
-    const f_user: ResLoadUser = await service.get(access_token);
+    const f_user: ResLoadUser = await service.load(access_token);
     if (edit_data.add_street !== f_user.add_street ||
       edit_data.add_parcel !== f_user.add_parcel) {
       throw new Error();
