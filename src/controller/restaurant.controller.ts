@@ -22,7 +22,7 @@ import getPrototypeOf = Reflect.getPrototypeOf;
 @ApiTags('restaurant')
 @Controller('api/restaurant')
 export class RestaurantController {
-  @Inject() private readonly restaurant_service: RestaurantService;
+  @Inject() private readonly r_service: RestaurantService;
   @Inject() private readonly util_service: UtilService;
 
   @Get('auth/email')
@@ -33,7 +33,7 @@ export class RestaurantController {
   @ApiConflictResponse()
   public async check_email(@Query(new ValidationPipe()) query: QueryCheckEmail): Promise<void> {
     try {
-      return this.restaurant_service.check_email(query);
+      return this.r_service.check_email(query);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -46,7 +46,7 @@ export class RestaurantController {
   @ApiConflictResponse()
   public async create(@Body(new ValidationPipe()) payload: DtoCreateRestaurant): Promise<void> {
     try {
-      return this.restaurant_service.create(payload);
+      return this.r_service.create(payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -59,7 +59,7 @@ export class RestaurantController {
   @ApiNotFoundResponse()
   public async sign_in(@Body(new ValidationPipe()) payload: DtoSignIn): Promise<ResSignIn> {
     try {
-      return this.restaurant_service.sign_in(payload);
+      return this.r_service.sign_in(payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -72,7 +72,7 @@ export class RestaurantController {
   @ApiOkResponse({ type: ResRefresh })
   @ApiForbiddenResponse()
   public refresh(@Headers() token: Header): ResRefresh {
-    return this.restaurant_service.refresh(this.util_service.get_token_body(token));
+    return this.r_service.refresh(this.util_service.get_token_body(token));
   }
 
   @Delete('leave')
@@ -83,7 +83,7 @@ export class RestaurantController {
   @ApiForbiddenResponse()
   public async leave(@Headers() token: Header): Promise<void> {
     try {
-      return this.restaurant_service.leave(
+      return this.r_service.leave(
         this.util_service.get_token_body(token));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
@@ -111,7 +111,7 @@ export class RestaurantController {
     @Body(new ValidationPipe()) payload: DtoCheckPassword,
   ): Promise<void> {
     try {
-      return this.restaurant_service.check_password(this.util_service.get_token_body(header), payload);
+      return this.r_service.check_password(this.util_service.get_token_body(header), payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -128,7 +128,7 @@ export class RestaurantController {
     @Body(new ValidationPipe()) payload: DtoEditPassword,
   ): Promise<void> {
     try {
-      return this.restaurant_service.edit(this.util_service.get_token_body(header), payload);
+      return this.r_service.edit(this.util_service.get_token_body(header), payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -145,7 +145,7 @@ export class RestaurantController {
     @Body(new ValidationPipe()) payload: DtoEditRestaurantInfo,
   ): Promise<void> {
     try {
-      return this.restaurant_service.edit(this.util_service.get_token_body(header), payload);
+      return this.r_service.edit(this.util_service.get_token_body(header), payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -162,7 +162,7 @@ export class RestaurantController {
     @Body(new ValidationPipe()) payload: DtoEditAddress,
   ): Promise<void> {
     try {
-      return this.restaurant_service.edit(this.util_service.get_token_body(header), payload);
+      return this.r_service.edit(this.util_service.get_token_body(header), payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -176,7 +176,7 @@ export class RestaurantController {
   @ApiNotFoundResponse()
   public async get(@Headers() header: Header): Promise<ResLoadRestaurant> {
     try {
-      return this.restaurant_service.get(this.util_service.get_token_body(header));
+      return this.r_service.get(this.util_service.get_token_body(header));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }

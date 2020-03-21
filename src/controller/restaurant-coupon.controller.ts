@@ -10,7 +10,7 @@ import getPrototypeOf = Reflect.getPrototypeOf;
 @ApiTags('restaurant/coupon')
 @Controller('api/restaurant/coupon')
 export class RestaurantCouponController {
-  @Inject() private readonly coupon_service: CouponService;
+  @Inject() private readonly c_service: CouponService;
   @Inject() private readonly util_service: UtilService;
 
   @Post()
@@ -23,7 +23,7 @@ export class RestaurantCouponController {
     @Body(new ValidationPipe()) payload: DtoUploadCoupon,
   ): Promise<void> {
     try {
-      return this.coupon_service.upload(this.util_service.get_token_body(header), payload);
+      return this.c_service.upload(this.util_service.get_token_body(header), payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -37,7 +37,7 @@ export class RestaurantCouponController {
   @ApiNotFoundResponse()
   public async get_coupon_list(@Headers() header: Header): Promise<ResGetCouponList[]> {
     try {
-      return this.coupon_service.get_list(this.util_service.get_token_body(header));
+      return this.c_service.get_list(this.util_service.get_token_body(header));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }

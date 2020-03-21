@@ -26,8 +26,8 @@ import getPrototypeOf = Reflect.getPrototypeOf;
 @ApiTags('user')
 @Controller('api/user')
 export class UserController {
-  @Inject() private readonly restaurant_service: RestaurantService;
-  @Inject() private readonly user_service: UserService;
+  @Inject() private readonly r_service: RestaurantService;
+  @Inject() private readonly u_service: UserService;
   @Inject() private readonly util_service: UtilService;
 
   @Get('auth/email')
@@ -38,7 +38,7 @@ export class UserController {
   @ApiConflictResponse()
   public async check_email(@Query(new ValidationPipe()) query: QueryCheckEmail): Promise<void> {
     try {
-      return this.user_service.check_email(query);
+      return this.u_service.check_email(query);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -50,7 +50,7 @@ export class UserController {
   @ApiOkResponse()
   public async create(@Body(new ValidationPipe()) payload: DtoCreateUser): Promise<void> {
     try {
-      return this.user_service.create(payload);
+      return this.u_service.create(payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -63,7 +63,7 @@ export class UserController {
   @ApiNotFoundResponse()
   public async sign_in(@Body(new ValidationPipe()) payload: DtoSignIn): Promise<ResSignIn> {
     try {
-      return this.user_service.sign_in(payload);
+      return this.u_service.sign_in(payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -76,7 +76,7 @@ export class UserController {
   @ApiOkResponse({ type: ResRefresh })
   @ApiForbiddenResponse()
   public refresh(@Headers() header: Header): ResRefresh {
-    return this.user_service.refresh(this.util_service.get_token_body(header));
+    return this.u_service.refresh(this.util_service.get_token_body(header));
   }
 
   @Delete('leave')
@@ -87,7 +87,7 @@ export class UserController {
   @ApiForbiddenResponse()
   public async leave(@Headers() header: Header): Promise<void> {
     try {
-      return this.user_service.leave(this.util_service.get_token_body(header));
+      return this.u_service.leave(this.util_service.get_token_body(header));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -115,7 +115,7 @@ export class UserController {
     @Body(new ValidationPipe()) payload: DtoCheckPassword,
   ): Promise<void> {
     try {
-      return this.user_service.check_password(this.util_service.get_token_body(header), payload);
+      return this.u_service.check_password(this.util_service.get_token_body(header), payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -132,7 +132,7 @@ export class UserController {
     @Body(new ValidationPipe()) payload: DtoEditPassword,
   ): Promise<void> {
     try {
-      return this.user_service.edit(this.util_service.get_token_body(header), payload);
+      return this.u_service.edit(this.util_service.get_token_body(header), payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -149,7 +149,7 @@ export class UserController {
     @Body(new ValidationPipe()) payload: DtoEditUserInfo,
   ): Promise<void> {
     try {
-      return this.user_service.edit(this.util_service.get_token_body(header), payload);
+      return this.u_service.edit(this.util_service.get_token_body(header), payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -166,7 +166,7 @@ export class UserController {
     @Body(new ValidationPipe()) payload: DtoEditAddress,
   ): Promise<void> {
     try {
-      return this.user_service.edit(this.util_service.get_token_body(header), payload);
+      return this.u_service.edit(this.util_service.get_token_body(header), payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -180,7 +180,7 @@ export class UserController {
   @ApiNotFoundResponse()
   public async get(@Headers() header: Header): Promise<ResLoadUser> {
     try {
-      return this.user_service.get(this.util_service.get_token_body(header));
+      return this.u_service.get(this.util_service.get_token_body(header));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -199,7 +199,7 @@ export class UserController {
     @Query(new ValidationPipe()) query: QueryGetRestaurantList,
   ): Promise<ResGetRestaurantList[]> {
     try {
-      return this.restaurant_service.get_list(query);
+      return this.r_service.get_list(query);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }

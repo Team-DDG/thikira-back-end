@@ -9,7 +9,7 @@ import getPrototypeOf = Reflect.getPrototypeOf;
 @ApiTags('user/menu')
 @Controller('api/user/menu')
 export class UserMenuController {
-  @Inject() private readonly menu_service: MenuService;
+  @Inject() private readonly m_service: MenuService;
 
   @Get('category')
   @HttpCode(200)
@@ -23,7 +23,7 @@ export class UserMenuController {
     @Query(new ValidationPipe()) query: QueryGetMenuCategoryList,
   ): Promise<ResGetMenuCategoryList[]> {
     try {
-      return this.menu_service.get_menu_category_list(query);
+      return this.m_service.get_menu_category_list(query);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -41,7 +41,7 @@ export class UserMenuController {
     @Query(new ValidationPipe()) query: QueryGetMenuList,
   ): Promise<ResGetMenuList[]> {
     try {
-      return this.menu_service.get_menu_list(query);
+      return this.m_service.get_menu_list(query);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }

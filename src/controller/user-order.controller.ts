@@ -15,7 +15,7 @@ import getPrototypeOf = Reflect.getPrototypeOf;
 @ApiTags('user/order')
 @Controller('api/user/order')
 export class UserOrderController {
-  @Inject() private readonly order_service: OrderService;
+  @Inject() private readonly od_service: OrderService;
   @Inject() private readonly util_service: UtilService;
 
   @Post()
@@ -29,7 +29,7 @@ export class UserOrderController {
     @Body(new ValidationPipe()) payload: DtoUploadOrder,
   ): Promise<void> {
     try {
-      return this.order_service.upload(this.util_service.get_token_body(header), payload);
+      return this.od_service.upload(this.util_service.get_token_body(header), payload);
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
@@ -43,7 +43,7 @@ export class UserOrderController {
   @ApiForbiddenResponse()
   public async get_orders(@Headers() header: Header): Promise<ResGetOrderListByUser[]> {
     try {
-      return this.order_service.get_list_by_user(this.util_service.get_token_body(header));
+      return this.od_service.get_list_by_user(this.util_service.get_token_body(header));
     } catch (e) {
       throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
     }
