@@ -95,7 +95,7 @@ describe('RestaurantService', () => {
       phone: '01012345679',
     };
     await service.edit(access_token, edit_data);
-    const f_restaurant: ResLoadRestaurant = await service.get(access_token);
+    const f_restaurant: ResLoadRestaurant = await service.load(access_token);
     for (const e of ['add_parcel', 'add_street', 'category', 'create_time']) {
       Reflect.deleteProperty(f_restaurant, e);
     }
@@ -108,7 +108,7 @@ describe('RestaurantService', () => {
       add_street: '경기도 어딘가',
     };
     await service.edit(access_token, edit_data);
-    const f_restaurant: ResLoadRestaurant = await service.get(access_token);
+    const f_restaurant: ResLoadRestaurant = await service.load(access_token);
     if (edit_data.add_street !== f_restaurant.add_street ||
       edit_data.add_parcel !== f_restaurant.add_parcel) {
       throw new Error();

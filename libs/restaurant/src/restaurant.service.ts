@@ -62,7 +62,7 @@ export class RestaurantService {
     await this.db_service.update_restaurant(email, payload);
   }
 
-  public async get(token: string): Promise<ResLoadRestaurant> {
+  public async load(token: string): Promise<ResLoadRestaurant> {
     const email: string = this.util_service.get_email_by_token(token);
     const f_restaurant: Restaurant = await this.db_service.find_restaurant_by_email(email);
     for (const e of ['coupon', 'email', 'password', 'r_id']) {
@@ -124,5 +124,12 @@ export class RestaurantService {
     }
 
     await this.db_service.delete_restaurant(email);
+  }
+
+  // use only in test
+
+  public async get(token: string): Promise<Restaurant> {
+    const email: string = this.util_service.get_email_by_token(token);
+    return this.db_service.find_restaurant_by_email(email);
   }
 }
