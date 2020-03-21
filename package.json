@@ -49,6 +49,9 @@
     "tsconfig-paths": "^3.9.0",
     "typescript": "^3.8.3"
   },
+  "engines": {
+    "yarn": "1.x"
+  },
   "jest": {
     "coverageDirectory": "./coverage",
     "moduleFileExtensions": [
