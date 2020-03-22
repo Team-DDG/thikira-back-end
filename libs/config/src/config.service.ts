@@ -20,13 +20,13 @@ export class ConfigService {
   public readonly JWT_SECRET?: string;
   @IsString()
   public readonly MONGODB_HOST: string;
-  @IsString()
+  @IsString() @IsOptional()
   public readonly MONGODB_PASS: string;
   @IsNumberString() @IsOptional()
   public readonly MONGODB_PORT: string = '27017';
   @IsString()
   public readonly MONGODB_SCHEMA: string;
-  @IsString()
+  @IsString() @IsOptional()
   public readonly MONGODB_USER: string;
   @IsString()
   public readonly MYSQL_HOST: string;
@@ -43,7 +43,7 @@ export class ConfigService {
   @IsEnum(NodeEnv)
   public readonly NODE_ENV: NodeEnv;
   @IsOptional() @IsNumberString()
-  public readonly PORT?: string;
+  public readonly PORT?: string = '3000';
   public readonly mysql_config: TypeOrmModuleOptions;
   public readonly mongodb_config: TypeOrmModuleOptions;
 
