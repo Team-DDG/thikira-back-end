@@ -58,6 +58,15 @@
       "sourceRoot": "libs/restaurant/src",
       "type": "library"
     },
+    "test-util": {
+      "compilerOptions": {
+        "tsConfigPath": "libs/test-util/tsconfig.lib.json"
+      },
+      "entryFile": "index",
+      "root": "libs/test-util",
+      "sourceRoot": "libs/test-util/src",
+      "type": "library"
+    },
     "type": {
       "compilerOptions": {
         "tsConfigPath": "libs/type/tsconfig.lib.json"
