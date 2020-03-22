@@ -37,6 +37,8 @@ export class ConfigService {
   @IsString()
   public readonly MYSQL_SCHEMA: string;
   @IsString()
+  public readonly MYSQL_TYPE: 'mysql' | 'mariadb' = 'mysql';
+  @IsString()
   public readonly MYSQL_USER: string;
   @IsEnum(NodeEnv)
   public readonly NODE_ENV: NodeEnv;
@@ -64,7 +66,7 @@ export class ConfigService {
       password: this.MYSQL_PASS,
       port: parseInt(this.MYSQL_PORT, 10),
       synchronize: true,
-      type: 'mysql',
+      type: this.MYSQL_TYPE,
       username: this.MYSQL_USER,
     };
     this.mongodb_config = {
