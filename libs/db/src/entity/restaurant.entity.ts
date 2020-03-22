@@ -1,6 +1,8 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Coupon } from './coupon.entity';
 import { MenuCategory } from './menu-category.entity';
+import { ReplyReview } from './relpy-review.entity';
+import { Review } from './review.entity';
 
 @Entity()
 export class Restaurant {
@@ -44,4 +46,8 @@ export class Restaurant {
   public coupon: Coupon[];
   @OneToMany(() => MenuCategory, (menu_category: MenuCategory) => menu_category.restaurant)
   public menu_category: MenuCategory[];
+  @OneToMany(() => ReplyReview, (reply_review: ReplyReview) => reply_review.restaurant)
+  public reply_review: MenuCategory[];
+  @OneToMany(() => Review, (review: Review) => review.restaurant)
+  public review: Review[];
 }

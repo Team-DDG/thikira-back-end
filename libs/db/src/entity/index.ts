@@ -4,5 +4,7 @@ export * from './menu-category.entity';
 export * from './menu.entity';
 export * from './order.entity';
 export * from './option.entity';
+export * from './relpy-review.entity';
 export * from './restaurant.entity';
+export * from './review.entity';
 export * from './user.entity';

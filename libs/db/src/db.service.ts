@@ -1,7 +1,8 @@
-import { Coupon, Group, Menu, MenuCategory, Option, Order, Restaurant, User } from './entity';
+import { Coupon, Group, Menu, MenuCategory, Option, Order, ReplyReview, Restaurant, Review, User } from './entity';
 import {
   EditGroupClass, EditMenuCategoryClass, EditMenuClass,
-  EditOptionClass, EditOrderClass, EditRestaurantClass, EditUserClass,
+  EditOptionClass, EditOrderClass, EditReplyReviewClass,
+  EditRestaurantClass, EditReviewClass, EditUserClass,
 } from '@app/type/etc';
 import { Inject, Injectable } from '@nestjs/common';
 import { MongoRepository, ObjectID, Repository } from 'typeorm';
@@ -22,8 +23,12 @@ export class DBService {
   private readonly od_repo: MongoRepository<Order>;
   @InjectRepository(Option, 'mysql')
   private readonly o_repo: Repository<Option>;
+  @InjectRepository(ReplyReview, 'mysql')
+  private readonly rr_repo: Repository<ReplyReview>;
   @InjectRepository(Restaurant, 'mysql')
   private readonly r_repo: Repository<Restaurant>;
+  @InjectRepository(Review, 'mysql')
+  private readonly rv_repo: Repository<Review>;
   @InjectRepository(User, 'mysql')
   private readonly u_repo: Repository<User>;
   @Inject()
@@ -281,5 +286,75 @@ export class DBService {
 
   public async delete_order(id: ObjectID | ObjectID[]): Promise<void> {
     await this.od_repo.delete(id);
+  }
+
+  // review
+
+  public async insert_review(review: Review): Promise<void> {
+    await this.rv_repo.insert(review);
+  }
+
+  public async find_review_by_id(id: number): Promise<Review> {
+    return this.rv_repo.findOne(id, {
+      join: {
+        alias: 'Review',
+        leftJoinAndSelect: { ReplyReview: 'Review.reply_review' },
+      },
+    });
+  }
+
+  public async find_review_by_email(email: string): Promise<Review> {
+    return this.rv_repo.createQueryBuilder()
+      .where(`User.email = "${email}"`)
+      .leftJoinAndSelect('Review.user', 'User')
+      .leftJoinAndSelect('Review.reply_review', 'ReplyReview')
+      .getOne();
+  }
+
+  public async find_review_by_restaurant_user(restaurant: Restaurant, user: User): Promise<Review> {
+    return this.rv_repo.findOne({ restaurant, user });
+  }
+
+  public async find_reviews_by_restaurant(restaurant: Restaurant): Promise<Review[]> {
+    return this.rv_repo.find({
+      join: { alias: 'Review', leftJoinAndSelect: { ReplyReview: 'Review.reply_review' } },
+      where: { restaurant },
+    });
+  }
+
+  public async find_reviews_by_user(user: User): Promise<Review[]> {
+    return this.rv_repo.find({
+      join: { alias: 'Review', leftJoinAndSelect: { ReplyReview: 'Review.reply_review' } },
+      where: { user },
+    });
+  }
+
+  public async update_review(id: number, payload: EditReviewClass): Promise<void> {
+    await this.rv_repo.update(id, payload);
+  }
+
+  public async delete_review(id: number): Promise<void> {
+    await this.rv_repo.delete(id);
+  }
+
+  // reply_review
+
+  public async find_reply_review_by_email(email: string): Promise<ReplyReview> {
+    return this.rr_repo.createQueryBuilder()
+      .where(`Restaurant.email= "${email}"`)
+      .leftJoinAndSelect('ReplyReview.restaurant', 'Restaurant')
+      .getOne();
+  }
+
+  public async insert_reply_review(reply_review: ReplyReview): Promise<void> {
+    await this.rr_repo.insert(reply_review);
+  }
+
+  public async update_reply_review(id: number, payload: EditReplyReviewClass): Promise<void> {
+    await this.rr_repo.update(id, payload);
+  }
+
+  public async delete_reply_review(id: number): Promise<void> {
+    await this.rr_repo.delete(id);
   }
 }

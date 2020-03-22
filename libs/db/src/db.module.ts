@@ -1,16 +1,14 @@
-import { Coupon, Group, Menu, MenuCategory, Option, Order, Restaurant, User } from './entity';
+import { Coupon, Group, Menu, MenuCategory, Option, Order, ReplyReview, Restaurant, Review, User } from './entity';
 import { ConfigModule } from '@app/config';
 import { DBService } from './db.service';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UtilModule } from '@app/util';
 
-export const mongodb_entities: Function[] = [
-  Order,
-];
+export const mongodb_entities: Function[] = [Order];
 
 export const mysql_entities: Function[] = [
-  Coupon, Group, Menu, MenuCategory, Option, Restaurant, User,
+  Coupon, Group, Menu, MenuCategory, Option, ReplyReview, Restaurant, Review, User,
 ];
 
 @Module({

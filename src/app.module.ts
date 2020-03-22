@@ -3,8 +3,9 @@ import { DBModule, mongodb_entities, mysql_entities } from '@app/db';
 import {
   RestaurantController, RestaurantCouponController,
   RestaurantMenuController, RestaurantOrderController,
-  UserController, UserCouponController,
-  UserMenuController, UserOrderController,
+  RestaurantReviewController,
+  UserController, UserCouponController, UserMenuController,
+  UserOrderController, UserReviewController,
 } from './controller';
 import { UtilModule, UtilService } from '@app/util';
 import { APP_GUARD } from '@nestjs/core';
@@ -14,6 +15,7 @@ import { MenuModule } from '@app/menu';
 import { Module } from '@nestjs/common';
 import { OrderModule } from '@app/order';
 import { RestaurantModule } from '@app/restaurant';
+import { ReviewModule } from '@app/review';
 import { TypeModule } from '@app/type';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from '@app/user';
@@ -22,12 +24,13 @@ import { UserModule } from '@app/user';
   controllers: [
     RestaurantController, RestaurantMenuController,
     RestaurantCouponController, RestaurantOrderController,
-    UserController, UserCouponController,
-    UserMenuController, UserOrderController,
+    RestaurantReviewController,
+    UserController, UserCouponController, UserMenuController,
+    UserOrderController, UserReviewController,
   ],
   imports: [
     CouponModule, DBModule, MenuModule, OrderModule,
-    RestaurantModule, TypeModule,
+    RestaurantModule, ReviewModule, TypeModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       name: 'mysql',
