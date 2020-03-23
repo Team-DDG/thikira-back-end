@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/thikira-back-and.iml" filepath="$PROJECT_DIR$/.idea/thikira-back-and.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/thikira-back-end.iml" filepath="$PROJECT_DIR$/.idea/thikira-back-end.iml" />
     </modules>
   </component>
 </project>
