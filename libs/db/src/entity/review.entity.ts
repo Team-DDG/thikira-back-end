@@ -1,4 +1,8 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column, CreateDateColumn, Entity,
+  JoinColumn, ManyToOne, OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { ReplyReview, Restaurant, User } from '@app/db';
 
 @Entity()

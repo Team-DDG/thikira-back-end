@@ -1,4 +1,8 @@
-import { Coupon, Group, Menu, MenuCategory, Option, Order, ReplyReview, Restaurant, Review, User } from './entity';
+import {
+  Coupon, Group, Menu, MenuCategory,
+  Option, Order, ReplyReview,
+  Restaurant, Review, User,
+} from './entity';
 import {
   EditGroupClass, EditMenuCategoryClass, EditMenuClass,
   EditOptionClass, EditOrderClass, EditReplyReviewClass,
@@ -81,10 +85,6 @@ export class DBService {
     return this.u_repo.findOne({ nickname });
   }
 
-  public async find_user_by_id(id: number): Promise<User> {
-    return this.u_repo.findOne(id);
-  }
-
   public async update_user(email: string, payload: EditUserClass): Promise<void> {
     if (payload.password) {
       payload = { ...payload, password: this.util_service.encode(payload.password) };
@@ -108,7 +108,9 @@ export class DBService {
     return this.mc_repo.findOne({ name, restaurant: restaurant });
   }
 
-  public async find_menu_categories_by_restaurant(restaurant: Restaurant, are_with_menu: boolean): Promise<MenuCategory[]> {
+  public async find_menu_categories_by_restaurant(
+    restaurant: Restaurant, are_with_menu: boolean,
+  ): Promise<MenuCategory[]> {
     if (are_with_menu) {
       return this.mc_repo.createQueryBuilder()
         .where(`MenuCategory.r_id = ${restaurant.r_id.toString()}`)

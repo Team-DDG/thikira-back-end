@@ -198,7 +198,9 @@ describe('ReviewService', () => {
       email: `3${test_u.email}`, nickname: `${test_u.nickname}_3`,
     };
     await u_service.create({ ...test_u, ...user });
-    const u_token: string = (await u_service.sign_in({ email: user.email, password: test_u.password })).access_token;
+    const u_token: string = (await u_service.sign_in({
+      email: user.email, password: test_u.password,
+    })).access_token;
 
     const restaurant: { email: string; name: string } = {
       email: `3${test_r.email}`, name: `${test_r.name}_3`,

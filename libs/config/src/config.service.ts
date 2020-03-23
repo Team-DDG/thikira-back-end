@@ -1,10 +1,10 @@
+import { DotenvParseOutput, parse } from 'dotenv';
 import { IsEnum, IsNumberString, IsOptional, IsString, validateSync } from 'class-validator';
 import { Injectable } from '@nestjs/common';
 import { NodeEnv } from './node-env.enum';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ValidationError } from 'class-validator/validation/ValidationError';
 import { fileExistsSync } from 'tsconfig-paths/lib/filesystem';
-import { parse } from 'dotenv';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
@@ -48,11 +48,14 @@ export class ConfigService {
   public readonly mongodb_config: TypeOrmModuleOptions;
 
   public constructor(file_path?: string, custom_config?: Config) {
+    let env: DotenvParseOutput;
+    if (file_path && fileExistsSync(file_path)) {
+      env = parse(readFileSync(file_path));
+    }
+
     Object.assign(this, {
       NODE_ENV: NodeEnv.development,
-      ...process.env,
-      ...file_path && fileExistsSync(file_path) && parse(readFileSync(file_path)),
-      ...custom_config,
+      ...env, ...process.env, ...custom_config,
     });
 
     const errors: ValidationError[] = validateSync(this);

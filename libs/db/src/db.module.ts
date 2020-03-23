@@ -1,4 +1,8 @@
-import { Coupon, Group, Menu, MenuCategory, Option, Order, ReplyReview, Restaurant, Review, User } from './entity';
+import {
+  Coupon, Group, Menu, MenuCategory,
+  Option, Order, ReplyReview,
+  Restaurant, Review, User,
+} from './entity';
 import { ConfigModule } from '@app/config';
 import { DBService } from './db.service';
 import { Module } from '@nestjs/common';

@@ -1,5 +1,9 @@
 import { ConflictException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { DtoCheckPassword, DtoCreateUser, DtoEditAddress, DtoEditPassword, DtoEditUserInfo, DtoSignIn, QueryCheckEmail } from '@app/type/req';
+import {
+  DtoCheckPassword, DtoCreateUser, DtoEditAddress,
+  DtoEditPassword, DtoEditUserInfo, DtoSignIn,
+  QueryCheckEmail,
+} from '@app/type/req';
 import { Order, User } from '@app/db';
 import { ResLoadUser, ResRefresh, ResSignIn } from '@app/type/res';
 import { TokenTypeEnum, UtilService } from '@app/util';
@@ -56,7 +60,10 @@ export class UserService {
     }
   }
 
-  public async edit(token: string, payload: DtoEditPassword | DtoEditUserInfo | DtoEditAddress): Promise<void> {
+  public async edit(
+    token: string,
+    payload: DtoEditPassword | DtoEditUserInfo | DtoEditAddress,
+  ): Promise<void> {
     const email: string = this.util_service.get_email_by_token(token);
     await this.db_service.update_user(email, payload);
   }
@@ -92,7 +99,6 @@ export class UserService {
 
     await this.db_service.delete_user(email);
   }
-
 
   // use only in test
 

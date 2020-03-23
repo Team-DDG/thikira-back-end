@@ -20,10 +20,14 @@ export class MenuService {
 
   // menu_category
 
-  public async upload_menu_category(token: string, payload: DtoUploadMenuCategory): Promise<ResUploadMenuCategory> {
+  public async upload_menu_category(
+    token: string,
+    payload: DtoUploadMenuCategory,
+  ): Promise<ResUploadMenuCategory> {
     const email: string = this.util_service.get_email_by_token(token);
     const f_restaurant: Restaurant = await this.db_service.find_restaurant_by_email(email);
-    const f_menu_category: MenuCategory = await this.db_service.find_menu_category_by_name(payload.name, f_restaurant);
+    const f_menu_category: MenuCategory =
+      await this.db_service.find_menu_category_by_name(payload.name, f_restaurant);
     if (f_menu_category) {
       throw new ConflictException();
     }
@@ -34,7 +38,9 @@ export class MenuService {
     return { mc_id: menu_category.mc_id };
   }
 
-  public async get_menu_category_list(param: string | QueryGetMenuCategoryList): Promise<ResGetMenuCategoryList[]> {
+  public async get_menu_category_list(
+    param: string | QueryGetMenuCategoryList,
+  ): Promise<ResGetMenuCategoryList[]> {
     let f_restaurant: Restaurant;
     if ('string' === typeof param) {
       const email: string = this.util_service.get_email_by_token(param);
@@ -43,7 +49,8 @@ export class MenuService {
       f_restaurant = await this.db_service.find_restaurant_by_id(parseInt(param.r_id));
     }
 
-    const f_menu_categories: MenuCategory[] = await this.db_service.find_menu_categories_by_restaurant(f_restaurant, false);
+    const f_menu_categories: MenuCategory[] =
+      await this.db_service.find_menu_categories_by_restaurant(f_restaurant, false);
 
     if (1 > f_menu_categories.length) {
       throw new NotFoundException();
@@ -110,7 +117,8 @@ export class MenuService {
   }
 
   public async get_menu_list(query: QueryGetMenuList): Promise<ResGetMenuList[]> {
-    const f_menu_category: MenuCategory = await this.db_service.find_menu_category_by_id(parseInt(query.mc_id));
+    const f_menu_category: MenuCategory =
+      await this.db_service.find_menu_category_by_id(parseInt(query.mc_id));
     if (!f_menu_category) {
       throw new NotFoundException();
     }

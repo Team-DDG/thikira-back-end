@@ -1,4 +1,7 @@
-import { ApiConflictResponse, ApiForbiddenResponse, ApiHeader, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiConflictResponse, ApiForbiddenResponse, ApiHeader,
+  ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags,
+} from '@nestjs/swagger';
 import {
   Body, Controller, Delete, Get,
   Headers, HttpCode, HttpException,

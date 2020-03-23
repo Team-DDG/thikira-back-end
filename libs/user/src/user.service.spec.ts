@@ -102,7 +102,9 @@ describe('UserService', () => {
   });
 
   it('Should fail check_password()', async () => {
-    await expect(service.check_password(access_token, { password: `${test_req.password}1` })).rejects.toThrow();
+    await expect(service.check_password(access_token, {
+      password: `${test_req.password}1`,
+    })).rejects.toThrow();
   });
 
   it('Should success edit_password()', async () => {

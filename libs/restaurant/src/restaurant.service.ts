@@ -57,7 +57,10 @@ export class RestaurantService {
     }
   }
 
-  public async edit(token: string, payload: DtoEditPassword | DtoEditRestaurantInfo | DtoEditAddress): Promise<void> {
+  public async edit(
+    token: string,
+    payload: DtoEditPassword | DtoEditRestaurantInfo | DtoEditAddress,
+  ): Promise<void> {
     const email: string = this.util_service.get_email_by_token(token);
     await this.db_service.update_restaurant(email, payload);
   }
@@ -93,7 +96,8 @@ export class RestaurantService {
       await this.db_service.delete_coupon(e_c.c_id);
     }
 
-    const f_m_categories: MenuCategory[] = await this.db_service.find_menu_categories_by_restaurant(f_restaurant, true);
+    const f_m_categories: MenuCategory[] =
+      await this.db_service.find_menu_categories_by_restaurant(f_restaurant, true);
     if (0 < f_m_categories.length) {
       const mc_ids: number[] = [];
       for (const e_mc of f_m_categories) {
