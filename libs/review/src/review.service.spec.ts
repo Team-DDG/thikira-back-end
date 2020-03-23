@@ -110,10 +110,14 @@ describe('ReviewService', () => {
 
   it('Should success upload_review', async () => {
     await u_service.create(test_u);
-    const u_token: string = (await u_service.sign_in({ email: test_u.email, password: test_u.password })).access_token;
+    const u_token: string = (await u_service.sign_in({
+      email: test_u.email, password: test_u.password,
+    })).access_token;
 
     await r_service.create(test_r);
-    const r_token: string = (await r_service.sign_in({ email: test_r.email, password: test_r.password })).access_token;
+    const r_token: string = (await r_service.sign_in({
+      email: test_r.email, password: test_r.password,
+    })).access_token;
     const { r_id }: Restaurant = await r_service.get(r_token);
 
     await expect(service.check_review(u_token, { r_id: r_id.toString() })).rejects.toThrow();
@@ -142,13 +146,21 @@ describe('ReviewService', () => {
   });
 
   it('Should success edit_review', async () => {
-    const user: { email: string; nickname: string } = { email: `2${test_u.email}`, nickname: `${test_u.nickname}_2` };
+    const user: { email: string; nickname: string } = {
+      email: `2${test_u.email}`, nickname: `${test_u.nickname}_2`,
+    };
     await u_service.create({ ...test_u, ...user });
-    const u_token: string = (await u_service.sign_in({ email: user.email, password: test_u.password })).access_token;
+    const u_token: string = (await u_service.sign_in({
+      email: user.email, password: test_u.password,
+    })).access_token;
 
-    const restaurant: { email: string; name: string } = { email: `2${test_r.email}`, name: `${test_r.name}_2` };
+    const restaurant: { email: string; name: string } = {
+      email: `2${test_r.email}`, name: `${test_r.name}_2`,
+    };
     await r_service.create({ ...test_r, ...restaurant });
-    const r_token: string = (await r_service.sign_in({ email: restaurant.email, password: test_r.password })).access_token;
+    const r_token: string = (await r_service.sign_in({
+      email: restaurant.email, password: test_r.password,
+    })).access_token;
     const { r_id }: Restaurant = await r_service.get(r_token);
 
     await od_service.upload(u_token, { ...test_od, r_id });
@@ -182,13 +194,19 @@ describe('ReviewService', () => {
   });
 
   it('Should success upload_reply_review', async () => {
-    const user: { email: string; nickname: string } = { email: `3${test_u.email}`, nickname: `${test_u.nickname}_3` };
+    const user: { email: string; nickname: string } = {
+      email: `3${test_u.email}`, nickname: `${test_u.nickname}_3`,
+    };
     await u_service.create({ ...test_u, ...user });
     const u_token: string = (await u_service.sign_in({ email: user.email, password: test_u.password })).access_token;
 
-    const restaurant: { email: string; name: string } = { email: `3${test_r.email}`, name: `${test_r.name}_3` };
+    const restaurant: { email: string; name: string } = {
+      email: `3${test_r.email}`, name: `${test_r.name}_3`,
+    };
     await r_service.create({ ...test_r, ...restaurant });
-    const r_token: string = (await r_service.sign_in({ email: restaurant.email, password: test_r.password })).access_token;
+    const r_token: string = (await r_service.sign_in({
+      email: restaurant.email, password: test_r.password,
+    })).access_token;
     const { r_id }: Restaurant = await r_service.get(r_token);
 
     await od_service.upload(u_token, { ...test_od, r_id });
@@ -217,13 +235,21 @@ describe('ReviewService', () => {
   });
 
   it('Should success edit_reply_review', async () => {
-    const user: { email: string; nickname: string } = { email: `4${test_u.email}`, nickname: `${test_u.nickname}_4` };
+    const user: { email: string; nickname: string } = {
+      email: `4${test_u.email}`, nickname: `${test_u.nickname}_4`,
+    };
     await u_service.create({ ...test_u, ...user });
-    const u_token: string = (await u_service.sign_in({ email: user.email, password: test_u.password })).access_token;
+    const u_token: string = (await u_service.sign_in({
+      email: user.email, password: test_u.password,
+    })).access_token;
 
-    const restaurant: { email: string; name: string } = { email: `4${test_r.email}`, name: `${test_r.name}_4` };
+    const restaurant: { email: string; name: string } = {
+      email: `4${test_r.email}`, name: `${test_r.name}_4`,
+    };
     await r_service.create({ ...test_r, ...restaurant });
-    const r_token: string = (await r_service.sign_in({ email: restaurant.email, password: test_r.password })).access_token;
+    const r_token: string = (await r_service.sign_in({
+      email: restaurant.email, password: test_r.password,
+    })).access_token;
     const { r_id }: Restaurant = await r_service.get(r_token);
 
     await od_service.upload(u_token, { ...test_od, r_id });
