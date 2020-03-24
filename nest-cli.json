@@ -59,13 +59,13 @@
       "type": "library"
     },
     "review": {
-      "type": "library",
-      "sourceRoot": "libs/review/src",
-      "root": "libs/review",
-      "entryFile": "index",
       "compilerOptions": {
         "tsConfigPath": "libs/review/tsconfig.lib.json"
-      }
+      },
+      "entryFile": "index",
+      "root": "libs/review",
+      "sourceRoot": "libs/review/src",
+      "type": "library"
     },
     "test-util": {
       "compilerOptions": {
