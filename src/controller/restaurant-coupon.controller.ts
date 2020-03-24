@@ -18,8 +18,10 @@ import getPrototypeOf = Reflect.getPrototypeOf;
 @ApiTags('restaurant/coupon')
 @Controller('api/restaurant/coupon')
 export class RestaurantCouponController {
-  @Inject() private readonly c_service: CouponService;
-  @Inject() private readonly util_service: UtilService;
+  @Inject()
+  private readonly c_service: CouponService;
+  @Inject()
+  private readonly util_service: UtilService;
 
   @Post()
   @HttpCode(200)

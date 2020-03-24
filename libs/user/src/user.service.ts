@@ -12,8 +12,10 @@ import { ObjectID } from 'typeorm';
 
 @Injectable()
 export class UserService {
-  @Inject() private readonly db_service: DBService;
-  @Inject() private readonly util_service: UtilService;
+  @Inject()
+  private readonly db_service: DBService;
+  @Inject()
+  private readonly util_service: UtilService;
 
   public async check_email(query: QueryCheckEmail): Promise<void> {
     const f_user: User = await this.db_service.find_user_by_email(query.email);

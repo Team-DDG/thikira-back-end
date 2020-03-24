@@ -5,4 +5,5 @@ import { TestUtilService } from './test-util.service';
   exports: [TestUtilService],
   providers: [TestUtilService],
 })
-export class TestUtilModule {}
+export class TestUtilModule {
+}

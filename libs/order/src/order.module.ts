@@ -10,5 +10,4 @@ import { UtilModule } from '@app/util';
   providers: [OrderService],
 })
 export class OrderModule {
-
 }

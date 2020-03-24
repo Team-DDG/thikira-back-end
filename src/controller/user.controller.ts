@@ -26,9 +26,12 @@ import getPrototypeOf = Reflect.getPrototypeOf;
 @ApiTags('user')
 @Controller('api/user')
 export class UserController {
-  @Inject() private readonly r_service: RestaurantService;
-  @Inject() private readonly u_service: UserService;
-  @Inject() private readonly util_service: UtilService;
+  @Inject()
+  private readonly r_service: RestaurantService;
+  @Inject()
+  private readonly u_service: UserService;
+  @Inject()
+  private readonly util_service: UtilService;
 
   @Get('auth/email')
   @HttpCode(200)

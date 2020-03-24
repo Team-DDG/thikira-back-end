@@ -21,8 +21,10 @@ import getPrototypeOf = Reflect.getPrototypeOf;
 @ApiTags('user/review')
 @Controller('api/user/review')
 export class UserReviewController {
-  @Inject() private readonly review_service: ReviewService;
-  @Inject() private readonly util_service: UtilService;
+  @Inject()
+  private readonly review_service: ReviewService;
+  @Inject()
+  private readonly util_service: UtilService;
 
   @Get('check')
   @HttpCode(200)

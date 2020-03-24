@@ -18,8 +18,10 @@ import getPrototypeOf = Reflect.getPrototypeOf;
 @ApiTags('user/order')
 @Controller('api/user/order')
 export class UserOrderController {
-  @Inject() private readonly od_service: OrderService;
-  @Inject() private readonly util_service: UtilService;
+  @Inject()
+  private readonly od_service: OrderService;
+  @Inject()
+  private readonly util_service: UtilService;
 
   @Post()
   @HttpCode(200)

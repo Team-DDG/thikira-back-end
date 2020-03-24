@@ -22,8 +22,10 @@ import getPrototypeOf = Reflect.getPrototypeOf;
 @ApiTags('restaurant')
 @Controller('api/restaurant')
 export class RestaurantController {
-  @Inject() private readonly r_service: RestaurantService;
-  @Inject() private readonly util_service: UtilService;
+  @Inject()
+  private readonly r_service: RestaurantService;
+  @Inject()
+  private readonly util_service: UtilService;
 
   @Get('auth/email')
   @HttpCode(200)

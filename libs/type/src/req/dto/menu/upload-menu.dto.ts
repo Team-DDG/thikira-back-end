@@ -13,6 +13,6 @@ export class DtoUploadMenu {
   public readonly name: string;
   @ApiProperty() @IsNumber()
   public readonly price: number;
-  @ApiProperty()  @IsArray()  @IsOptional()
+  @ApiProperty() @IsArray() @IsOptional()
   public readonly group?: UploadGroupClass[];
 }

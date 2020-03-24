@@ -26,8 +26,10 @@ import getPrototypeOf = Reflect.getPrototypeOf;
 @ApiTags('restaurant/menu')
 @Controller('api/restaurant/menu')
 export class RestaurantMenuController {
-  @Inject() private readonly m_service: MenuService;
-  @Inject() private readonly util_service: UtilService;
+  @Inject()
+  private readonly m_service: MenuService;
+  @Inject()
+  private readonly util_service: UtilService;
 
   @Post('category')
   @HttpCode(200)

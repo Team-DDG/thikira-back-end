@@ -10,8 +10,10 @@ import { OrderUserClass } from '@app/type/etc';
 import { UtilService } from '@app/util';
 
 export class OrderService {
-  @Inject() private readonly db_service: DBService;
-  @Inject() private readonly util_service: UtilService;
+  @Inject()
+  private readonly db_service: DBService;
+  @Inject()
+  private readonly util_service: UtilService;
 
   public async upload(token: string, payload: DtoUploadOrder): Promise<void> {
     const email: string = this.util_service.get_email_by_token(token);

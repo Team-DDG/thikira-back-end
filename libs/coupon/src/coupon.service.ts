@@ -7,8 +7,10 @@ import { UtilService } from '@app/util';
 import { plainToClass } from 'class-transformer';
 
 export class CouponService {
-  @Inject() private readonly db_service: DBService;
-  @Inject() private readonly util_service: UtilService;
+  @Inject()
+  private readonly db_service: DBService;
+  @Inject()
+  private readonly util_service: UtilService;
 
   public async upload(token: string, payload: DtoUploadCoupon): Promise<void> {
     const email: string = this.util_service.get_email_by_token(token);
