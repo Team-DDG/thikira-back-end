@@ -275,18 +275,26 @@ export class DBService {
   }
 
   public async find_orders_by_restaurant_user(restaurant: Restaurant, user: User): Promise<Order[]> {
-    return this.od_repo.find({ r_id: restaurant.r_id, u_id: user.u_id });
+    const res: Order[] = [];
+    const f_orders: Order[] = await this.od_repo.find({ r_id: restaurant.r_id, u_id: user.u_id });
+    if (f_orders) {
+      for (const e_od of f_orders) {
+        res.push(new Order(e_od));
+      }
+      return res;
+    }
+    return null;
   }
 
-  public async find_order_by_restaurant_id(id: number): Promise<Order> {
-    return new Order(await this.od_repo.findOne({ r_id: id }));
+  public async find_order_by_id(id: ObjectID | string): Promise<Order> {
+    return new Order(await this.od_repo.findOne(id));
   }
 
   public async update_order(id: string, payload: EditOrderClass): Promise<void> {
     await this.od_repo.update(id, payload);
   }
 
-  public async delete_order(id: ObjectID | ObjectID[]): Promise<void> {
+  public async delete_order(id: ObjectID | ObjectID[] | string): Promise<void> {
     await this.od_repo.delete(id);
   }
 

@@ -1,9 +1,10 @@
 import { ConfigModule, config } from '@app/config';
-import { DBModule, EnumOrderStatus, EnumPaymentType, Order, mongodb_entities, mysql_entities } from '@app/db';
+import { DBModule, EnumOrderStatus, EnumPaymentType, mongodb_entities, mysql_entities } from '@app/db';
 import { DtoCreateRestaurant, DtoCreateUser, DtoUploadOrder } from '@app/type/req';
-import { EnumSortOption, ResGetRestaurantList } from '@app/type';
+import { EnumSortOption, ResGetOrderList, ResGetRestaurantList } from '@app/type';
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
 import { Test, TestingModule } from '@nestjs/testing';
+import { TestUtilModule, TestUtilService } from '@app/test-util';
 import { UserModule, UserService } from '@app/user';
 import { MenuModule } from '@app/menu';
 import { OrderModule } from './order.module';
@@ -16,6 +17,23 @@ describe('OrderService', () => {
   let r_service: RestaurantService;
   let r_token: string;
   let service: OrderService;
+  const test_od: DtoUploadOrder = {
+    discount_amount: 500,
+    menu: [{
+      group: [{
+        name: '치킨 유형',
+        option: [{
+          name: '순살',
+          price: 1000,
+        }],
+      }],
+      name: '쁘링클',
+      price: 17000,
+      quantity: 2,
+    }],
+    payment_type: EnumPaymentType.ONLINE,
+    r_id: 0,
+  };
   const test_r: DtoCreateRestaurant = {
     add_parcel: 'a',
     add_street: 'b',
@@ -34,27 +52,6 @@ describe('OrderService', () => {
     password: 'order_test',
     phone: '01012345678',
   };
-  let test_req: DtoUploadOrder = {
-    discount_amount: 500,
-    menu: [{
-      group: [{
-        name: '치킨 유형',
-        option: [{
-          name: '순살',
-          price: 1000,
-        }],
-      }],
-      name: '쁘링클',
-      price: 17000,
-      quantity: 2,
-    }, {
-      name: '갈릭 소스',
-      price: 500,
-      quantity: 3,
-    }],
-    payment_type: EnumPaymentType.ONLINE,
-    r_id: 0,
-  };
   const test_u: DtoCreateUser = {
     email: 'order_test',
     nickname: 'order_test',
@@ -67,7 +64,7 @@ describe('OrderService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        DBModule, MenuModule, OrderModule, RestaurantModule,
+        DBModule, MenuModule, OrderModule, RestaurantModule, TestUtilModule,
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
           name: 'mysql',
@@ -87,7 +84,14 @@ describe('OrderService', () => {
     service = module.get<OrderService>(OrderService);
     r_service = module.get<RestaurantService>(RestaurantService);
     u_service = module.get<UserService>(UserService);
+  });
 
+  afterAll(async () => {
+    await getConnection('mysql').close();
+    await getConnection('mongodb').close();
+  });
+
+  it('200 upload_order_status', async () => {
     await r_service.create(test_r);
     r_token = (await r_service.sign_in({
       email: test_r.email,
@@ -95,10 +99,8 @@ describe('OrderService', () => {
     })).access_token;
 
     const { r_id }: ResGetRestaurantList = (await r_service.get_list({
-      category: test_r.category,
-      sort_option: EnumSortOption.NEARNESS,
+      category: test_r.category, sort_option: EnumSortOption.NEARNESS,
     }))[0];
-    test_req = { ...test_req, r_id };
 
     await u_service.create(test_u);
     u_token = (await u_service.sign_in({
@@ -106,27 +108,63 @@ describe('OrderService', () => {
       password: test_u.password,
     })).access_token;
 
-    await service.upload(u_token, test_req);
-  });
+    await service.upload(u_token, { ...test_od, r_id });
 
-  afterAll(async () => {
+    const f_order: ResGetOrderList = (await service.get_list_by_restaurant(r_token))[0];
+
+    let [req, res] = TestUtilService.make_comparable(f_order, test_od, [
+      'add_street', 'add_parcel', 'create_time', 'menu', 'nickname',
+      'od_id', 'order_detail', 'phone', 'r_id', 'status', 'total_price',
+    ]);
+    expect(req).toEqual(res);
+    [req, res] = TestUtilService.make_comparable(f_order.order_detail[0], test_od.menu[0], [
+      'sub_price', 'group',
+    ]);
+    expect(req).toEqual(res);
+    [req, res] = TestUtilService.make_comparable(
+      f_order.order_detail[0].group[0], test_od.menu[0].group[0], ['option']);
+    expect(req).toEqual(res);
+    expect(f_order.order_detail[0].group[0].option[0]).toEqual(test_od.menu[0].group[0].option[0]);
+    await service.remove_order(f_order.od_id);
+
     await r_service.leave(r_token);
     await u_service.leave(u_token);
-
-    await getConnection('mysql').close();
-    await getConnection('mongodb').close();
   });
 
   it('200 edit_order_status', async () => {
-    let f_order: Order = await service.get_order(test_req.r_id);
+    const restaurant: { email: string; name: string } = {
+      email: `2${test_r.email}`, name: `${test_r.name}_2`,
+    };
+    await r_service.create({ ...test_r, ...restaurant });
+    r_token = (await r_service.sign_in({
+      email: restaurant.email, password: test_r.password,
+    })).access_token;
 
-    await service.edit_order_status({ od_id: f_order.od_id.toString(), status: EnumOrderStatus.DONE });
+    const { r_id }: ResGetRestaurantList = (await r_service.get_list({
+      category: test_r.category, sort_option: EnumSortOption.NEARNESS,
+    }))[0];
 
-    f_order = await service.get_order(test_req.r_id);
-    if (EnumOrderStatus.DONE !== f_order.status) {
-      throw Error();
-    }
+    const user: { email: string; nickname: string } = {
+      email: `2${test_u.email}`, nickname: `${test_u.nickname}_2`,
+    };
+    await u_service.create({ ...test_u, ...user });
+    u_token = (await u_service.sign_in({
+      email: user.email,
+      password: test_u.password,
+    })).access_token;
+
+    await service.upload(u_token, { ...test_od, r_id });
+
+    let f_order: ResGetOrderList = (await service.get_list_by_restaurant(r_token))[0];
+
+    await service.edit_order_status({ od_id: f_order.od_id, status: EnumOrderStatus.DONE });
+
+    f_order = (await service.get_list_by_restaurant(r_token))[0];
+    expect(f_order.status).toEqual(EnumOrderStatus.DONE);
 
     await service.remove_order(f_order.od_id);
+
+    await r_service.leave(r_token);
+    await u_service.leave(u_token);
   });
 });
