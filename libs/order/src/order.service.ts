@@ -106,10 +106,6 @@ export class OrderService {
 
   // only use in test
 
-  public async get_order(od_id: string | ObjectID): Promise<Order> {
-    return this.db_service.find_order_by_id(od_id);
-  }
-
   public async remove_order(od_id: ObjectID | string): Promise<void> {
     await this.db_service.delete_order(od_id);
   }
