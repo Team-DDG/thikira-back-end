@@ -11,7 +11,7 @@ import {
 import { DtoUploadOrder } from '@app/type/req';
 import { Header } from '@app/type/etc';
 import { OrderService } from '@app/order';
-import { ResGetOrderListByUser } from '@app/type/res';
+import { ResGetOrderList } from '@app/type/res';
 import { UtilService } from '@app/util';
 import getPrototypeOf = Reflect.getPrototypeOf;
 
@@ -44,9 +44,9 @@ export class UserOrderController {
   @HttpCode(200)
   @ApiOperation({ summary: '주문 조회' })
   @ApiHeader({ name: 'Authorization' })
-  @ApiOkResponse({ type: [ResGetOrderListByUser] })
+  @ApiOkResponse({ type: [ResGetOrderList] })
   @ApiForbiddenResponse()
-  public async get_orders(@Headers() header: Header): Promise<ResGetOrderListByUser[]> {
+  public async get_orders(@Headers() header: Header): Promise<ResGetOrderList[]> {
     try {
       return this.od_service.get_list_by_user(this.util_service.get_token_body(header));
     } catch (e) {

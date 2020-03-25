@@ -1,12 +1,10 @@
 import { DtoEditOrderStatus, DtoUploadOrder } from '@app/type/req';
 import { ForbiddenException, Inject, NotFoundException } from '@nestjs/common';
 import { Order, Restaurant, User } from '@app/db';
-import {
-  ResGetOrderListByRestaurant, ResGetOrderListByUser,
-} from '@app/type/res';
 import { DBService } from '@app/db';
 import { ObjectID } from 'typeorm';
 import { OrderUserClass } from '@app/type/etc';
+import { ResGetOrderList } from '@app/type/res';
 import { UtilService } from '@app/util';
 
 export class OrderService {
@@ -49,8 +47,8 @@ export class OrderService {
     await this.db_service.insert_order(option);
   }
 
-  public async get_list_by_user(token: string): Promise<ResGetOrderListByUser[]> {
-    const res: ResGetOrderListByUser[] = [];
+  public async get_list_by_user(token: string): Promise<ResGetOrderList[]> {
+    const res: ResGetOrderList[] = [];
 
     const email: string = this.util_service.get_email_by_token(token);
     const f_user: User = await this.db_service.find_user_by_email(email);
@@ -64,17 +62,19 @@ export class OrderService {
     }
 
     for (const e_od of f_orders) {
-      const create_time: Date = e_od.od_id.getTimestamp();
-      for (const e of ['_id', 'od_id', 'u_id', 'r_id']) {
+      for (const e of ['_id', 'u_id', 'r_id']) {
         Reflect.deleteProperty(e_od, e);
       }
-      res.push({ ...e_od, create_time });
+      res.push({
+        ...e_od, create_time: e_od.od_id.getTimestamp(),
+        od_id: e_od.od_id.toString(),
+      });
     }
     return res;
   }
 
-  public async get_list_by_restaurant(token: string): Promise<ResGetOrderListByRestaurant[]> {
-    const res: ResGetOrderListByRestaurant[] = [];
+  public async get_list_by_restaurant(token: string): Promise<ResGetOrderList[]> {
+    const res: ResGetOrderList[] = [];
 
     const email: string = this.util_service.get_email_by_token(token);
     const f_restaurant: Restaurant = await this.db_service.find_restaurant_by_email(email);

@@ -10,7 +10,7 @@ import {
 import { DtoEditOrderStatus } from '@app/type/req';
 import { Header } from '@app/type/etc';
 import { OrderService } from '@app/order';
-import { ResGetOrderListByRestaurant } from '@app/type/res';
+import { ResGetOrderList } from '@app/type/res';
 import { UtilService } from '@app/util';
 import getPrototypeOf = Reflect.getPrototypeOf;
 
@@ -26,9 +26,9 @@ export class RestaurantOrderController {
   @HttpCode(200)
   @ApiOperation({ summary: '주문 조회' })
   @ApiHeader({ name: 'Authorization' })
-  @ApiOkResponse({ type: [ResGetOrderListByRestaurant] })
+  @ApiOkResponse({ type: [ResGetOrderList] })
   @ApiForbiddenResponse()
-  public async get_orders(@Headers() header: Header): Promise<ResGetOrderListByRestaurant[]> {
+  public async get_orders(@Headers() header: Header): Promise<ResGetOrderList[]> {
     try {
       return this.od_service.get_list_by_restaurant(this.util_service.get_token_body(header));
     } catch (e) {

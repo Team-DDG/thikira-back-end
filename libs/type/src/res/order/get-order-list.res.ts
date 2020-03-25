@@ -1,7 +1,9 @@
 import { EnumOrderStatus, EnumPaymentType, OrderDetail } from '@app/db';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class ResGetOrderListByUser {
+export class ResGetOrderList {
+  @ApiProperty()
+  public readonly od_id: string;
   @ApiProperty()
   public readonly add_street: string;
   @ApiProperty()
