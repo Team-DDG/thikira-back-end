@@ -1,6 +1,6 @@
 import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { EnumPaymentType } from '@app/db';
+import { EnumPaymentType } from '@app/entity';
 
 export class DtoOrderOption {
   @ApiProperty() @IsString()

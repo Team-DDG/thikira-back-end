@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { EnumOrderStatus } from '@app/db';
+import { EnumOrderStatus } from '@app/entity';
 import { IsString } from 'class-validator';
 
 export class DtoEditOrderStatus {

@@ -1,27 +1,23 @@
-import { ConfigModule, config } from '@app/config';
-import { DBModule, mongodb_entities, mysql_entities } from '@app/db';
 import {
   DtoCreateRestaurant,
   DtoEditGroup, DtoEditMenu, DtoEditMenuCategory, DtoEditOption,
   DtoUploadGroup, DtoUploadMenu, DtoUploadMenuCategory, DtoUploadOption,
 } from '@app/type/req';
 import {
-  ResGetGroupList,
-  ResGetMenuCategoryList,
-  ResGetMenuList,
-  ResGetOptionList,
-  ResSignIn, ResUploadGroup,
-  ResUploadMenu,
+  ResGetGroupList, ResGetMenuCategoryList,
+  ResGetMenuList, ResGetOptionList, ResSignIn,
+  ResUploadGroup, ResUploadMenu,
   ResUploadMenuCategory, ResUploadOption,
 } from '@app/type/res';
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestUtilModule, TestUtilService } from '@app/test-util';
+import { mongodb_entities, mysql_entities } from '@app/entity';
 import { MenuModule } from './menu.module';
 import { MenuService } from './menu.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserModule } from '@app/user';
 import { UtilModule } from '@app/util';
+import { config } from '@app/config';
 import { getConnection } from 'typeorm';
 
 describe('MenuService', () => {
@@ -66,20 +62,21 @@ describe('MenuService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        DBModule, MenuModule, RestaurantModule, TestUtilModule,
-        TypeOrmModule.forRootAsync({
-          imports: [ConfigModule],
+        MenuModule, RestaurantModule, TestUtilModule,
+        TypeOrmModule.forRoot({
+          ...config.mysql_config,
+          entities: mysql_entities,
           name: 'mysql',
-          useFactory() {
-            return { ...config.mysql_config, entities: mysql_entities };
-          },
-        }), TypeOrmModule.forRootAsync({
-          imports: [ConfigModule],
+        }),
+        TypeOrmModule.forRoot({
+          ...config.mongodb_config,
+          entities: mongodb_entities,
           name: 'mongodb',
-          useFactory() {
-            return { ...config.mongodb_config, entities: mongodb_entities };
-          },
-        }), UserModule, UtilModule],
+        }),
+        TypeOrmModule.forFeature(mysql_entities, 'mysql'),
+        TypeOrmModule.forFeature(mongodb_entities, 'mongodb'),
+        UtilModule,
+      ],
       providers: [MenuService],
     }).compile();
 

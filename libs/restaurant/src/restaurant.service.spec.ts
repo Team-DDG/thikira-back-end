@@ -1,13 +1,14 @@
-import { ConfigModule, config } from '@app/config';
-import { DBModule, mongodb_entities, mysql_entities } from '@app/db';
-import { DtoCreateRestaurant, DtoEditAddress, DtoEditPassword, DtoEditRestaurantInfo } from '@app/type';
-import { ResLoadRestaurant, ResRefresh, ResSignIn } from '@app/type/res';
+import { DtoCreateRestaurant, DtoEditAddress, DtoEditPassword, DtoEditRestaurantInfo } from '@app/type/req';
+import { ResRefresh, ResSignIn } from '@app/type/res';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestUtilModule, TestUtilService } from '@app/test-util';
+import { mongodb_entities, mysql_entities } from '@app/entity';
+import { ResLoadRestaurant } from '@app/type/res';
 import { RestaurantModule } from './restaurant.module';
 import { RestaurantService } from './restaurant.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UtilModule } from '@app/util';
+import { config } from '@app/config';
 import { getConnection } from 'typeorm';
 
 describe('RestaurantService', () => {
@@ -34,20 +35,21 @@ describe('RestaurantService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        DBModule, RestaurantModule, TestUtilModule,
-        TypeOrmModule.forRootAsync({
-          imports: [ConfigModule],
+        RestaurantModule, TestUtilModule,
+        TypeOrmModule.forRoot({
+          ...config.mysql_config,
+          entities: mysql_entities,
           name: 'mysql',
-          useFactory() {
-            return { ...config.mysql_config, entities: mysql_entities };
-          },
-        }), TypeOrmModule.forRootAsync({
-          imports: [ConfigModule],
+        }),
+        TypeOrmModule.forRoot({
+          ...config.mongodb_config,
+          entities: mongodb_entities,
           name: 'mongodb',
-          useFactory() {
-            return { ...config.mongodb_config, entities: mongodb_entities };
-          },
-        }), UtilModule],
+        }),
+        TypeOrmModule.forFeature(mysql_entities, 'mysql'),
+        TypeOrmModule.forFeature(mongodb_entities, 'mongodb'),
+        UtilModule,
+      ],
       providers: [RestaurantService],
     }).compile();
 
@@ -62,6 +64,7 @@ describe('RestaurantService', () => {
   it('Should success refresh()', async () => {
     await service.check_email({ email: test_r.email });
     await service.create(test_r);
+
     const { refresh_token }: ResSignIn = await service.sign_in({
       email: test_r.email, password: test_r.password,
     });
@@ -140,7 +143,7 @@ describe('RestaurantService', () => {
 
     await service.check_password(access_token, { password: test_r.password });
     const edit_data: DtoEditPassword = { password: `${test_r.password}_edit` };
-    await service.edit(access_token, edit_data);
+    await service.edit_password(access_token, edit_data);
 
     await service.sign_in({ ...edit_data, email: restaurant.email });
 

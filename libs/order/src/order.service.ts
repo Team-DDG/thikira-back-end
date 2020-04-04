@@ -1,21 +1,25 @@
 import { DtoEditOrderStatus, DtoUploadOrder } from '@app/type/req';
 import { ForbiddenException, Inject, NotFoundException } from '@nestjs/common';
-import { Order, Restaurant, User } from '@app/db';
-import { DBService } from '@app/db';
-import { ObjectID } from 'typeorm';
+import { ObjectID, Repository } from 'typeorm';
+import { Order, Restaurant, User } from '@app/entity';
+import { InjectRepository } from '@nestjs/typeorm';
 import { OrderUserClass } from '@app/type/etc';
 import { ResGetOrderList } from '@app/type/res';
 import { UtilService } from '@app/util';
 
 export class OrderService {
-  @Inject()
-  private readonly db_service: DBService;
+  @InjectRepository(Order, 'mongodb')
+  private readonly od_repo: Repository<Order>;
+  @InjectRepository(Restaurant, 'mysql')
+  private readonly r_repo: Repository<Restaurant>;
+  @InjectRepository(User, 'mysql')
+  private readonly u_repo: Repository<User>;
   @Inject()
   private readonly util_service: UtilService;
 
   public async upload(token: string, payload: DtoUploadOrder): Promise<void> {
     const email: string = this.util_service.get_email_by_token(token);
-    const f_user: User = await this.db_service.find_user_by_email(email);
+    const f_user: User = await this.u_repo.findOne({ email });
     if (!f_user) {
       throw new ForbiddenException();
     }
@@ -44,21 +48,25 @@ export class OrderService {
       Reflect.deleteProperty(payload, e);
     }
     Object.assign(option, payload);
-    await this.db_service.insert_order(option);
+    await this.od_repo.insert(option);
   }
 
   public async get_list_by_user(token: string): Promise<ResGetOrderList[]> {
     const res: ResGetOrderList[] = [];
 
     const email: string = this.util_service.get_email_by_token(token);
-    const f_user: User = await this.db_service.find_user_by_email(email);
+    const f_user: User = await this.u_repo.findOne({ email });
     if (!f_user) {
       throw new ForbiddenException();
     }
 
-    const f_orders: Order[] = await this.db_service.find_orders_by_user(f_user);
+    const f_orders: Order[] = await this.od_repo.find({ u_id: f_user.u_id });
     if (!f_orders) {
       throw new NotFoundException();
+    }
+
+    for (const e_od of f_orders) {
+      e_od.od_id = e_od._id;
     }
 
     for (const e_od of f_orders) {
@@ -77,14 +85,18 @@ export class OrderService {
     const res: ResGetOrderList[] = [];
 
     const email: string = this.util_service.get_email_by_token(token);
-    const f_restaurant: Restaurant = await this.db_service.find_restaurant_by_email(email);
+    const f_restaurant: Restaurant = await this.r_repo.findOne({ email });
     if (!f_restaurant) {
       throw new ForbiddenException();
     }
 
-    const f_orders: Order[] = await this.db_service.find_orders_by_restaurant(f_restaurant);
-    if (1 > f_orders.length) {
+    const f_orders: Order[] = await this.od_repo.find({ r_id: f_restaurant.r_id });
+    if (!f_orders) {
       throw new NotFoundException();
+    }
+
+    for (const e_od of f_orders) {
+      e_od.od_id = e_od._id;
     }
 
     for (const e_od of f_orders) {
@@ -101,21 +113,25 @@ export class OrderService {
   }
 
   public async edit_order_status(payload: DtoEditOrderStatus): Promise<void> {
-    await this.db_service.update_order(payload.od_id, payload);
+    await this.od_repo.update(payload.od_id, payload);
   }
 
   // only use in test
 
   public async remove_order(od_id: ObjectID | string): Promise<void> {
-    await this.db_service.delete_order(od_id);
+    await this.od_repo.delete(od_id);
   }
 
   public async get_orders_by_restaurant_user(r_token: string, u_token: string): Promise<Order[]> {
     let email: string = this.util_service.get_email_by_token(r_token);
-    const f_restaurant: Restaurant = await this.db_service.find_restaurant_by_email(email);
+    const f_restaurant: Restaurant = await this.r_repo.findOne({ email });
     email = this.util_service.get_email_by_token(u_token);
-    const f_user: User = await this.db_service.find_user_by_email(email);
+    const f_user: User = await this.u_repo.findOne({ email });
 
-    return this.db_service.find_orders_by_restaurant_user(f_restaurant, f_user);
+    const f_orders: Order[] = await this.od_repo.find({ r_id: f_restaurant.r_id, u_id: f_user.u_id });
+    for (const e_od of f_orders) {
+      e_od.od_id = e_od._id;
+    }
+    return f_orders;
   }
 }

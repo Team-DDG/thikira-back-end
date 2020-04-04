@@ -22,13 +22,13 @@
       "sourceRoot": "libs/coupon/src",
       "type": "library"
     },
-    "db": {
+    "entity": {
       "compilerOptions": {
-        "tsConfigPath": "libs/db/tsconfig.lib.json"
+        "tsConfigPath": "libs/entity/tsconfig.lib.json"
       },
       "entryFile": "index",
-      "root": "libs/db",
-      "sourceRoot": "libs/db/src",
+      "root": "libs/entity",
+      "sourceRoot": "libs/entity/src",
       "type": "library"
     },
     "menu": {

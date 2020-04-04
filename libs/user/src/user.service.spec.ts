@@ -1,13 +1,14 @@
-import { ConfigModule, config } from '@app/config';
-import { DBModule, mongodb_entities, mysql_entities } from '@app/db';
 import { DtoCreateUser, DtoEditAddress, DtoEditPassword, DtoEditUserInfo } from '@app/type/req';
 import { ResLoadUser, ResRefresh, ResSignIn } from '@app/type/res';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestUtilModule, TestUtilService } from '@app/test-util';
+import { mongodb_entities, mysql_entities } from '@app/entity';
+import { RestaurantModule } from '@app/restaurant';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user.module';
 import { UserService } from './user.service';
 import { UtilModule } from '@app/util';
+import { config } from '@app/config';
 import { getConnection } from 'typeorm';
 
 describe('UserService', () => {
@@ -22,19 +23,21 @@ describe('UserService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        DBModule, TestUtilModule, TypeOrmModule.forRootAsync({
-          imports: [ConfigModule],
+        RestaurantModule, TestUtilModule,
+        TypeOrmModule.forRoot({
+          ...config.mysql_config,
+          entities: mysql_entities,
           name: 'mysql',
-          useFactory() {
-            return { ...config.mysql_config, entities: mysql_entities };
-          },
-        }), TypeOrmModule.forRootAsync({
-          imports: [ConfigModule],
+        }),
+        TypeOrmModule.forRoot({
+          ...config.mongodb_config,
+          entities: mongodb_entities,
           name: 'mongodb',
-          useFactory() {
-            return { ...config.mongodb_config, entities: mongodb_entities };
-          },
-        }), UserModule, UtilModule],
+        }),
+        TypeOrmModule.forFeature(mysql_entities, 'mysql'),
+        TypeOrmModule.forFeature(mongodb_entities, 'mongodb'),
+        UserModule, UtilModule,
+      ],
       providers: [UserService],
     }).compile();
 
@@ -118,7 +121,7 @@ describe('UserService', () => {
 
     await service.check_password(access_token, { password: test_u.password });
     const edit_data: DtoEditPassword = { password: `${test_u.password}_edit` };
-    await service.edit(access_token, edit_data);
+    await service.edit_password(access_token, edit_data);
 
     await service.sign_in({ ...edit_data, email: restaurant.email });
 

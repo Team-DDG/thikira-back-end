@@ -1,4 +1,4 @@
-import { ReplyReview } from '@app/db';
+import { ReplyReview } from '@app/entity';
 
 export class EditReviewClass {
   public content?: string;

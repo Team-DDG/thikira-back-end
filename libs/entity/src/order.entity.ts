@@ -1,6 +1,5 @@
 import { Column, Entity, ObjectID, ObjectIdColumn } from 'typeorm';
-import { EnumOrderStatus } from '../order-status.enum';
-import { EnumPaymentType } from '../payment-type.enum';
+import { EnumOrderStatus, EnumPaymentType } from './enum';
 
 export class OrderDetailOption {
   public name: string;
@@ -47,9 +46,4 @@ export class Order {
   public u_id: number;
   @Column()
   public r_id: number;
-
-  public constructor(order?: Order) {
-    Object.assign(this, order);
-    this.od_id = this._id;
-  }
 }

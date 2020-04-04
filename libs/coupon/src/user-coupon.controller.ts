@@ -3,20 +3,18 @@ import {
   ApiOkResponse, ApiOperation, ApiTags,
 } from '@nestjs/swagger';
 import {
-  Controller, Get, Headers, HttpCode,
-  HttpException, Inject,
+  Controller, Get, Headers, HttpCode, Inject,
   InternalServerErrorException,
   Query, ValidationPipe,
 } from '@nestjs/common';
-import { CouponService } from '@app/coupon';
+import { CouponService } from './coupon.service';
 import { Header } from '@app/type/etc';
 import { QueryGetCoupon } from '@app/type/req';
 import { ResGetCoupon } from '@app/type/res';
 import { UtilService } from '@app/util';
-import getPrototypeOf = Reflect.getPrototypeOf;
 
-@ApiTags('user/coupon')
-@Controller('api/user/coupon')
+@ApiTags('req/coupon')
+@Controller('api/req/coupon')
 export class UserCouponController {
   @Inject()
   private readonly c_service: CouponService;
@@ -36,7 +34,7 @@ export class UserCouponController {
     try {
       return this.c_service.get(query);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 }

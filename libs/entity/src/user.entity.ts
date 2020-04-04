@@ -1,5 +1,4 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { MenuCategory } from './menu-category.entity';
 import { Review } from './review.entity';
 
 @Entity()
@@ -20,6 +19,6 @@ export class User {
   public nickname: string;
   @CreateDateColumn()
   public create_time: Date;
-  @OneToMany(() => Review, (review: Review) => review.restaurant)
-  public review: MenuCategory[];
+  @OneToMany(() => Review, (review: Review) => review.user)
+  public review: Review[];
 }

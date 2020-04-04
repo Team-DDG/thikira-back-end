@@ -4,18 +4,16 @@ import {
 } from '@nestjs/swagger';
 import {
   Controller, Get, Headers, HttpCode,
-  HttpException, Inject,
-  InternalServerErrorException,
+  Inject, InternalServerErrorException,
   Query, ValidationPipe,
 } from '@nestjs/common';
 import { QueryGetMenuCategoryList, QueryGetMenuList } from '@app/type/req';
 import { ResGetMenuCategoryList, ResGetMenuList } from '@app/type/res';
 import { Header } from '@app/type/etc';
-import { MenuService } from '@app/menu';
-import getPrototypeOf = Reflect.getPrototypeOf;
+import { MenuService } from './menu.service';
 
-@ApiTags('user/menu')
-@Controller('api/user/menu')
+@ApiTags('req/menu')
+@Controller('api/req/menu')
 export class UserMenuController {
   @Inject()
   private readonly m_service: MenuService;
@@ -34,7 +32,7 @@ export class UserMenuController {
     try {
       return this.m_service.get_menu_category_list(query);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -52,7 +50,7 @@ export class UserMenuController {
     try {
       return this.m_service.get_menu_list(query);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 

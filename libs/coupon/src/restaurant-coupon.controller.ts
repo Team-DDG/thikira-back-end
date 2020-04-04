@@ -4,16 +4,15 @@ import {
 } from '@nestjs/swagger';
 import {
   Body, Controller, Get, Headers,
-  HttpCode, HttpException, Inject,
+  HttpCode, Inject,
   InternalServerErrorException,
   Post, ValidationPipe,
 } from '@nestjs/common';
-import { CouponService } from '@app/coupon';
+import { CouponService } from './coupon.service';
 import { DtoUploadCoupon } from '@app/type/req';
 import { Header } from '@app/type/etc';
 import { ResGetCouponList } from '@app/type/res';
 import { UtilService } from '@app/util';
-import getPrototypeOf = Reflect.getPrototypeOf;
 
 @ApiTags('restaurant/coupon')
 @Controller('api/restaurant/coupon')
@@ -35,7 +34,7 @@ export class RestaurantCouponController {
     try {
       return this.c_service.upload(this.util_service.get_token_body(header), payload);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -49,7 +48,7 @@ export class RestaurantCouponController {
     try {
       return this.c_service.get_list(this.util_service.get_token_body(header));
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 }

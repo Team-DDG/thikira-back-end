@@ -1,9 +1,8 @@
-import { ConfigModule, config } from '@app/config';
-import { DBModule, EnumPaymentType, Order, Restaurant, mongodb_entities, mysql_entities } from '@app/db';
 import {
   DtoCreateRestaurant, DtoCreateUser, DtoEditReplyReview, DtoEditReview,
   DtoUploadOrder, DtoUploadReplyReview, DtoUploadReview, ResGetReviewList,
 } from '@app/type';
+import { EnumPaymentType, Order, Restaurant, mongodb_entities, mysql_entities } from '@app/entity';
 import { OrderModule, OrderService } from '@app/order';
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -14,6 +13,7 @@ import { ReviewModule } from './review.module';
 import { ReviewService } from './review.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UtilModule } from '@app/util';
+import { config } from '@app/config';
 import { getConnection } from 'typeorm';
 
 describe('ReviewService', () => {
@@ -80,20 +80,22 @@ describe('ReviewService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        DBModule, MenuModule, OrderModule, RestaurantModule, ReviewModule, TestUtilModule,
-        TypeOrmModule.forRootAsync({
-          imports: [ConfigModule],
+        MenuModule, OrderModule, RestaurantModule,
+        ReviewModule, TestUtilModule,
+        TypeOrmModule.forRoot({
+          ...config.mysql_config,
+          entities: mysql_entities,
           name: 'mysql',
-          useFactory() {
-            return { ...config.mysql_config, entities: mysql_entities };
-          },
-        }), TypeOrmModule.forRootAsync({
-          imports: [ConfigModule],
+        }),
+        TypeOrmModule.forRoot({
+          ...config.mongodb_config,
+          entities: mongodb_entities,
           name: 'mongodb',
-          useFactory() {
-            return { ...config.mongodb_config, entities: mongodb_entities };
-          },
-        }), UserModule, UtilModule],
+        }),
+        TypeOrmModule.forFeature(mysql_entities, 'mysql'),
+        TypeOrmModule.forFeature(mongodb_entities, 'mongodb'),
+        UserModule, UtilModule,
+      ],
       providers: [OrderService],
     }).compile();
 

@@ -4,8 +4,9 @@ import {
   ApiOkResponse, ApiOperation, ApiQuery, ApiTags,
 } from '@nestjs/swagger';
 import {
-  Body, Controller, Delete, Get, Headers, HttpCode,
-  HttpException, Inject, InternalServerErrorException,
+  Body, Controller, Delete, Get,
+  Headers, HttpCode, Inject,
+  InternalServerErrorException,
   Patch, Post, Query, ValidationPipe,
 } from '@nestjs/common';
 import {
@@ -15,9 +16,8 @@ import {
 } from '@app/type/req';
 import { ResLoadRestaurant, ResRefresh, ResSignIn } from '@app/type/res';
 import { Header } from '@app/type/etc';
-import { RestaurantService } from '@app/restaurant';
+import { RestaurantService } from './restaurant.service';
 import { UtilService } from '@app/util';
-import getPrototypeOf = Reflect.getPrototypeOf;
 
 @ApiTags('restaurant')
 @Controller('api/restaurant')
@@ -37,7 +37,7 @@ export class RestaurantController {
     try {
       return this.r_service.check_email(query);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -50,7 +50,7 @@ export class RestaurantController {
     try {
       return this.r_service.create(payload);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -63,7 +63,7 @@ export class RestaurantController {
     try {
       return this.r_service.sign_in(payload);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -88,7 +88,7 @@ export class RestaurantController {
       return this.r_service.leave(
         this.util_service.get_token_body(token));
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -115,7 +115,7 @@ export class RestaurantController {
     try {
       return this.r_service.check_password(this.util_service.get_token_body(header), payload);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -130,9 +130,9 @@ export class RestaurantController {
     @Body(new ValidationPipe()) payload: DtoEditPassword,
   ): Promise<void> {
     try {
-      return this.r_service.edit(this.util_service.get_token_body(header), payload);
+      return this.r_service.edit_password(this.util_service.get_token_body(header), payload);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -149,7 +149,7 @@ export class RestaurantController {
     try {
       return this.r_service.edit(this.util_service.get_token_body(header), payload);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -166,7 +166,7 @@ export class RestaurantController {
     try {
       return this.r_service.edit(this.util_service.get_token_body(header), payload);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -180,7 +180,7 @@ export class RestaurantController {
     try {
       return this.r_service.load(this.util_service.get_token_body(header));
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 }

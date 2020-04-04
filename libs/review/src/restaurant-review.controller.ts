@@ -6,7 +6,7 @@ import {
 import {
   Body,
   Controller, Delete, Get, Headers,
-  HttpCode, HttpException, Inject,
+  HttpCode, Inject,
   InternalServerErrorException, Patch, Post, ValidationPipe,
 } from '@nestjs/common';
 import {
@@ -14,9 +14,8 @@ import {
   ResGetReviewList, ResGetReviewStatistic,
 } from '@app/type';
 import { Header } from '@app/type/etc';
-import { ReviewService } from '@app/review';
+import { ReviewService } from './review.service';
 import { UtilService } from '@app/util';
-import getPrototypeOf = Reflect.getPrototypeOf;
 
 @ApiTags('restaurant/review')
 @Controller('api/restaurant/review')
@@ -37,7 +36,7 @@ export class RestaurantReviewController {
     try {
       return this.review_service.get_review_list_by_restaurant(this.util_service.get_token_body(header));
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -52,7 +51,7 @@ export class RestaurantReviewController {
     try {
       return this.review_service.get_review_statistic(this.util_service.get_token_body(header));
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -68,7 +67,7 @@ export class RestaurantReviewController {
     try {
       return this.review_service.upload_reply_review(this.util_service.get_token_body(header), payload);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -85,7 +84,7 @@ export class RestaurantReviewController {
     try {
       return this.review_service.edit_reply_review(this.util_service.get_token_body(header), payload);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -99,7 +98,7 @@ export class RestaurantReviewController {
     try {
       return this.review_service.remove_reply_review(this.util_service.get_token_body(header));
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 }

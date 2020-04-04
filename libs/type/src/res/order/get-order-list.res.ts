@@ -1,4 +1,4 @@
-import { EnumOrderStatus, EnumPaymentType, OrderDetail } from '@app/db';
+import { EnumOrderStatus, EnumPaymentType, OrderDetail } from '@app/entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ResGetOrderList {

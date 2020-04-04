@@ -1,16 +1,15 @@
-import { ConfigModule, config } from '@app/config';
-import { DBModule, EnumOrderStatus, EnumPaymentType, mongodb_entities, mysql_entities } from '@app/db';
 import { DtoCreateRestaurant, DtoCreateUser, DtoUploadOrder } from '@app/type/req';
+import { EnumOrderStatus, EnumPaymentType, mongodb_entities, mysql_entities } from '@app/entity';
 import { EnumSortOption, ResGetOrderList, ResGetRestaurantList } from '@app/type';
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestUtilModule, TestUtilService } from '@app/test-util';
 import { UserModule, UserService } from '@app/user';
-import { MenuModule } from '@app/menu';
 import { OrderModule } from './order.module';
 import { OrderService } from './order.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UtilModule } from '@app/util';
+import { config } from '@app/config';
 import { getConnection } from 'typeorm';
 
 describe('OrderService', () => {
@@ -64,20 +63,21 @@ describe('OrderService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        DBModule, MenuModule, OrderModule, RestaurantModule, TestUtilModule,
-        TypeOrmModule.forRootAsync({
-          imports: [ConfigModule],
+        OrderModule, RestaurantModule, TestUtilModule,
+        TypeOrmModule.forRoot({
+          ...config.mysql_config,
+          entities: mysql_entities,
           name: 'mysql',
-          useFactory() {
-            return { ...config.mysql_config, entities: mysql_entities };
-          },
-        }), TypeOrmModule.forRootAsync({
-          imports: [ConfigModule],
+        }),
+        TypeOrmModule.forRoot({
+          ...config.mongodb_config,
+          entities: mongodb_entities,
           name: 'mongodb',
-          useFactory() {
-            return { ...config.mongodb_config, entities: mongodb_entities };
-          },
-        }), UserModule, UtilModule],
+        }),
+        TypeOrmModule.forFeature(mysql_entities, 'mysql'),
+        TypeOrmModule.forFeature(mongodb_entities, 'mongodb'),
+        UserModule, UtilModule,
+      ],
       providers: [OrderService],
     }).compile();
 
@@ -144,12 +144,12 @@ describe('OrderService', () => {
       category: test_r.category, sort_option: EnumSortOption.NEARNESS,
     }))[0];
 
-    const user: { email: string; nickname: string } = {
+    const req: { email: string; nickname: string } = {
       email: `2${test_u.email}`, nickname: `${test_u.nickname}_2`,
     };
-    await u_service.create({ ...test_u, ...user });
+    await u_service.create({ ...test_u, ...req });
     u_token = (await u_service.sign_in({
-      email: user.email,
+      email: req.email,
       password: test_u.password,
     })).access_token;
 

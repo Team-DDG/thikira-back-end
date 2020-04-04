@@ -17,8 +17,8 @@
       "@app/coupon": [
         "libs/coupon/src"
       ],
-      "@app/db": [
-        "libs/db/src"
+      "@app/entity": [
+        "libs/entity/src"
       ],
       "@app/menu": [
         "libs/menu/src"

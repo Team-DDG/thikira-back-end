@@ -4,19 +4,18 @@ import {
 } from '@nestjs/swagger';
 import {
   Body, Controller, Get, Headers,
-  HttpCode, HttpException, Inject,
+  HttpCode, Inject,
   InternalServerErrorException,
   Post, ValidationPipe,
 } from '@nestjs/common';
 import { DtoUploadOrder } from '@app/type/req';
 import { Header } from '@app/type/etc';
-import { OrderService } from '@app/order';
+import { OrderService } from './order.service';
 import { ResGetOrderList } from '@app/type/res';
 import { UtilService } from '@app/util';
-import getPrototypeOf = Reflect.getPrototypeOf;
 
-@ApiTags('user/order')
-@Controller('api/user/order')
+@ApiTags('req/order')
+@Controller('api/req/order')
 export class UserOrderController {
   @Inject()
   private readonly od_service: OrderService;
@@ -36,7 +35,7 @@ export class UserOrderController {
     try {
       return this.od_service.upload(this.util_service.get_token_body(header), payload);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -50,7 +49,7 @@ export class UserOrderController {
     try {
       return this.od_service.get_list_by_user(this.util_service.get_token_body(header));
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 }

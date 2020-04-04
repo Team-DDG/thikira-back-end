@@ -1,4 +1,4 @@
-import { EnumOrderStatus } from '@app/db';
+import { EnumOrderStatus } from '@app/entity';
 
 export class EditOrderClass {
   public readonly status?: EnumOrderStatus;

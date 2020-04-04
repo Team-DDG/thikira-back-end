@@ -5,7 +5,7 @@ import {
 } from '@nestjs/swagger';
 import {
   Body, Controller, Delete, Get, Headers,
-  HttpCode, HttpException, Inject, InternalServerErrorException,
+  HttpCode, Inject, InternalServerErrorException,
   Param, Patch, Post, Query, ValidationPipe,
 } from '@nestjs/common';
 import {
@@ -19,9 +19,8 @@ import {
   ResUploadGroup, ResUploadMenu, ResUploadMenuCategory, ResUploadOption,
 } from '@app/type/res';
 import { Header } from '@app/type/etc';
-import { MenuService } from '@app/menu';
+import { MenuService } from './menu.service';
 import { UtilService } from '@app/util';
-import getPrototypeOf = Reflect.getPrototypeOf;
 
 @ApiTags('restaurant/menu')
 @Controller('api/restaurant/menu')
@@ -45,7 +44,7 @@ export class RestaurantMenuController {
     try {
       return this.m_service.upload_menu_category(this.util_service.get_token_body(header), payload);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -59,7 +58,7 @@ export class RestaurantMenuController {
     try {
       return this.m_service.get_menu_category_list(this.util_service.get_token_body(header));
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -77,7 +76,7 @@ export class RestaurantMenuController {
     try {
       return this.m_service.edit_menu_category(payload);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -95,7 +94,7 @@ export class RestaurantMenuController {
 
       return this.m_service.remove_menu_category(UtilService.parse_ids(param.mc_id));
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -113,7 +112,7 @@ export class RestaurantMenuController {
     try {
       return this.m_service.upload_menu(payload);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -131,7 +130,7 @@ export class RestaurantMenuController {
     try {
       return this.m_service.get_menu_list(query);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -148,7 +147,7 @@ export class RestaurantMenuController {
     try {
       return this.m_service.edit_menu(payload);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -165,7 +164,7 @@ export class RestaurantMenuController {
     try {
       return this.m_service.remove_menu(UtilService.parse_ids(param.m_id));
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -183,7 +182,7 @@ export class RestaurantMenuController {
     try {
       return this.m_service.upload_group(payload);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -201,7 +200,7 @@ export class RestaurantMenuController {
     try {
       return this.m_service.get_group_list(query);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -218,7 +217,7 @@ export class RestaurantMenuController {
     try {
       return this.m_service.edit_group(payload);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -235,7 +234,7 @@ export class RestaurantMenuController {
     try {
       return this.m_service.remove_group(UtilService.parse_ids(param.g_id));
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -253,7 +252,7 @@ export class RestaurantMenuController {
     try {
       return this.m_service.upload_option(payload);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -271,7 +270,7 @@ export class RestaurantMenuController {
     try {
       return this.m_service.get_option_list(query);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -288,7 +287,7 @@ export class RestaurantMenuController {
     try {
       return this.m_service.edit_option(payload);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -305,7 +304,7 @@ export class RestaurantMenuController {
     try {
       return this.m_service.remove_option(UtilService.parse_ids(param.o_id));
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 }

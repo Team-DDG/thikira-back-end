@@ -26,8 +26,16 @@ export class UtilService {
     return createHash(config.ENCIPHERMENT).update(content).digest('base64');
   }
 
-  public create_token(email: string, type: TokenTypeEnum): string {
-    const expires_in: string = type === TokenTypeEnum.access ? '30 min' : '14 days';
+  public create_token(email: string, param: TokenTypeEnum | number): string {
+    let expires_in: string;
+    if (TokenTypeEnum.access === param) {
+      expires_in = '30 min';
+    } else if (TokenTypeEnum.refresh === param) {
+      expires_in = '14 days';
+    } else {
+
+    }
+
     return sign({ id: email }, this.secret, { expiresIn: expires_in });
   }
 

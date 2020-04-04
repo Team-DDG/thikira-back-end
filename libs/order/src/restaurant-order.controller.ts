@@ -4,15 +4,14 @@ import {
 } from '@nestjs/swagger';
 import {
   Body, Controller, Get, Headers,
-  HttpCode, HttpException, Inject,
+  HttpCode, Inject,
   InternalServerErrorException, Patch, ValidationPipe,
 } from '@nestjs/common';
 import { DtoEditOrderStatus } from '@app/type/req';
 import { Header } from '@app/type/etc';
-import { OrderService } from '@app/order';
+import { OrderService } from './order.service';
 import { ResGetOrderList } from '@app/type/res';
 import { UtilService } from '@app/util';
-import getPrototypeOf = Reflect.getPrototypeOf;
 
 @ApiTags('restaurant/order')
 @Controller('api/restaurant/order')
@@ -32,7 +31,7 @@ export class RestaurantOrderController {
     try {
       return this.od_service.get_list_by_restaurant(this.util_service.get_token_body(header));
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -49,7 +48,7 @@ export class RestaurantOrderController {
     try {
       return this.od_service.edit_order_status(payload);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 }

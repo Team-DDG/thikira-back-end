@@ -6,7 +6,7 @@ import {
 } from '@nestjs/swagger';
 import {
   Body, Controller, Delete, Get,
-  Headers, HttpCode, HttpException, Inject,
+  Headers, HttpCode, Inject,
   InternalServerErrorException,
   Patch, Post, Query, ValidationPipe,
 } from '@nestjs/common';
@@ -19,12 +19,11 @@ import { ResGetRestaurantList, ResLoadUser, ResRefresh, ResSignIn } from '@app/t
 import { EnumSortOption } from '@app/type';
 import { Header } from '@app/type/etc';
 import { RestaurantService } from '@app/restaurant';
-import { UserService } from '@app/user';
+import { UserService } from './user.service';
 import { UtilService } from '@app/util';
-import getPrototypeOf = Reflect.getPrototypeOf;
 
-@ApiTags('user')
-@Controller('api/user')
+@ApiTags('req')
+@Controller('api/req')
 export class UserController {
   @Inject()
   private readonly r_service: RestaurantService;
@@ -43,7 +42,7 @@ export class UserController {
     try {
       return this.u_service.check_email(query);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -55,7 +54,7 @@ export class UserController {
     try {
       return this.u_service.create(payload);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -68,7 +67,7 @@ export class UserController {
     try {
       return this.u_service.sign_in(payload);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -92,7 +91,7 @@ export class UserController {
     try {
       return this.u_service.leave(this.util_service.get_token_body(header));
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -120,7 +119,7 @@ export class UserController {
     try {
       return this.u_service.check_password(this.util_service.get_token_body(header), payload);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -135,9 +134,9 @@ export class UserController {
     @Body(new ValidationPipe()) payload: DtoEditPassword,
   ): Promise<void> {
     try {
-      return this.u_service.edit(this.util_service.get_token_body(header), payload);
+      return this.u_service.edit_password(this.util_service.get_token_body(header), payload);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -154,7 +153,7 @@ export class UserController {
     try {
       return this.u_service.edit(this.util_service.get_token_body(header), payload);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -171,7 +170,7 @@ export class UserController {
     try {
       return this.u_service.edit(this.util_service.get_token_body(header), payload);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -185,7 +184,7 @@ export class UserController {
     try {
       return this.u_service.load(this.util_service.get_token_body(header));
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -204,7 +203,7 @@ export class UserController {
     try {
       return this.r_service.get_list(query);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 }

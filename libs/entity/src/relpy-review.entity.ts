@@ -3,7 +3,7 @@ import {
   JoinColumn, ManyToOne, OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Restaurant, Review } from '@app/db';
+import { Restaurant, Review } from '@app/entity';
 
 @Entity()
 export class ReplyReview {

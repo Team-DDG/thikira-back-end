@@ -4,7 +4,7 @@ import {
 } from '@nestjs/swagger';
 import {
   Body, Controller, Delete, Get,
-  Headers, HttpCode, HttpException,
+  Headers, HttpCode,
   Inject, InternalServerErrorException,
   Patch, Post, Query, ValidationPipe,
 } from '@nestjs/common';
@@ -14,12 +14,11 @@ import {
   ResGetReviewList, ResGetReviewStatistic,
 } from '@app/type';
 import { Header } from '@app/type/etc';
-import { ReviewService } from '@app/review';
+import { ReviewService } from './review.service';
 import { UtilService } from '@app/util';
-import getPrototypeOf = Reflect.getPrototypeOf;
 
-@ApiTags('user/review')
-@Controller('api/user/review')
+@ApiTags('req/review')
+@Controller('api/req/review')
 export class UserReviewController {
   @Inject()
   private readonly review_service: ReviewService;
@@ -31,7 +30,7 @@ export class UserReviewController {
   @ApiOperation({ summary: '리뷰 등록 가능 여부 확인' })
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse({ type: [ResGetReviewList] })
-  @ApiForbiddenResponse({ description: '\"user haven\'t order by the restaurant\" | null' })
+  @ApiForbiddenResponse({ description: '\"req haven\'t order by the restaurant\" | null' })
   @ApiConflictResponse()
   public async check_review(
     @Headers() header: Header,
@@ -40,7 +39,7 @@ export class UserReviewController {
     try {
       return this.review_service.check_review(this.util_service.get_token_body(header), query);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -56,7 +55,7 @@ export class UserReviewController {
     try {
       return this.review_service.upload_review(this.util_service.get_token_body(header), payload);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -71,7 +70,7 @@ export class UserReviewController {
     try {
       return this.review_service.get_review_list_by_user(this.util_service.get_token_body(header));
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -89,7 +88,7 @@ export class UserReviewController {
     try {
       return this.review_service.get_review_statistic(query);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -106,7 +105,7 @@ export class UserReviewController {
     try {
       return this.review_service.edit_review(this.util_service.get_token_body(header), payload);
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -122,7 +121,7 @@ export class UserReviewController {
     try {
       return this.review_service.remove_review(this.util_service.get_token_body(header));
     } catch (e) {
-      throw getPrototypeOf(e) === HttpException ? e : new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 }
