@@ -13,8 +13,8 @@ import { QueryGetCoupon } from '@app/type/req';
 import { ResGetCoupon } from '@app/type/res';
 import { UtilService } from '@app/util';
 
-@ApiTags('req/coupon')
-@Controller('api/req/coupon')
+@ApiTags('user/coupon')
+@Controller('api/user/coupon')
 export class UserCouponController {
   @Inject()
   private readonly c_service: CouponService;

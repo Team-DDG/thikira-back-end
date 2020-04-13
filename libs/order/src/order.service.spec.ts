@@ -112,18 +112,18 @@ describe('OrderService', () => {
 
     const f_order: ResGetOrderList = (await service.get_list_by_restaurant(r_token))[0];
 
-    let [req, res] = TestUtilService.make_comparable(f_order, test_od, [
+    let [req_od, res_od] = TestUtilService.make_comparable(f_order, test_od, [
       'add_street', 'add_parcel', 'create_time', 'menu', 'nickname',
       'od_id', 'order_detail', 'phone', 'r_id', 'status', 'total_price',
     ]);
-    expect(req).toEqual(res);
-    [req, res] = TestUtilService.make_comparable(f_order.order_detail[0], test_od.menu[0], [
+    expect(req_od).toEqual(res_od);
+    [req_od, res_od] = TestUtilService.make_comparable(f_order.order_detail[0], test_od.menu[0], [
       'sub_price', 'group',
     ]);
-    expect(req).toEqual(res);
-    [req, res] = TestUtilService.make_comparable(
+    expect(req_od).toEqual(res_od);
+    [req_od, res_od] = TestUtilService.make_comparable(
       f_order.order_detail[0].group[0], test_od.menu[0].group[0], ['option']);
-    expect(req).toEqual(res);
+    expect(req_od).toEqual(res_od);
     expect(f_order.order_detail[0].group[0].option[0]).toEqual(test_od.menu[0].group[0].option[0]);
     await service.remove_order(f_order.od_id);
 
@@ -144,12 +144,12 @@ describe('OrderService', () => {
       category: test_r.category, sort_option: EnumSortOption.NEARNESS,
     }))[0];
 
-    const req: { email: string; nickname: string } = {
+    const user: { email: string; nickname: string } = {
       email: `2${test_u.email}`, nickname: `${test_u.nickname}_2`,
     };
-    await u_service.create({ ...test_u, ...req });
+    await u_service.create({ ...test_u, ...user });
     u_token = (await u_service.sign_in({
-      email: req.email,
+      email: user.email,
       password: test_u.password,
     })).access_token;
 

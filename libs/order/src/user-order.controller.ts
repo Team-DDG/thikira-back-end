@@ -14,8 +14,8 @@ import { OrderService } from './order.service';
 import { ResGetOrderList } from '@app/type/res';
 import { UtilService } from '@app/util';
 
-@ApiTags('req/order')
-@Controller('api/req/order')
+@ApiTags('user/order')
+@Controller('api/user/order')
 export class UserOrderController {
   @Inject()
   private readonly od_service: OrderService;

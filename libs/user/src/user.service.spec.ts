@@ -78,10 +78,10 @@ describe('UserService', () => {
     await service.edit(access_token, edit_data);
 
     const f_restaurant: ResLoadUser = await service.load(access_token);
-    const [req_restaurant, res_restaurant] = TestUtilService.make_comparable(f_restaurant, edit_data, [
+    const [req_r, res_r] = TestUtilService.make_comparable(f_restaurant, edit_data, [
       'add_parcel', 'add_street', 'category', 'create_time',
     ]);
-    expect(req_restaurant).toStrictEqual(res_restaurant);
+    expect(req_r).toStrictEqual(res_r);
 
     await service.leave(access_token);
   });

@@ -22,8 +22,8 @@ import { RestaurantService } from '@app/restaurant';
 import { UserService } from './user.service';
 import { UtilService } from '@app/util';
 
-@ApiTags('req')
-@Controller('api/req')
+@ApiTags('user')
+@Controller('api/user')
 export class UserController {
   @Inject()
   private readonly r_service: RestaurantService;

@@ -12,8 +12,8 @@ import { ResGetMenuCategoryList, ResGetMenuList } from '@app/type/res';
 import { Header } from '@app/type/etc';
 import { MenuService } from './menu.service';
 
-@ApiTags('req/menu')
-@Controller('api/req/menu')
+@ApiTags('user/menu')
+@Controller('api/user/menu')
 export class UserMenuController {
   @Inject()
   private readonly m_service: MenuService;

@@ -17,8 +17,8 @@ import { Header } from '@app/type/etc';
 import { ReviewService } from './review.service';
 import { UtilService } from '@app/util';
 
-@ApiTags('req/review')
-@Controller('api/req/review')
+@ApiTags('user/review')
+@Controller('api/user/review')
 export class UserReviewController {
   @Inject()
   private readonly review_service: ReviewService;
@@ -30,7 +30,7 @@ export class UserReviewController {
   @ApiOperation({ summary: '리뷰 등록 가능 여부 확인' })
   @ApiHeader({ name: 'Authorization' })
   @ApiOkResponse({ type: [ResGetReviewList] })
-  @ApiForbiddenResponse({ description: '\"req haven\'t order by the restaurant\" | null' })
+  @ApiForbiddenResponse({ description: '\"user haven\'t order by the restaurant\" | null' })
   @ApiConflictResponse()
   public async check_review(
     @Headers() header: Header,
