@@ -6,11 +6,11 @@ env:
   ENCIPHERMENT: sha512
   MONGODB_HOST: 0.0.0.0
   MONGODB_PORT: 27017
-  MONGODB_SCHEMA: thikira
+  MONGODB_SCHEMA: test
   MYSQL_HOST: 0.0.0.0
   MYSQL_PASS: p@ssword
   MYSQL_PORT: 3307
-  MYSQL_SCHEMA: cooktak_test
+  MYSQL_SCHEMA: test
   MYSQL_TYPE: mariadb
   MYSQL_USER: root
 
