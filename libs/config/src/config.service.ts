@@ -13,21 +13,15 @@ export type Config = Record<string, string>;
 @Injectable()
 export class ConfigService {
   @IsString()
-  public readonly ENCIPHERMENT: string;
+  public readonly ENCRYPTION: string;
   @IsOptional() @IsString()
   public readonly HOST?: string;
   @IsOptional() @IsString()
   public readonly JWT_SECRET?: string;
   @IsString()
-  public readonly MONGODB_HOST: string;
-  @IsString() @IsOptional()
-  public readonly MONGODB_PASS: string;
-  @IsNumberString() @IsOptional()
-  public readonly MONGODB_PORT: string = '27017';
-  @IsString()
   public readonly MONGODB_SCHEMA: string;
   @IsString() @IsOptional()
-  public readonly MONGODB_USER: string;
+  public readonly MONGODB_URL: string;
   @IsString()
   public readonly MYSQL_HOST: string;
   @IsString()
@@ -66,6 +60,7 @@ export class ConfigService {
     this.mysql_config = {
       database: this.MYSQL_SCHEMA,
       host: this.MYSQL_HOST,
+      name: 'mysql',
       password: this.MYSQL_PASS,
       port: parseInt(this.MYSQL_PORT, 10),
       synchronize: true,
@@ -73,14 +68,11 @@ export class ConfigService {
       username: this.MYSQL_USER,
     };
     this.mongodb_config = {
-      database: this.MONGODB_SCHEMA,
-      host: this.MONGODB_HOST,
-      password: this.MONGODB_PASS,
-      port: parseInt(this.MONGODB_PORT, 10),
+      name: 'mongodb',
       synchronize: true,
       type: 'mongodb',
+      url: this.MONGODB_URL,
       useUnifiedTopology: true,
-      username: this.MONGODB_USER,
     };
   }
 }

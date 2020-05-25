@@ -23,7 +23,7 @@ export class UtilService {
   }
 
   public encode(content: string): string {
-    return createHash(config.ENCIPHERMENT).update(content).digest('base64');
+    return createHash(config.ENCRYPTION).update(content).digest('base64');
   }
 
   public create_token(email: string, param: TokenTypeEnum | number): string {

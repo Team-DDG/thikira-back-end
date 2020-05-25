@@ -18,12 +18,10 @@ import { config } from '@app/config';
     TypeOrmModule.forRoot({
       ...config.mysql_config,
       entities: mysql_entities,
-      name: 'mysql',
     }),
     TypeOrmModule.forRoot({
       ...config.mongodb_config,
       entities: mongodb_entities,
-      name: 'mongodb',
     }),
     UserModule, UtilModule,
   ],
