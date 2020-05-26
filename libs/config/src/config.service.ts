@@ -18,8 +18,6 @@ export class ConfigService {
   public readonly HOST?: string;
   @IsOptional() @IsString()
   public readonly JWT_SECRET?: string;
-  @IsString()
-  public readonly MONGODB_SCHEMA: string;
   @IsString() @IsOptional()
   public readonly MONGODB_URL: string;
   @IsString()
