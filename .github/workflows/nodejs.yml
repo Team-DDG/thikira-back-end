@@ -3,10 +3,8 @@ on: [push]
 
 env:
   CI: true
-  ENCIPHERMENT: sha512
-  MONGODB_HOST: 0.0.0.0
-  MONGODB_PORT: 27017
-  MONGODB_SCHEMA: test
+  ENCRYPTION: sha512
+  MONGODB_URL: mongodb://0.0.0.0:27017/test
   MYSQL_HOST: 0.0.0.0
   MYSQL_PASS: p@ssword
   MYSQL_PORT: 3307
