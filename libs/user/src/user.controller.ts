@@ -34,7 +34,7 @@ export class UserController {
 
   @Get('auth/email')
   @HttpCode(200)
-  @ApiOperation({ summary: '이메일 확인' })
+  @ApiOperation({ summary: '이메일 중복 확인' })
   @ApiQuery({ name: 'email' })
   @ApiOkResponse()
   @ApiConflictResponse()

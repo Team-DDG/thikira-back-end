@@ -29,7 +29,7 @@ export class RestaurantController {
 
   @Get('auth/email')
   @HttpCode(200)
-  @ApiOperation({ summary: '업체 이메일 확인' })
+  @ApiOperation({ summary: '업체 이메일 중복 확인' })
   @ApiQuery({ name: 'email' })
   @ApiOkResponse()
   @ApiConflictResponse()
