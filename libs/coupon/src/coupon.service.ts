@@ -18,6 +18,9 @@ export class CouponService {
   public async upload(token: string, payload: DtoUploadCoupon): Promise<void> {
     const email: string = this.util_service.get_email_by_token(token);
     const f_restaurant: Restaurant = await this.r_repo.findOne({ email });
+    if (!f_restaurant) {
+      throw new ForbiddenException();
+    }
     const f_coupon: Coupon = await this.c_repo.findOne({ where: { expired_day: MoreThan(Date.now()) } });
     if (f_coupon) {
       throw new ConflictException();
