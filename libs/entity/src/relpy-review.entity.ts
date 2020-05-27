@@ -1,6 +1,10 @@
 import {
-  Column, CreateDateColumn, Entity,
-  JoinColumn, ManyToOne, OneToOne,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Restaurant, Review } from '@app/entity';

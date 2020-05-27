@@ -1,22 +1,53 @@
 import {
-  ApiConflictResponse, ApiForbiddenResponse,
-  ApiHeader, ApiOkResponse, ApiOperation,
-  ApiQuery, ApiTags,
+  ApiBearerAuth,
+  ApiConflictResponse,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
 } from '@nestjs/swagger';
 import {
-  Body, Controller, Delete, Get, Headers,
-  HttpCode, Inject, InternalServerErrorException,
-  Param, Patch, Post, Query, ValidationPipe,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Headers,
+  HttpCode,
+  Inject,
+  InternalServerErrorException,
+  Param,
+  Patch,
+  Post,
+  Query,
+  ValidationPipe,
 } from '@nestjs/common';
 import {
-  DtoEditGroup, DtoEditMenu, DtoEditMenuCategory, DtoEditOption,
-  DtoUploadGroup, DtoUploadMenu, DtoUploadMenuCategory, DtoUploadOption,
-  ParamRemoveGroup, ParamRemoveMenu, ParamRemoveMenuCategory, ParamRemoveOption,
-  QueryGetGroupList, QueryGetMenuList, QueryGetOptionList,
+  DtoEditGroup,
+  DtoEditMenu,
+  DtoEditMenuCategory,
+  DtoEditOption,
+  DtoUploadGroup,
+  DtoUploadMenu,
+  DtoUploadMenuCategory,
+  DtoUploadOption,
+  ParamRemoveGroup,
+  ParamRemoveMenu,
+  ParamRemoveMenuCategory,
+  ParamRemoveOption,
+  QueryGetGroupList,
+  QueryGetMenuList,
+  QueryGetOptionList,
 } from '@app/type/req';
 import {
-  ResGetGroupList, ResGetMenuCategoryList, ResGetMenuList, ResGetOptionList,
-  ResUploadGroup, ResUploadMenu, ResUploadMenuCategory, ResUploadOption,
+  ResGetGroupList,
+  ResGetMenuCategoryList,
+  ResGetMenuList,
+  ResGetOptionList,
+  ResUploadGroup,
+  ResUploadMenu,
+  ResUploadMenuCategory,
+  ResUploadOption,
 } from '@app/type/res';
 import { Header } from '@app/type/etc';
 import { MenuService } from './menu.service';
@@ -33,7 +64,7 @@ export class RestaurantMenuController {
   @Post('category')
   @HttpCode(200)
   @ApiOperation({ summary: '메뉴 카테고리 업로드' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse({ type: ResUploadMenuCategory })
   @ApiForbiddenResponse()
   @ApiConflictResponse()
@@ -51,7 +82,7 @@ export class RestaurantMenuController {
   @Get('category')
   @HttpCode(200)
   @ApiOperation({ summary: '메뉴 카테고리 리스트 불러오기' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse({ type: [ResGetMenuCategoryList] })
   @ApiForbiddenResponse()
   public async get_menu_category_list(@Headers() header: Header): Promise<ResGetMenuCategoryList[]> {
@@ -65,7 +96,7 @@ export class RestaurantMenuController {
   @Patch('category')
   @HttpCode(200)
   @ApiOperation({ summary: '메뉴 카테고리 수정' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   @ApiConflictResponse()
@@ -83,7 +114,7 @@ export class RestaurantMenuController {
   @Delete('category/:mc_id')
   @HttpCode(200)
   @ApiOperation({ summary: '메뉴 카테고리 삭제' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async remove_menu_category(
@@ -101,7 +132,7 @@ export class RestaurantMenuController {
   @Post()
   @HttpCode(200)
   @ApiOperation({ summary: '메뉴 업로드' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse({ type: ResUploadMenu })
   @ApiForbiddenResponse()
   @ApiConflictResponse()
@@ -119,7 +150,7 @@ export class RestaurantMenuController {
   @Get()
   @HttpCode(200)
   @ApiOperation({ summary: '메뉴 리스트 불러오기' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiQuery({ name: 'mc_id' })
   @ApiOkResponse({ type: [ResGetMenuList] })
   @ApiForbiddenResponse()
@@ -137,7 +168,7 @@ export class RestaurantMenuController {
   @Patch()
   @HttpCode(200)
   @ApiOperation({ summary: '메뉴 수정' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_menu(
@@ -154,7 +185,7 @@ export class RestaurantMenuController {
   @Delete(':m_id')
   @HttpCode(200)
   @ApiOperation({ summary: '메뉴 삭제' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async remove_menu(
@@ -171,7 +202,7 @@ export class RestaurantMenuController {
   @Post('group')
   @HttpCode(200)
   @ApiOperation({ summary: '그룹 업로드' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse({ type: ResUploadGroup })
   @ApiForbiddenResponse()
   @ApiConflictResponse()
@@ -189,7 +220,7 @@ export class RestaurantMenuController {
   @Get('group')
   @HttpCode(200)
   @ApiOperation({ summary: '그룹 리스트 불러오기' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiQuery({ name: 'm_id' })
   @ApiOkResponse({ type: [ResGetGroupList] })
   @ApiForbiddenResponse()
@@ -207,7 +238,7 @@ export class RestaurantMenuController {
   @Patch('group')
   @HttpCode(200)
   @ApiOperation({ summary: '그룹 수정' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_group(
@@ -224,7 +255,7 @@ export class RestaurantMenuController {
   @Delete('group/:g_id')
   @HttpCode(200)
   @ApiOperation({ summary: '그룹 삭제' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async remove_group(
@@ -241,7 +272,7 @@ export class RestaurantMenuController {
   @Post('option')
   @HttpCode(200)
   @ApiOperation({ summary: '옵션 업로드' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse({ type: ResUploadOption })
   @ApiForbiddenResponse()
   @ApiConflictResponse()
@@ -259,7 +290,7 @@ export class RestaurantMenuController {
   @Get('option')
   @HttpCode(200)
   @ApiOperation({ summary: '옵션 리스트 불러오기' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiQuery({ name: 'g_id' })
   @ApiOkResponse({ type: [ResGetOptionList] })
   @ApiForbiddenResponse()
@@ -277,7 +308,7 @@ export class RestaurantMenuController {
   @Patch('option')
   @HttpCode(200)
   @ApiOperation({ summary: '옵션 수정' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_option(
@@ -294,7 +325,7 @@ export class RestaurantMenuController {
   @Delete('option/:o_id')
   @HttpCode(200)
   @ApiOperation({ summary: '옵션 삭제' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async remove_option(

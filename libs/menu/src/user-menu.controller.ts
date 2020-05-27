@@ -1,11 +1,20 @@
 import {
-  ApiForbiddenResponse, ApiHeader, ApiOkResponse,
-  ApiOperation, ApiQuery, ApiTags,
+  ApiBearerAuth,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
 } from '@nestjs/swagger';
 import {
-  Controller, Get, Headers, HttpCode,
-  Inject, InternalServerErrorException,
-  Query, ValidationPipe,
+  Controller,
+  Get,
+  Headers,
+  HttpCode,
+  Inject,
+  InternalServerErrorException,
+  Query,
+  ValidationPipe,
 } from '@nestjs/common';
 import { QueryGetMenuCategoryList, QueryGetMenuList } from '@app/type/req';
 import { ResGetMenuCategoryList, ResGetMenuList } from '@app/type/res';
@@ -21,7 +30,7 @@ export class UserMenuController {
   @Get('category')
   @HttpCode(200)
   @ApiOperation({ summary: '메뉴 카테고리 리스트 불러오기' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiQuery({ name: 'r_id' })
   @ApiOkResponse({ type: [ResGetMenuCategoryList] })
   @ApiForbiddenResponse()
@@ -39,7 +48,7 @@ export class UserMenuController {
   @Get()
   @HttpCode(200)
   @ApiOperation({ summary: '메뉴 리스트 불러오기' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiQuery({ name: 'mc_id' })
   @ApiOkResponse({ type: [ResGetMenuList] })
   @ApiForbiddenResponse()

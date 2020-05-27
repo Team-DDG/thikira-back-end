@@ -1,16 +1,14 @@
-import { UtilModule, UtilService } from '@app/util';
-import { mongodb_entities, mysql_entities } from '@app/entity';
-import { APP_GUARD } from '@nestjs/core';
-import { AppGuard } from './app.guard';
+import { config } from '@app/config';
 import { CouponModule } from '@app/coupon';
+import { mongodb_entities, mysql_entities } from '@app/entity';
 import { MenuModule } from '@app/menu';
-import { Module } from '@nestjs/common';
 import { OrderModule } from '@app/order';
 import { RestaurantModule } from '@app/restaurant';
 import { ReviewModule } from '@app/review';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from '@app/user';
-import { config } from '@app/config';
+import { UtilModule } from '@app/util';
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
@@ -25,11 +23,6 @@ import { config } from '@app/config';
     }),
     UserModule, UtilModule,
   ],
-  providers: [{
-    inject: [UtilService],
-    provide: APP_GUARD,
-    useClass: AppGuard,
-  }],
 })
 export class AppModule {
 }

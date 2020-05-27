@@ -1,11 +1,13 @@
+import { ApiBearerAuth, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
-  ApiHeader, ApiNotFoundResponse,
-  ApiOkResponse, ApiOperation, ApiTags,
-} from '@nestjs/swagger';
-import {
-  Controller, Get, Headers, HttpCode, Inject,
+  Controller,
+  Get,
+  Headers,
+  HttpCode,
+  Inject,
   InternalServerErrorException,
-  Query, ValidationPipe,
+  Query,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CouponService } from './coupon.service';
 import { Header } from '@app/type/etc';
@@ -24,7 +26,7 @@ export class UserCouponController {
   @Get()
   @HttpCode(200)
   @ApiOperation({ summary: '쿠폰 조회' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse({ type: ResGetCoupon })
   @ApiNotFoundResponse()
   public async get_coupon(

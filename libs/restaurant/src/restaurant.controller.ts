@@ -1,17 +1,34 @@
 import {
-  ApiConflictResponse, ApiForbiddenResponse,
-  ApiHeader, ApiNotFoundResponse,
-  ApiOkResponse, ApiOperation, ApiQuery, ApiTags,
+  ApiBearerAuth,
+  ApiConflictResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
 } from '@nestjs/swagger';
 import {
-  Body, Controller, Delete, Get,
-  Headers, HttpCode, Inject,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Headers,
+  HttpCode,
+  Inject,
   InternalServerErrorException,
-  Patch, Post, Query, ValidationPipe,
+  Patch,
+  Post,
+  Query,
+  ValidationPipe,
 } from '@nestjs/common';
 import {
-  DtoCheckPassword, DtoCreateRestaurant, DtoEditAddress,
-  DtoEditPassword, DtoEditRestaurantInfo, DtoSignIn,
+  DtoCheckPassword,
+  DtoCreateRestaurant,
+  DtoEditAddress,
+  DtoEditPassword,
+  DtoEditRestaurantInfo,
+  DtoSignIn,
   QueryCheckEmail,
 } from '@app/type/req';
 import { ResLoadRestaurant, ResRefresh, ResSignIn } from '@app/type/res';
@@ -70,7 +87,7 @@ export class RestaurantController {
   @Get('auth/refresh')
   @HttpCode(200)
   @ApiOperation({ summary: '업체 토큰 재발급' })
-  @ApiHeader({ name: 'X-Refresh-Token' })
+  @ApiBearerAuth()
   @ApiOkResponse({ type: ResRefresh })
   @ApiForbiddenResponse()
   public refresh(@Headers() token: Header): ResRefresh {
@@ -80,7 +97,7 @@ export class RestaurantController {
   @Delete('leave')
   @HttpCode(200)
   @ApiOperation({ summary: '업체 회원 탈퇴' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async leave(@Headers() token: Header): Promise<void> {
@@ -95,7 +112,7 @@ export class RestaurantController {
   @Get('auth')
   @HttpCode(200)
   @ApiOperation({ summary: '업체 접근 토큰 확인' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public auth(): void {
@@ -105,7 +122,7 @@ export class RestaurantController {
   @Post('auth/password')
   @HttpCode(200)
   @ApiOperation({ summary: '업체 비밀번호 확인' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async check_password(
@@ -122,7 +139,7 @@ export class RestaurantController {
   @Patch('password')
   @HttpCode(200)
   @ApiOperation({ summary: '업체 비밀번호 수정' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_password(
@@ -139,7 +156,7 @@ export class RestaurantController {
   @Patch('info')
   @HttpCode(200)
   @ApiOperation({ summary: '업체 정보 수정' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_info(
@@ -156,7 +173,7 @@ export class RestaurantController {
   @Patch('address')
   @HttpCode(200)
   @ApiOperation({ summary: '업체 주소 수정' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_address(
@@ -173,7 +190,7 @@ export class RestaurantController {
   @Get()
   @HttpCode(200)
   @ApiOperation({ summary: '업체 정보 조회' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse({ type: ResLoadRestaurant })
   @ApiNotFoundResponse()
   public async get(@Headers() header: Header): Promise<ResLoadRestaurant> {

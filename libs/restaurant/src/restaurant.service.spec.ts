@@ -1,9 +1,8 @@
 import { DtoCreateRestaurant, DtoEditAddress, DtoEditPassword, DtoEditRestaurantInfo } from '@app/type/req';
-import { ResRefresh, ResSignIn } from '@app/type/res';
+import { ResLoadRestaurant, ResRefresh, ResSignIn } from '@app/type/res';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestUtilModule, TestUtilService } from '@app/test-util';
 import { mongodb_entities, mysql_entities } from '@app/entity';
-import { ResLoadRestaurant } from '@app/type/res';
 import { RestaurantModule } from './restaurant.module';
 import { RestaurantService } from './restaurant.service';
 import { TypeOrmModule } from '@nestjs/typeorm';

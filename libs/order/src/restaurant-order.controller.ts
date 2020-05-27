@@ -1,11 +1,14 @@
+import { ApiBearerAuth, ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
-  ApiForbiddenResponse, ApiHeader,
-  ApiOkResponse, ApiOperation, ApiTags,
-} from '@nestjs/swagger';
-import {
-  Body, Controller, Get, Headers,
-  HttpCode, Inject,
-  InternalServerErrorException, Patch, ValidationPipe,
+  Body,
+  Controller,
+  Get,
+  Headers,
+  HttpCode,
+  Inject,
+  InternalServerErrorException,
+  Patch,
+  ValidationPipe,
 } from '@nestjs/common';
 import { DtoEditOrderStatus } from '@app/type/req';
 import { Header } from '@app/type/etc';
@@ -24,7 +27,7 @@ export class RestaurantOrderController {
   @Get()
   @HttpCode(200)
   @ApiOperation({ summary: '주문 조회' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse({ type: [ResGetOrderList] })
   @ApiForbiddenResponse()
   public async get_orders(@Headers() header: Header): Promise<ResGetOrderList[]> {
@@ -38,7 +41,7 @@ export class RestaurantOrderController {
   @Patch('status')
   @HttpCode(200)
   @ApiOperation({ summary: '주문 상태 수정' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_order_status(

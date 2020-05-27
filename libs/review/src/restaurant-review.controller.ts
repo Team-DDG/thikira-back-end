@@ -1,18 +1,26 @@
 import {
-  ApiConflictResponse, ApiForbiddenResponse,
-  ApiHeader, ApiNotFoundResponse, ApiOkResponse,
-  ApiOperation, ApiTags,
+  ApiBearerAuth,
+  ApiConflictResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
 } from '@nestjs/swagger';
 import {
   Body,
-  Controller, Delete, Get, Headers,
-  HttpCode, Inject,
-  InternalServerErrorException, Patch, Post, ValidationPipe,
+  Controller,
+  Delete,
+  Get,
+  Headers,
+  HttpCode,
+  Inject,
+  InternalServerErrorException,
+  Patch,
+  Post,
+  ValidationPipe,
 } from '@nestjs/common';
-import {
-  DtoEditReplyReview, DtoUploadReplyReview,
-  ResGetReviewList, ResGetReviewStatistic,
-} from '@app/type';
+import { DtoEditReplyReview, DtoUploadReplyReview, ResGetReviewList, ResGetReviewStatistic } from '@app/type';
 import { Header } from '@app/type/etc';
 import { ReviewService } from './review.service';
 import { UtilService } from '@app/util';
@@ -28,7 +36,7 @@ export class RestaurantReviewController {
   @Get()
   @HttpCode(200)
   @ApiOperation({ summary: '업체 리뷰 조회' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse({ type: [ResGetReviewList] })
   @ApiForbiddenResponse()
   @ApiNotFoundResponse()
@@ -43,7 +51,7 @@ export class RestaurantReviewController {
   @Get('statistic')
   @HttpCode(200)
   @ApiOperation({ summary: '업체 리뷰 통계 조회' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse({ type: ResGetReviewStatistic })
   @ApiForbiddenResponse()
   @ApiNotFoundResponse()
@@ -74,7 +82,7 @@ export class RestaurantReviewController {
   @Patch('reply')
   @HttpCode(200)
   @ApiOperation({ summary: '업체 답변 리뷰 수정' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_reply_review(
@@ -91,7 +99,7 @@ export class RestaurantReviewController {
   @Delete('reply')
   @HttpCode(200)
   @ApiOperation({ summary: '업체 답변 리뷰 삭제' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async remove_reply_review(@Headers() header: Header): Promise<void> {

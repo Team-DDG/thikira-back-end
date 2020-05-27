@@ -1,19 +1,37 @@
 import {
-  ApiConflictResponse, ApiForbiddenResponse,
-  ApiHeader, ApiNotFoundResponse,
-  ApiOkResponse, ApiOperation, ApiQuery,
-  ApiTags, ApiUnauthorizedResponse,
+  ApiBearerAuth,
+  ApiConflictResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import {
-  Body, Controller, Delete, Get,
-  Headers, HttpCode, Inject,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Headers,
+  HttpCode,
+  Inject,
   InternalServerErrorException,
-  Patch, Post, Query, ValidationPipe,
+  Patch,
+  Post,
+  Query,
+  ValidationPipe,
 } from '@nestjs/common';
 import {
-  DtoCheckPassword, DtoCreateUser, DtoEditAddress,
-  DtoEditPassword, DtoEditUserInfo, DtoSignIn,
-  QueryCheckEmail, QueryGetRestaurantList,
+  DtoCheckPassword,
+  DtoCreateUser,
+  DtoEditAddress,
+  DtoEditPassword,
+  DtoEditUserInfo,
+  DtoSignIn,
+  QueryCheckEmail,
+  QueryGetRestaurantList,
 } from '@app/type/req';
 import { ResGetRestaurantList, ResLoadUser, ResRefresh, ResSignIn } from '@app/type/res';
 import { EnumSortOption } from '@app/type';
@@ -74,7 +92,7 @@ export class UserController {
   @Get('auth/refresh')
   @HttpCode(200)
   @ApiOperation({ summary: '토큰 재발급' })
-  @ApiHeader({ name: 'X-Refresh-Token' })
+  @ApiBearerAuth()
   @ApiOkResponse({ type: ResRefresh })
   @ApiForbiddenResponse()
   public refresh(@Headers() header: Header): ResRefresh {
@@ -84,7 +102,7 @@ export class UserController {
   @Delete('leave')
   @HttpCode(200)
   @ApiOperation({ summary: '회원 탈퇴' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async leave(@Headers() header: Header): Promise<void> {
@@ -98,7 +116,7 @@ export class UserController {
   @Get('auth')
   @HttpCode(200)
   @ApiOperation({ summary: '접근 토큰 확인' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public auth(): void {
@@ -108,7 +126,7 @@ export class UserController {
   @Post('auth/password')
   @HttpCode(200)
   @ApiOperation({ summary: '비밀번호 확인' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   @ApiUnauthorizedResponse()
@@ -126,7 +144,7 @@ export class UserController {
   @Patch('password')
   @HttpCode(200)
   @ApiOperation({ summary: '비밀번호 수정' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_password(
@@ -143,7 +161,7 @@ export class UserController {
   @Patch('info')
   @HttpCode(200)
   @ApiOperation({ summary: '정보 수정' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_profile(
@@ -160,7 +178,7 @@ export class UserController {
   @Patch('address')
   @HttpCode(200)
   @ApiOperation({ summary: '주소 수정' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_address(
@@ -177,7 +195,7 @@ export class UserController {
   @Get()
   @HttpCode(200)
   @ApiOperation({ summary: '정보 조회' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse({ type: ResLoadUser })
   @ApiNotFoundResponse()
   public async get(@Headers() header: Header): Promise<ResLoadUser> {
@@ -191,7 +209,7 @@ export class UserController {
   @Get('restaurant')
   @HttpCode(200)
   @ApiOperation({ summary: '업체 리스트 조회' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse({ type: ResGetRestaurantList })
   @ApiQuery({ name: 'category' })
   @ApiQuery({ enum: EnumSortOption, name: 'sort_option', type: 'enum' })

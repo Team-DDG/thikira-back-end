@@ -11,7 +11,7 @@ import { UtilModule } from '@app/util';
   imports: [
     TypeOrmModule.forFeature(mysql_entities, 'mysql'),
     TypeOrmModule.forFeature(mongodb_entities, 'mongodb'),
-    UtilModule
+    UtilModule,
   ],
   providers: [RestaurantService],
 })

@@ -1,12 +1,14 @@
+import { ApiBearerAuth, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
-  ApiHeader, ApiNotFoundResponse,
-  ApiOkResponse, ApiOperation, ApiTags,
-} from '@nestjs/swagger';
-import {
-  Body, Controller, Get, Headers,
-  HttpCode, Inject,
+  Body,
+  Controller,
+  Get,
+  Headers,
+  HttpCode,
+  Inject,
   InternalServerErrorException,
-  Post, ValidationPipe,
+  Post,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CouponService } from './coupon.service';
 import { DtoUploadCoupon } from '@app/type/req';
@@ -25,7 +27,7 @@ export class RestaurantCouponController {
   @Post()
   @HttpCode(200)
   @ApiOperation({ summary: '업체 쿠폰 등록' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   public async upload_coupon(
     @Headers() header: Header,
@@ -41,7 +43,7 @@ export class RestaurantCouponController {
   @Get()
   @HttpCode(200)
   @ApiOperation({ summary: '업체 쿠폰 조회' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiNotFoundResponse()
   public async get_coupon_list(@Headers() header: Header): Promise<ResGetCouponList[]> {

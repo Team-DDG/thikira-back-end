@@ -1,12 +1,14 @@
+import { ApiBearerAuth, ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
-  ApiForbiddenResponse, ApiHeader,
-  ApiOkResponse, ApiOperation, ApiTags,
-} from '@nestjs/swagger';
-import {
-  Body, Controller, Get, Headers,
-  HttpCode, Inject,
+  Body,
+  Controller,
+  Get,
+  Headers,
+  HttpCode,
+  Inject,
   InternalServerErrorException,
-  Post, ValidationPipe,
+  Post,
+  ValidationPipe,
 } from '@nestjs/common';
 import { DtoUploadOrder } from '@app/type/req';
 import { Header } from '@app/type/etc';
@@ -25,7 +27,7 @@ export class UserOrderController {
   @Post()
   @HttpCode(200)
   @ApiOperation({ summary: '주문 등록' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async upload_order(
@@ -42,7 +44,7 @@ export class UserOrderController {
   @Get()
   @HttpCode(200)
   @ApiOperation({ summary: '주문 조회' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse({ type: [ResGetOrderList] })
   @ApiForbiddenResponse()
   public async get_orders(@Headers() header: Header): Promise<ResGetOrderList[]> {

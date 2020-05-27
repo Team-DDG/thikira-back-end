@@ -1,17 +1,33 @@
 import {
-  ApiConflictResponse, ApiForbiddenResponse, ApiHeader,
-  ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags,
+  ApiBearerAuth,
+  ApiConflictResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
 } from '@nestjs/swagger';
 import {
-  Body, Controller, Delete, Get,
-  Headers, HttpCode,
-  Inject, InternalServerErrorException,
-  Patch, Post, Query, ValidationPipe,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Headers,
+  HttpCode,
+  Inject,
+  InternalServerErrorException,
+  Patch,
+  Post,
+  Query,
+  ValidationPipe,
 } from '@nestjs/common';
 import {
-  DtoEditReview, DtoUploadReview,
-  QueryCheckReview, QueryGetReviewStatistic,
-  ResGetReviewList, ResGetReviewStatistic,
+  DtoEditReview,
+  DtoUploadReview,
+  QueryCheckReview,
+  QueryGetReviewStatistic,
+  ResGetReviewList,
+  ResGetReviewStatistic,
 } from '@app/type';
 import { Header } from '@app/type/etc';
 import { ReviewService } from './review.service';
@@ -28,7 +44,7 @@ export class UserReviewController {
   @Get('check')
   @HttpCode(200)
   @ApiOperation({ summary: '리뷰 등록 가능 여부 확인' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse({ type: [ResGetReviewList] })
   @ApiForbiddenResponse({ description: '\"user haven\'t order by the restaurant\" | null' })
   @ApiConflictResponse()
@@ -62,7 +78,7 @@ export class UserReviewController {
   @Get()
   @HttpCode(200)
   @ApiOperation({ summary: '주문 조회' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse({ type: [ResGetReviewList] })
   @ApiForbiddenResponse()
   @ApiNotFoundResponse()
@@ -77,7 +93,7 @@ export class UserReviewController {
   @Get('statistic')
   @HttpCode(200)
   @ApiOperation({ summary: '업체 리뷰 통계 조회' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse({ type: ResGetReviewStatistic })
   @ApiForbiddenResponse()
   @ApiNotFoundResponse()
@@ -95,7 +111,7 @@ export class UserReviewController {
   @Patch()
   @HttpCode(200)
   @ApiOperation({ summary: '리뷰 수정' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async edit_review(
@@ -112,7 +128,7 @@ export class UserReviewController {
   @Delete()
   @HttpCode(200)
   @ApiOperation({ summary: '리뷰 삭제' })
-  @ApiHeader({ name: 'Authorization' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async remove_review(

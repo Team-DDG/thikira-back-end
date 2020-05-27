@@ -1,4 +1,4 @@
-import { ConfigService, config } from './config.service';
+import { config, ConfigService } from './config.service';
 import { Module } from '@nestjs/common';
 
 @Module({
