@@ -21,7 +21,10 @@ export class CouponService {
     if (!f_restaurant) {
       throw new ForbiddenException();
     }
-    const f_coupon: Coupon = await this.c_repo.findOne({ where: { expired_day: MoreThan(Date.now()) } });
+    const f_coupon: Coupon = await this.c_repo.findOne({
+      expired_day: MoreThan(Date.now()),
+      restaurant: f_restaurant,
+    });
     if (f_coupon) {
       throw new ConflictException();
     }
