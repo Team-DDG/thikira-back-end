@@ -12,24 +12,16 @@
 - monogodb: 4.x
 
 #### 2. Environment
-- ENCIPHERMENT
-  - password encipherment algorithm
+- ENCRYPTION
+  - password encryption algorithm
   
 - HOST (Optional)
 - JWT_SECRET
-  - JWT token secret key
+    - JWT token secret key
   - default: randomBytes(16)
-- MONGODB_HOST
-- MONGODB_PASS (Optional)
-  - this variable used when you use mongodb authorization
-  - must use with MONGODB_USER
-- MONGODB_PORT
-  - default: 27017
-- MONGODB_SCHEMA
-  - same to mongodb database
-- MONGODB_USER (Optional)
-  - this variable used when you use mongodb authorization
-  - must use with MONGODB_PASS
+- MONGODB_URL
+  - with log in: mongodb://{username}:{password}@{host}:{port}/{database}?{options}
+  - without log in: mongodb://{host}:{port}/{database}?{options}
 - MYSQL_HOST
 - MYSQL_PASS
 - MYSQL_PORT
@@ -50,4 +42,4 @@
 
 ### case. 2 docker
 
-see https://hub.docker.com/r/thikira/thikira-back-end
+see https://hub.docker.com/r/deadeokdevelopergroup/thikira-back-end
