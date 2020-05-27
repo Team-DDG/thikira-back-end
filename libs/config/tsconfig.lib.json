@@ -3,7 +3,14 @@
     "declaration": true,
     "outDir": "../../dist/libs/config"
   },
-  "exclude": ["node_modules", "dist", "test", "**/*spec.ts"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "test",
+    "**/*spec.ts"
+  ],
   "extends": "../../tsconfig.json",
-  "include": ["src/**/*"]
+  "include": [
+    "src/**/*"
+  ]
 }
