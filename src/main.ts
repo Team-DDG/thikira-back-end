@@ -13,6 +13,7 @@ import { config } from '@app/config';
     .setTitle('Thikira BackEnd')
     .setDescription('Thikira BackEnd')
     .setVersion(process.env.npm_package_version)
+    .addBearerAuth()
     .build();
   const document: OpenAPIObject = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
