@@ -7,6 +7,7 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { fileExistsSync } from 'tsconfig-paths/lib/filesystem';
 import { NodeEnv } from './node-env.enum';
+import { randomBytes } from 'crypto';
 
 export type Config = Record<string, string>;
 
@@ -17,7 +18,7 @@ export class ConfigService {
   @IsOptional() @IsString()
   public readonly HOST?: string;
   @IsOptional() @IsString()
-  public readonly JWT_SECRET?: string;
+  public readonly JWT_SECRET?: string = randomBytes(16).toString();
   @IsString() @IsOptional()
   public readonly MONGODB_URL: string;
   @IsString()
