@@ -1,16 +1,17 @@
-import { DtoCreateRestaurant, DtoCreateUser, DtoUploadOrder } from '@app/type/req';
+import { config } from '@app/config';
 import { EnumOrderStatus, EnumPaymentType, mongodb_entities, mysql_entities } from '@app/entity';
-import { EnumSortOption, ResGetOrderList, ResGetRestaurantList } from '@app/type';
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
-import { Test, TestingModule } from '@nestjs/testing';
 import { TestUtilModule, TestUtilService } from '@app/test-util';
+import { TokenModule } from '@app/token';
+import { EnumSortOption, ResGetOrderList, ResGetRestaurantList } from '@app/type';
+import { DtoCreateRestaurant, DtoCreateUser, DtoUploadOrder } from '@app/type/req';
 import { UserModule, UserService } from '@app/user';
+import { UtilModule } from '@app/util';
+import { Test, TestingModule } from '@nestjs/testing';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { getConnection } from 'typeorm';
 import { OrderModule } from './order.module';
 import { OrderService } from './order.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UtilModule } from '@app/util';
-import { config } from '@app/config';
-import { getConnection } from 'typeorm';
 
 describe('OrderService', () => {
   let r_service: RestaurantService;
@@ -63,7 +64,7 @@ describe('OrderService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        OrderModule, RestaurantModule, TestUtilModule,
+        OrderModule, RestaurantModule, TestUtilModule, TokenModule,
         TypeOrmModule.forRoot({
           ...config.mysql_config,
           entities: mysql_entities,

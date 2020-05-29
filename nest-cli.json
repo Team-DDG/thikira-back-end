@@ -76,6 +76,15 @@
       "sourceRoot": "libs/test-util/src",
       "type": "library"
     },
+    "token": {
+      "compilerOptions": {
+        "tsConfigPath": "libs/token/tsconfig.lib.json"
+      },
+      "entryFile": "index",
+      "root": "libs/token",
+      "sourceRoot": "libs/token/src",
+      "type": "library"
+    },
     "type": {
       "compilerOptions": {
         "tsConfigPath": "libs/type/tsconfig.lib.json"

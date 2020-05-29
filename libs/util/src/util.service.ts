@@ -1,9 +1,7 @@
-import { createHash, randomBytes } from 'crypto';
-import { sign, verify } from 'jsonwebtoken';
+import { config } from '@app/config';
 import { Header } from '@app/type/etc';
 import { Injectable } from '@nestjs/common';
-import { TokenTypeEnum } from './token-type.enum';
-import { config } from '@app/config';
+import { createHash, randomBytes } from 'crypto';
 
 @Injectable()
 export class UtilService {
@@ -26,19 +24,6 @@ export class UtilService {
     return createHash(config.ENCRYPTION).update(content).digest('base64');
   }
 
-  public create_token(email: string, param: TokenTypeEnum | number): string {
-    let expires_in: string;
-    if (TokenTypeEnum.access === param) {
-      expires_in = '30 min';
-    } else if (TokenTypeEnum.refresh === param) {
-      expires_in = '14 days';
-    } else {
-
-    }
-
-    return sign({ id: email }, this.secret, { expiresIn: expires_in });
-  }
-
   public get_token_body(header: Header): string {
     let token: string;
     if (header.authorization) {
@@ -50,15 +35,6 @@ export class UtilService {
     if (this.token_reg_exp.test(token)) {
       return token.split(' ', 2)[1];
     } else {
-      return null;
-    }
-  }
-
-  public get_email_by_token(token: string): string {
-    try {
-      const parsed_token: { id: string } = verify(token, this.secret, {}) as undefined as { id: string };
-      return parsed_token.id;
-    } catch (e) {
       return null;
     }
   }

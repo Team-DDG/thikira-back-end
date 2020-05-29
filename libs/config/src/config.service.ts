@@ -1,12 +1,12 @@
-import { DotenvParseOutput, parse } from 'dotenv';
-import { IsEnum, IsNumberString, IsOptional, IsString, validateSync } from 'class-validator';
 import { Injectable } from '@nestjs/common';
-import { NodeEnv } from './node-env.enum';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { IsEnum, IsNumberString, IsOptional, IsString, validateSync } from 'class-validator';
 import { ValidationError } from 'class-validator/validation/ValidationError';
-import { fileExistsSync } from 'tsconfig-paths/lib/filesystem';
+import { DotenvParseOutput, parse } from 'dotenv';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
+import { fileExistsSync } from 'tsconfig-paths/lib/filesystem';
+import { NodeEnv } from './node-env.enum';
 
 export type Config = Record<string, string>;
 

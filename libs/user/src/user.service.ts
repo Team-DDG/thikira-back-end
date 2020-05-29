@@ -1,4 +1,5 @@
-import { ConflictException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Order, User } from '@app/entity';
+import { TokenService, TokenTypeEnum } from '@app/token';
 import {
   DtoCheckPassword,
   DtoCreateUser,
@@ -8,11 +9,11 @@ import {
   DtoSignIn,
   QueryCheckEmail,
 } from '@app/type/req';
-import { ObjectID, Repository } from 'typeorm';
-import { Order, User } from '@app/entity';
 import { ResLoadUser, ResRefresh, ResSignIn } from '@app/type/res';
-import { TokenTypeEnum, UtilService } from '@app/util';
+import { UtilService } from '@app/util';
+import { ConflictException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ObjectID, Repository } from 'typeorm';
 
 @Injectable()
 export class UserService {
@@ -20,6 +21,8 @@ export class UserService {
   private readonly od_repo: Repository<Order>;
   @InjectRepository(User, 'mysql')
   private readonly u_repo: Repository<User>;
+  @Inject()
+  private readonly token_service: TokenService;
   @Inject()
   private readonly util_service: UtilService;
 
@@ -49,19 +52,19 @@ export class UserService {
     }
 
     return {
-      access_token: this.util_service.create_token(payload.email, TokenTypeEnum.access),
-      refresh_token: this.util_service.create_token(payload.email, TokenTypeEnum.refresh),
+      access_token: this.token_service.create_token(f_user.u_id, TokenTypeEnum.access),
+      refresh_token: this.token_service.create_token(f_user.u_id, TokenTypeEnum.refresh),
     };
   }
 
   public refresh(token: string): ResRefresh {
-    const email: string = this.util_service.get_email_by_token(token);
-    return { access_token: this.util_service.create_token(email, TokenTypeEnum.access) };
+    const id: number = this.token_service.get_id_by_token(token);
+    return { access_token: this.token_service.create_token(id, TokenTypeEnum.access) };
   }
 
   public async check_password(token: string, payload: DtoCheckPassword): Promise<void> {
-    const email: string = this.util_service.get_email_by_token(token);
-    const f_user: User = await this.u_repo.findOne({ email });
+    const id: number = this.token_service.get_id_by_token(token);
+    const f_user: User = await this.u_repo.findOne(id);
 
     if (!f_user || this.util_service.encode(payload.password) !== f_user.password) {
       throw new ForbiddenException();
@@ -69,20 +72,20 @@ export class UserService {
   }
 
   public async edit(token: string, payload: DtoEditUserInfo | DtoEditAddress): Promise<void> {
-    const email: string = this.util_service.get_email_by_token(token);
-    await this.u_repo.update({ email }, payload);
+    const id: number = this.token_service.get_id_by_token(token);
+    await this.u_repo.update(id, payload);
   }
 
   public async edit_password(token: string, payload: DtoEditPassword): Promise<void> {
-    const email: string = this.util_service.get_email_by_token(token);
-    await this.u_repo.update({ email }, {
+    const id: number = this.token_service.get_id_by_token(token);
+    await this.u_repo.update(id, {
       password: this.util_service.encode(payload.password),
     });
   }
 
   public async load(token: string): Promise<ResLoadUser> {
-    const email: string = this.util_service.get_email_by_token(token);
-    const f_user: User = await this.u_repo.findOne({ email });
+    const id: number = this.token_service.get_id_by_token(token);
+    const f_user: User = await this.u_repo.findOne(id);
     if (!f_user) {
       throw new ForbiddenException();
     }
@@ -93,8 +96,8 @@ export class UserService {
   }
 
   public async leave(token: string): Promise<void> {
-    const email: string = this.util_service.get_email_by_token(token);
-    const f_user: User = await this.u_repo.findOne({ email });
+    const id: number = this.token_service.get_id_by_token(token);
+    const f_user: User = await this.u_repo.findOne(id);
     if (!f_user) {
       throw new ForbiddenException();
     }
@@ -108,13 +111,13 @@ export class UserService {
       }
       await this.od_repo.delete(od_ids);
     }
-    await this.u_repo.delete({ email });
+    await this.u_repo.delete(id);
   }
 
   // use only in test
 
   public async get(token: string): Promise<User> {
-    const email: string = this.util_service.get_email_by_token(token);
-    return this.u_repo.findOne({ email });
+    const id: number = this.token_service.get_id_by_token(token);
+    return this.u_repo.findOne(id);
   }
 }

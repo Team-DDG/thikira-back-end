@@ -1,3 +1,10 @@
+import { config } from '@app/config';
+import { EnumPaymentType, mongodb_entities, mysql_entities, Order, Restaurant } from '@app/entity';
+import { MenuModule } from '@app/menu';
+import { OrderModule, OrderService } from '@app/order';
+import { RestaurantModule, RestaurantService } from '@app/restaurant';
+import { TestUtilModule, TestUtilService } from '@app/test-util';
+import { TokenModule } from '@app/token';
 import {
   DtoCreateRestaurant,
   DtoCreateUser,
@@ -8,19 +15,13 @@ import {
   DtoUploadReview,
   ResGetReviewList,
 } from '@app/type';
-import { EnumPaymentType, mongodb_entities, mysql_entities, Order, Restaurant } from '@app/entity';
-import { OrderModule, OrderService } from '@app/order';
-import { RestaurantModule, RestaurantService } from '@app/restaurant';
-import { Test, TestingModule } from '@nestjs/testing';
-import { TestUtilModule, TestUtilService } from '@app/test-util';
 import { UserModule, UserService } from '@app/user';
-import { MenuModule } from '@app/menu';
+import { UtilModule } from '@app/util';
+import { Test, TestingModule } from '@nestjs/testing';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { getConnection } from 'typeorm';
 import { ReviewModule } from './review.module';
 import { ReviewService } from './review.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UtilModule } from '@app/util';
-import { config } from '@app/config';
-import { getConnection } from 'typeorm';
 
 describe('ReviewService', () => {
   let od_service: OrderService;
@@ -87,7 +88,7 @@ describe('ReviewService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         MenuModule, OrderModule, RestaurantModule,
-        ReviewModule, TestUtilModule,
+        ReviewModule, TestUtilModule, TokenModule,
         TypeOrmModule.forRoot({
           ...config.mysql_config,
           entities: mysql_entities,

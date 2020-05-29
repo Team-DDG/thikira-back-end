@@ -1,21 +1,21 @@
 import { mongodb_entities, mysql_entities } from '@app/entity';
-import { CouponService } from './coupon.service';
-import { Module } from '@nestjs/common';
-import { RestaurantCouponController } from './restaurant-coupon.controller';
 import { RestaurantModule } from '@app/restaurant';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserCouponController } from './user-coupon.controller';
-import { UserModule } from '@app/user';
+import { TokenModule } from '@app/token';
 import { UtilModule } from '@app/util';
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { CouponService } from './coupon.service';
+import { RestaurantCouponController } from './restaurant-coupon.controller';
+import { UserCouponController } from './user-coupon.controller';
 
 @Module({
   controllers: [RestaurantCouponController, UserCouponController],
   exports: [CouponService],
   imports: [
-    RestaurantModule,
+    RestaurantModule, TokenModule,
     TypeOrmModule.forFeature(mysql_entities, 'mysql'),
     TypeOrmModule.forFeature(mongodb_entities, 'mongodb'),
-    UserModule, UtilModule,
+    UtilModule,
   ],
   providers: [CouponService],
 })

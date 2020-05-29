@@ -1,7 +1,7 @@
 import { Coupon } from './coupon.entity';
 import { Group } from './group.entity';
-import { Menu } from './menu.entity';
 import { MenuCategory } from './menu-category.entity';
+import { Menu } from './menu.entity';
 import { Option } from './option.entity';
 import { Order } from './order.entity';
 import { ReplyReview } from './relpy-review.entity';

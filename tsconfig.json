@@ -35,6 +35,9 @@
       "@app/test-util": [
         "libs/test-util/src"
       ],
+      "@app/token": [
+        "libs/token/src"
+      ],
       "@app/type": [
         "libs/type/src"
       ],

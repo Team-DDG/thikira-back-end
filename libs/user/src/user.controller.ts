@@ -1,14 +1,18 @@
+import { RestaurantService } from '@app/restaurant';
+import { EnumSortOption } from '@app/type';
+import { Header } from '@app/type/etc';
 import {
-  ApiBearerAuth,
-  ApiConflictResponse,
-  ApiForbiddenResponse,
-  ApiNotFoundResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiQuery,
-  ApiTags,
-  ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
+  DtoCheckPassword,
+  DtoCreateUser,
+  DtoEditAddress,
+  DtoEditPassword,
+  DtoEditUserInfo,
+  DtoSignIn,
+  QueryCheckEmail,
+  QueryGetRestaurantList,
+} from '@app/type/req';
+import { ResGetRestaurantList, ResLoadUser, ResRefresh, ResSignIn } from '@app/type/res';
+import { UtilService } from '@app/util';
 import {
   Body,
   Controller,
@@ -24,21 +28,17 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import {
-  DtoCheckPassword,
-  DtoCreateUser,
-  DtoEditAddress,
-  DtoEditPassword,
-  DtoEditUserInfo,
-  DtoSignIn,
-  QueryCheckEmail,
-  QueryGetRestaurantList,
-} from '@app/type/req';
-import { ResGetRestaurantList, ResLoadUser, ResRefresh, ResSignIn } from '@app/type/res';
-import { EnumSortOption } from '@app/type';
-import { Header } from '@app/type/etc';
-import { RestaurantService } from '@app/restaurant';
+  ApiBearerAuth,
+  ApiConflictResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { UserService } from './user.service';
-import { UtilService } from '@app/util';
 
 @ApiTags('user')
 @Controller('api/user')

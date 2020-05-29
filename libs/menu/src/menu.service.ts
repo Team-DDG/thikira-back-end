@@ -1,5 +1,5 @@
-import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Coupon, Group, Menu, MenuCategory, Option, Restaurant } from '@app/entity';
+import { TokenService } from '@app/token';
 import {
   DtoEditGroup,
   DtoEditMenu,
@@ -24,9 +24,9 @@ import {
   ResUploadMenuCategory,
   ResUploadOption,
 } from '@app/type/res';
+import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UtilService } from '@app/util';
 
 @Injectable()
 export class MenuService {
@@ -43,7 +43,7 @@ export class MenuService {
   @InjectRepository(Restaurant, 'mysql')
   private readonly r_repo: Repository<Restaurant>;
   @Inject()
-  private readonly util_service: UtilService;
+  private readonly token_service: TokenService;
 
   // menu_category
 
@@ -51,8 +51,8 @@ export class MenuService {
     token: string,
     payload: DtoUploadMenuCategory,
   ): Promise<ResUploadMenuCategory> {
-    const email: string = this.util_service.get_email_by_token(token);
-    const f_restaurant: Restaurant = await this.r_repo.findOne({ email });
+    const id: number = this.token_service.get_id_by_token(token);
+    const f_restaurant: Restaurant = await this.r_repo.findOne(id);
     const f_menu_category: MenuCategory = await this.mc_repo.findOne({
       name: payload.name, restaurant: f_restaurant,
     });
@@ -71,8 +71,8 @@ export class MenuService {
   ): Promise<ResGetMenuCategoryList[]> {
     let f_restaurant: Restaurant;
     if ('string' === typeof param) {
-      const email: string = this.util_service.get_email_by_token(param);
-      f_restaurant = await this.r_repo.findOne({ email });
+      const id: number = this.token_service.get_id_by_token(param);
+      f_restaurant = await this.r_repo.findOne(id);
     } else {
       f_restaurant = await this.r_repo.findOne(parseInt(param.r_id));
     }

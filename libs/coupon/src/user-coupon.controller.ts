@@ -1,4 +1,7 @@
-import { ApiBearerAuth, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Header } from '@app/type/etc';
+import { QueryGetCoupon } from '@app/type/req';
+import { ResGetCoupon } from '@app/type/res';
+import { UtilService } from '@app/util';
 import {
   Controller,
   Get,
@@ -9,11 +12,8 @@ import {
   Query,
   ValidationPipe,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CouponService } from './coupon.service';
-import { Header } from '@app/type/etc';
-import { QueryGetCoupon } from '@app/type/req';
-import { ResGetCoupon } from '@app/type/res';
-import { UtilService } from '@app/util';
 
 @ApiTags('user/coupon')
 @Controller('api/user/coupon')

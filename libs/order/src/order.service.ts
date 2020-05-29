@@ -1,11 +1,11 @@
-import { DtoEditOrderStatus, DtoUploadOrder } from '@app/type/req';
-import { ForbiddenException, Inject, NotFoundException } from '@nestjs/common';
-import { ObjectID, Repository } from 'typeorm';
 import { Order, Restaurant, User } from '@app/entity';
-import { InjectRepository } from '@nestjs/typeorm';
+import { TokenService } from '@app/token';
 import { OrderUserClass } from '@app/type/etc';
+import { DtoEditOrderStatus, DtoUploadOrder } from '@app/type/req';
 import { ResGetOrderList } from '@app/type/res';
-import { UtilService } from '@app/util';
+import { ForbiddenException, Inject, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ObjectID, Repository } from 'typeorm';
 
 export class OrderService {
   @InjectRepository(Order, 'mongodb')
@@ -15,11 +15,11 @@ export class OrderService {
   @InjectRepository(User, 'mysql')
   private readonly u_repo: Repository<User>;
   @Inject()
-  private readonly util_service: UtilService;
+  private readonly token_service: TokenService;
 
   public async upload(token: string, payload: DtoUploadOrder): Promise<void> {
-    const email: string = this.util_service.get_email_by_token(token);
-    const f_user: User = await this.u_repo.findOne({ email });
+    const id: number = this.token_service.get_id_by_token(token);
+    const f_user: User = await this.u_repo.findOne(id);
     if (!f_user) {
       throw new ForbiddenException();
     }
@@ -54,8 +54,8 @@ export class OrderService {
   public async get_list_by_user(token: string): Promise<ResGetOrderList[]> {
     const res: ResGetOrderList[] = [];
 
-    const email: string = this.util_service.get_email_by_token(token);
-    const f_user: User = await this.u_repo.findOne({ email });
+    const id: number = this.token_service.get_id_by_token(token);
+    const f_user: User = await this.u_repo.findOne(id);
     if (!f_user) {
       throw new ForbiddenException();
     }
@@ -84,8 +84,8 @@ export class OrderService {
   public async get_list_by_restaurant(token: string): Promise<ResGetOrderList[]> {
     const res: ResGetOrderList[] = [];
 
-    const email: string = this.util_service.get_email_by_token(token);
-    const f_restaurant: Restaurant = await this.r_repo.findOne({ email });
+    const id: number = this.token_service.get_id_by_token(token);
+    const f_restaurant: Restaurant = await this.r_repo.findOne(id);
     if (!f_restaurant) {
       throw new ForbiddenException();
     }
@@ -123,10 +123,10 @@ export class OrderService {
   }
 
   public async get_orders_by_restaurant_user(r_token: string, u_token: string): Promise<Order[]> {
-    let email: string = this.util_service.get_email_by_token(r_token);
-    const f_restaurant: Restaurant = await this.r_repo.findOne({ email });
-    email = this.util_service.get_email_by_token(u_token);
-    const f_user: User = await this.u_repo.findOne({ email });
+    let id: number = this.token_service.get_id_by_token(r_token);
+    const f_restaurant: Restaurant = await this.r_repo.findOne(id);
+    id = this.token_service.get_id_by_token(u_token);
+    const f_user: User = await this.u_repo.findOne(id);
 
     const f_orders: Order[] = await this.od_repo.find({ r_id: f_restaurant.r_id, u_id: f_user.u_id });
     for (const e_od of f_orders) {

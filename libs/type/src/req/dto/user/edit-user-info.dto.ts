@@ -1,5 +1,5 @@
-import { IsNumberString, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNumberString, IsOptional, IsString } from 'class-validator';
 
 export class DtoEditUserInfo {
   @ApiProperty() @IsString() @IsOptional()

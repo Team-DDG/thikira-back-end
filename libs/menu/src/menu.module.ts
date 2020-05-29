@@ -1,17 +1,18 @@
 import { mongodb_entities, mysql_entities } from '@app/entity';
-import { MenuService } from './menu.service';
-import { Module } from '@nestjs/common';
-import { RestaurantMenuController } from './restaurant-menu.controller';
 import { RestaurantModule } from '@app/restaurant';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserMenuController } from './user-menu.controller';
+import { TokenModule } from '@app/token';
 import { UtilModule } from '@app/util';
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { MenuService } from './menu.service';
+import { RestaurantMenuController } from './restaurant-menu.controller';
+import { UserMenuController } from './user-menu.controller';
 
 @Module({
   controllers: [RestaurantMenuController, UserMenuController],
   exports: [MenuService],
   imports: [
-    RestaurantModule,
+    RestaurantModule, TokenModule,
     TypeOrmModule.forFeature(mysql_entities, 'mysql'),
     TypeOrmModule.forFeature(mongodb_entities, 'mongodb'),
     UtilModule,

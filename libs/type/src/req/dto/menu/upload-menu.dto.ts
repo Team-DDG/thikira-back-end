@@ -1,6 +1,6 @@
-import { IsArray, IsNumber, IsOptional, IsString, IsUrl } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
 import { UploadGroupClass } from '@app/type/etc';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsArray, IsNumber, IsOptional, IsString, IsUrl } from 'class-validator';
 
 export class DtoUploadMenu {
   @ApiProperty() @IsNumber()

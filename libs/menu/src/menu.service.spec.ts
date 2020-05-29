@@ -1,3 +1,8 @@
+import { config } from '@app/config';
+import { mongodb_entities, mysql_entities } from '@app/entity';
+import { RestaurantModule, RestaurantService } from '@app/restaurant';
+import { TestUtilModule, TestUtilService } from '@app/test-util';
+import { TokenModule } from '@app/token';
 import {
   DtoCreateRestaurant,
   DtoEditGroup,
@@ -20,16 +25,12 @@ import {
   ResUploadMenuCategory,
   ResUploadOption,
 } from '@app/type/res';
-import { RestaurantModule, RestaurantService } from '@app/restaurant';
+import { UtilModule } from '@app/util';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestUtilModule, TestUtilService } from '@app/test-util';
-import { mongodb_entities, mysql_entities } from '@app/entity';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { getConnection } from 'typeorm';
 import { MenuModule } from './menu.module';
 import { MenuService } from './menu.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UtilModule } from '@app/util';
-import { config } from '@app/config';
-import { getConnection } from 'typeorm';
 
 describe('MenuService', () => {
   let r_service: RestaurantService;
@@ -73,7 +74,7 @@ describe('MenuService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        MenuModule, RestaurantModule, TestUtilModule,
+        MenuModule, RestaurantModule, TestUtilModule, TokenModule,
         TypeOrmModule.forRoot({
           ...config.mysql_config,
           entities: mysql_entities,

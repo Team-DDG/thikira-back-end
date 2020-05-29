@@ -1,6 +1,6 @@
-import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
 import { UploadOptionClass } from '@app/type/etc';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class DtoUploadGroup {
   @ApiProperty() @IsNumber()

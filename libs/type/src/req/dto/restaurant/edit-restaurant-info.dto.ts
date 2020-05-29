@@ -1,5 +1,5 @@
-import { IsBoolean, IsNumber, IsNumberString, IsOptional, IsString, IsUrl } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsBoolean, IsNumber, IsNumberString, IsOptional, IsString, IsUrl } from 'class-validator';
 
 export class DtoEditRestaurantInfo {
   @ApiProperty() @IsString() @IsOptional()

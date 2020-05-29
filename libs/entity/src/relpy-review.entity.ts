@@ -1,3 +1,4 @@
+import { Restaurant, Review } from '@app/entity';
 import {
   Column,
   CreateDateColumn,
@@ -7,7 +8,6 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Restaurant, Review } from '@app/entity';
 
 @Entity()
 export class ReplyReview {

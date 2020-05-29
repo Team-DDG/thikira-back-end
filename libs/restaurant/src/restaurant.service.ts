@@ -1,5 +1,5 @@
-import { ConflictException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Coupon, Group, Menu, MenuCategory, Option, Restaurant } from '@app/entity';
+import { TokenService, TokenTypeEnum } from '@app/token';
 import {
   DtoCheckPassword,
   DtoCreateRestaurant,
@@ -11,7 +11,8 @@ import {
   QueryGetRestaurantList,
 } from '@app/type/req';
 import { ResGetRestaurantList, ResLoadRestaurant, ResRefresh, ResSignIn } from '@app/type/res';
-import { TokenTypeEnum, UtilService } from '@app/util';
+import { UtilService } from '@app/util';
+import { ConflictException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -29,6 +30,8 @@ export class RestaurantService {
   private readonly o_repo: Repository<Option>;
   @InjectRepository(Restaurant, 'mysql')
   private readonly r_repo: Repository<Restaurant>;
+  @Inject()
+  private readonly token_service: TokenService;
   @Inject()
   private readonly util_service: UtilService;
 
@@ -53,44 +56,43 @@ export class RestaurantService {
   public async sign_in(payload: DtoSignIn): Promise<ResSignIn> {
     const f_restaurant: Restaurant = await this.r_repo.findOne({ email: payload.email });
     if (!f_restaurant || f_restaurant.password !== this.util_service.encode(payload.password)) {
-      console.log(f_restaurant);
       throw new NotFoundException();
     }
 
     return {
-      access_token: this.util_service.create_token(payload.email, TokenTypeEnum.access),
-      refresh_token: this.util_service.create_token(payload.email, TokenTypeEnum.refresh),
+      access_token: this.token_service.create_token(f_restaurant.r_id, TokenTypeEnum.access),
+      refresh_token: this.token_service.create_token(f_restaurant.r_id, TokenTypeEnum.refresh),
     };
   }
 
   public refresh(token: string): ResRefresh {
-    const email: string = this.util_service.get_email_by_token(token);
-    return { access_token: this.util_service.create_token(email, TokenTypeEnum.access) };
+    const r_id: number = this.token_service.get_id_by_token(token);
+    return { access_token: this.token_service.create_token(r_id, TokenTypeEnum.access) };
   }
 
   public async check_password(token: string, payload: DtoCheckPassword): Promise<void> {
-    const email: string = this.util_service.get_email_by_token(token);
-    const f_restaurant: Restaurant = await this.r_repo.findOne({ email });
+    const id: number = this.token_service.get_id_by_token(token);
+    const f_restaurant: Restaurant = await this.r_repo.findOne(id);
     if (this.util_service.encode(payload.password) !== f_restaurant.password) {
       throw new ForbiddenException();
     }
   }
 
   public async edit(token: string, payload: DtoEditRestaurantInfo | DtoEditAddress): Promise<void> {
-    const email: string = this.util_service.get_email_by_token(token);
-    await this.r_repo.update({ email }, payload);
+    const id: number = this.token_service.get_id_by_token(token);
+    await this.r_repo.update(id, payload);
   }
 
   public async edit_password(token: string, payload: DtoEditPassword): Promise<void> {
-    const email: string = this.util_service.get_email_by_token(token);
-    await this.r_repo.update({ email }, {
+    const id: number = this.token_service.get_id_by_token(token);
+    await this.r_repo.update(id, {
       password: this.util_service.encode(payload.password),
     });
   }
 
   public async load(token: string): Promise<ResLoadRestaurant> {
-    const email: string = this.util_service.get_email_by_token(token);
-    const f_restaurant: Restaurant = await this.r_repo.findOne({ email });
+    const id: number = this.token_service.get_id_by_token(token);
+    const f_restaurant: Restaurant = await this.r_repo.findOne(id);
     for (const e of ['coupon', 'email', 'password', 'r_id']) {
       Reflect.deleteProperty(f_restaurant, e);
     }
@@ -108,8 +110,8 @@ export class RestaurantService {
   }
 
   public async leave(token: string): Promise<void> {
-    const email: string = this.util_service.get_email_by_token(token);
-    const f_restaurant: Restaurant = await this.r_repo.findOne({ email });
+    const id: number = this.token_service.get_id_by_token(token);
+    const f_restaurant: Restaurant = await this.r_repo.findOne(id);
     if (!f_restaurant) {
       throw new ForbiddenException();
     }
@@ -163,13 +165,13 @@ export class RestaurantService {
       await this.mc_repo.delete(mc_ids);
     }
 
-    await this.r_repo.delete({ email });
+    await this.r_repo.delete(id);
   }
 
   // use only in test
 
   public async get(token: string): Promise<Restaurant> {
-    const email: string = this.util_service.get_email_by_token(token);
-    return this.r_repo.findOne({ email });
+    const id: number = this.token_service.get_id_by_token(token);
+    return this.r_repo.findOne(id);
   }
 }

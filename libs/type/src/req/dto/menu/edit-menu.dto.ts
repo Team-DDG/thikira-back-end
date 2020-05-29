@@ -1,5 +1,5 @@
-import { IsNumber, IsOptional, IsString, IsUrl } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNumber, IsOptional, IsString, IsUrl } from 'class-validator';
 
 export class DtoEditMenu {
   @ApiProperty() @IsNumber()

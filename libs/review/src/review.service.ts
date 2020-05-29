@@ -1,4 +1,5 @@
-import { ConflictException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Order, ReplyReview, Restaurant, Review, User } from '@app/entity';
+import { TokenService } from '@app/token';
 import {
   DtoEditReplyReview,
   DtoEditReview,
@@ -7,11 +8,10 @@ import {
   QueryCheckReview,
   QueryGetReviewStatistic,
 } from '@app/type/req';
-import { Order, ReplyReview, Restaurant, Review, User } from '@app/entity';
 import { ResGetReviewList, ResGetReviewStatistic } from '@app/type/res';
+import { ConflictException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UtilService } from '@app/util';
 
 @Injectable()
 export class ReviewService {
@@ -26,13 +26,13 @@ export class ReviewService {
   @InjectRepository(User, 'mysql')
   private readonly u_repo: Repository<User>;
   @Inject()
-  private readonly util_service: UtilService;
+  private readonly token_service: TokenService;
 
   // review
 
   public async check_review(token: string, payload: QueryCheckReview): Promise<void> {
-    const email: string = this.util_service.get_email_by_token(token);
-    const f_user: User = await this.u_repo.findOne({ email });
+    const id: number = this.token_service.get_id_by_token(token);
+    const f_user: User = await this.u_repo.findOne(id);
     if (!f_user) {
       throw new ForbiddenException();
     }
@@ -52,8 +52,8 @@ export class ReviewService {
   }
 
   public async upload_review(token: string, payload: DtoUploadReview): Promise<void> {
-    const email: string = this.util_service.get_email_by_token(token);
-    const f_user: User = await this.u_repo.findOne({ email });
+    const id: number = this.token_service.get_id_by_token(token);
+    const f_user: User = await this.u_repo.findOne(id);
     if (!f_user) {
       throw new ForbiddenException();
     }
@@ -72,8 +72,8 @@ export class ReviewService {
   }
 
   public async edit_review(token: string, payload: DtoEditReview): Promise<void> {
-    const email: string = this.util_service.get_email_by_token(token);
-    const f_user: User = await this.u_repo.findOne({ email });
+    const id: number = this.token_service.get_id_by_token(token);
+    const f_user: User = await this.u_repo.findOne(id);
     const f_review: Review = await this.rv_repo.findOne({ user: f_user });
     if (!f_review) {
       throw new NotFoundException();
@@ -84,8 +84,8 @@ export class ReviewService {
   }
 
   public async remove_review(token: string): Promise<void> {
-    const email: string = this.util_service.get_email_by_token(token);
-    const f_user: User = await this.u_repo.findOne({ email });
+    const id: number = this.token_service.get_id_by_token(token);
+    const f_user: User = await this.u_repo.findOne(id);
     const f_review: Review = await this.rv_repo.findOne({
       join: {
         alias: 'Review',
@@ -105,8 +105,8 @@ export class ReviewService {
   }
 
   public async get_review_list_by_user(token: string): Promise<ResGetReviewList[]> {
-    const email: string = this.util_service.get_email_by_token(token);
-    const f_user: User = await this.u_repo.findOne({ email });
+    const id: number = this.token_service.get_id_by_token(token);
+    const f_user: User = await this.u_repo.findOne(id);
     const f_reviews: Review[] = await this.rv_repo.find({
       join: {
         alias: 'Review',
@@ -129,8 +129,8 @@ export class ReviewService {
   }
 
   public async get_review_list_by_restaurant(token: string): Promise<ResGetReviewList[]> {
-    const email: string = this.util_service.get_email_by_token(token);
-    const f_restaurant: Restaurant = await this.r_repo.findOne({ email });
+    const id: number = this.token_service.get_id_by_token(token);
+    const f_restaurant: Restaurant = await this.r_repo.findOne(id);
     if (!f_restaurant) {
       throw new ForbiddenException();
     }
@@ -158,8 +158,8 @@ export class ReviewService {
   public async get_review_statistic(param: string | QueryGetReviewStatistic): Promise<ResGetReviewStatistic> {
     let f_restaurant: Restaurant;
     if ('string' === typeof param) {
-      const email: string = this.util_service.get_email_by_token(param);
-      f_restaurant = await this.r_repo.findOne({ email });
+      const id: number = this.token_service.get_id_by_token(param);
+      f_restaurant = await this.r_repo.findOne(id);
     } else {
       f_restaurant = await this.r_repo.findOne(parseInt(param.r_id));
     }
@@ -207,8 +207,8 @@ export class ReviewService {
     if (!f_review) {
       throw new NotFoundException();
     }
-    const email: string = this.util_service.get_email_by_token(token);
-    const f_restaurant: Restaurant = await this.r_repo.findOne({ email });
+    const id: number = this.token_service.get_id_by_token(token);
+    const f_restaurant: Restaurant = await this.r_repo.findOne(id);
 
     const reply_review: ReplyReview = new ReplyReview();
     Object.assign(reply_review, { ...payload, restaurant: f_restaurant, review: f_review });
@@ -216,8 +216,8 @@ export class ReviewService {
   }
 
   public async edit_reply_review(token: string, payload: DtoEditReplyReview): Promise<void> {
-    const email: string = this.util_service.get_email_by_token(token);
-    const f_restaurant: Restaurant = await this.r_repo.findOne({ email });
+    const id: number = this.token_service.get_id_by_token(token);
+    const f_restaurant: Restaurant = await this.r_repo.findOne(id);
     const f_reply_review: ReplyReview = await this.rr_repo.findOne({ restaurant: f_restaurant });
     if (!f_reply_review) {
       throw new NotFoundException();
@@ -228,8 +228,8 @@ export class ReviewService {
   }
 
   public async remove_reply_review(token: string): Promise<void> {
-    const email: string = this.util_service.get_email_by_token(token);
-    const f_restaurant: Restaurant = await this.r_repo.findOne({ email });
+    const id: number = this.token_service.get_id_by_token(token);
+    const f_restaurant: Restaurant = await this.r_repo.findOne(id);
     const f_reply_review: ReplyReview = await this.rr_repo.findOne({ restaurant: f_restaurant });
     await this.rr_repo.delete(f_reply_review.rr_id);
   }

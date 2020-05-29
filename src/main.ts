@@ -1,9 +1,9 @@
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { AppModule } from './app.module';
+import { config } from '@app/config';
 import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { OpenAPIObject } from '@nestjs/swagger/dist/interfaces';
-import { config } from '@app/config';
+import { AppModule } from './app.module';
 
 (async (): Promise<void> => {
   const app: INestApplication = await NestFactory.create(AppModule);

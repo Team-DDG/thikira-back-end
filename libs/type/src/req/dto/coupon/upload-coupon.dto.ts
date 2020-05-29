@@ -1,5 +1,5 @@
-import { IsISO8601, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsISO8601, IsNumber } from 'class-validator';
 
 export class DtoUploadCoupon {
   @ApiProperty() @IsNumber()

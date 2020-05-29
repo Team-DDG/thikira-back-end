@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "outDir": "../../dist/libs/token"
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "test",
+    "**/*spec.ts"
+  ],
+  "extends": "../../tsconfig.json",
+  "include": [
+    "src/**/*"
+  ]
+}

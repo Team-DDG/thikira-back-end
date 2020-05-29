@@ -1,5 +1,5 @@
-import { IsBoolean, IsEmail, IsNumber, IsNumberString, IsString, IsUrl } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsBoolean, IsEmail, IsNumber, IsNumberString, IsString, IsUrl } from 'class-validator';
 
 export class DtoCreateRestaurant {
   @ApiProperty() @IsString()

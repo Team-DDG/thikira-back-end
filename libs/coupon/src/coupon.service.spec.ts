@@ -1,14 +1,15 @@
+import { config } from '@app/config';
 import { Coupon, mongodb_entities, mysql_entities } from '@app/entity';
+import { RestaurantModule, RestaurantService } from '@app/restaurant';
+import { TokenModule } from '@app/token';
 import { DtoCreateRestaurant, DtoUploadCoupon } from '@app/type/req';
 import { ResGetCoupon, ResSignIn } from '@app/type/res';
-import { RestaurantModule, RestaurantService } from '@app/restaurant';
+import { UtilModule } from '@app/util';
 import { Test, TestingModule } from '@nestjs/testing';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { getConnection } from 'typeorm';
 import { CouponModule } from './coupon.module';
 import { CouponService } from './coupon.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UtilModule } from '@app/util';
-import { config } from '@app/config';
-import { getConnection } from 'typeorm';
 
 describe('CouponService', () => {
   let r_service: RestaurantService;
@@ -39,7 +40,7 @@ describe('CouponService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        CouponModule, RestaurantModule,
+        CouponModule, RestaurantModule, TokenModule,
         TypeOrmModule.forRoot({
           ...config.mysql_config,
           entities: mysql_entities,

@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v1
       - name: Authenticating Docker repositry
         run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_TOKEN }}
-      - name: Authenticating to Heroku repositry
+      - name: Authenticating Heroku repositry
         run: docker login registry.heroku.com -u _ -p ${{ secrets.HEROKU_API_KEY }}
       - name: Build Docker Image
         run: docker build . --file Dockerfile --tag ${{ env.IMAGE_NAME }}:${{ env.VERSION }}

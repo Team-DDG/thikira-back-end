@@ -1,5 +1,5 @@
-import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
 import { UploadOptionClass } from './upload-option.class';
 
 export class UploadGroupClass {

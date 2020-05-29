@@ -9,5 +9,6 @@ export * from './edit-review.class';
 export * from './edit-user.class';
 export * from './header.class';
 export * from './order-user.class';
+export * from './parsed-token.class';
 export * from './upload-group.class';
 export * from './upload-option.class';

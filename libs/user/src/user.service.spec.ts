@@ -1,15 +1,16 @@
-import { DtoCreateUser, DtoEditAddress, DtoEditPassword, DtoEditUserInfo } from '@app/type/req';
-import { ResLoadUser, ResRefresh, ResSignIn } from '@app/type/res';
-import { Test, TestingModule } from '@nestjs/testing';
-import { TestUtilModule, TestUtilService } from '@app/test-util';
+import { config } from '@app/config';
 import { mongodb_entities, mysql_entities } from '@app/entity';
 import { RestaurantModule } from '@app/restaurant';
+import { TestUtilModule, TestUtilService } from '@app/test-util';
+import { TokenModule } from '@app/token';
+import { DtoCreateUser, DtoEditAddress, DtoEditPassword, DtoEditUserInfo } from '@app/type/req';
+import { ResLoadUser, ResRefresh, ResSignIn } from '@app/type/res';
+import { UtilModule } from '@app/util';
+import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { getConnection } from 'typeorm';
 import { UserModule } from './user.module';
 import { UserService } from './user.service';
-import { UtilModule } from '@app/util';
-import { config } from '@app/config';
-import { getConnection } from 'typeorm';
 
 describe('UserService', () => {
   let service: UserService;
@@ -23,7 +24,7 @@ describe('UserService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        RestaurantModule, TestUtilModule,
+        RestaurantModule, TestUtilModule, TokenModule,
         TypeOrmModule.forRoot({
           ...config.mysql_config,
           entities: mysql_entities,
