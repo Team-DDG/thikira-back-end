@@ -1,14 +1,14 @@
+import { mongodb_entities, mysql_entities } from '@app/entity';
 import { Injectable } from '@nestjs/common';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { IsEnum, IsNumberString, IsOptional, IsString, validateSync } from 'class-validator';
 import { ValidationError } from 'class-validator/validation/ValidationError';
+import { randomBytes } from 'crypto';
 import { DotenvParseOutput, parse } from 'dotenv';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { fileExistsSync } from 'tsconfig-paths/lib/filesystem';
 import { NodeEnv } from './node-env.enum';
-import { randomBytes } from 'crypto';
-import { mongodb_entities, mysql_entities } from '@app/entity';
 
 export type Config = Record<string, string>;
 

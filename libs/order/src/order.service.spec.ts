@@ -1,5 +1,5 @@
 import { config } from '@app/config';
-import { EnumOrderStatus, EnumPaymentType, mongodb_entities, mysql_entities } from '@app/entity';
+import { EnumPaymentType, mongodb_entities, mysql_entities, EnumOrderStatus } from '@app/entity';
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
 import { TestUtilModule, TestUtilService } from '@app/test-util';
 import { TokenModule } from '@app/token';
@@ -84,16 +84,16 @@ describe('OrderService', () => {
     await getConnection('mongodb').close();
   });
 
-  it('200 upload_order_status', async () => {
+  it('200 upload_order', async () => {
     await r_service.create(test_r);
     r_token = (await r_service.sign_in({
       email: test_r.email,
       password: test_r.password,
     })).access_token;
 
-    const { r_id }: ResGetRestaurantList = (await r_service.get_list({
+    const [{ r_id }]: ResGetRestaurantList[] = await r_service.get_list({
       category: test_r.category, sort_option: EnumSortOption.NEARNESS,
-    }))[0];
+    });
 
     await u_service.create(test_u);
     u_token = (await u_service.sign_in({

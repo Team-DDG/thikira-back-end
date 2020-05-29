@@ -1,4 +1,4 @@
-import { ParsedToken } from '@app/type/etc';
+import { ParsedTokenClass } from '@app/type/etc';
 import { Injectable, Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { TokenTypeEnum } from './token-type.enum';
@@ -15,13 +15,13 @@ export class TokenService {
   }
 
   public get_iat(token: string): number {
-    const { iat }: ParsedToken = this.jwt_service.verify(token);
+    const { iat }: ParsedTokenClass = this.jwt_service.verify(token);
     return iat;
   }
 
   public get_id_by_token(token: string): number {
     try {
-      const { id }: ParsedToken = this.jwt_service.verify(token);
+      const { id }: ParsedTokenClass = this.jwt_service.verify(token);
       return id;
     } catch (e) {
       return null;

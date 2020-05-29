@@ -69,7 +69,7 @@ export class OrderService {
       throw new ForbiddenException();
     }
 
-    return this.get_list(id, EnumUserType.NORMAL);
+    return this.get_list(id, EnumUserType.RESTAURANT);
   }
 
   public async edit_order_status(payload: DtoEditOrderStatus): Promise<void> {
@@ -106,6 +106,7 @@ export class OrderService {
     }
 
     const f_orders: Order[] = await this.od_repo.find(find_option);
+
     if (!f_orders) {
       throw new NotFoundException();
     }
