@@ -1,11 +1,13 @@
 import { Order, Restaurant, User } from '@app/entity';
 import { TokenService } from '@app/token';
+import { EnumUserType } from '@app/type';
 import { OrderUserClass } from '@app/type/etc';
 import { DtoEditOrderStatus, DtoUploadOrder } from '@app/type/req';
 import { ResGetOrderList } from '@app/type/res';
 import { ForbiddenException, Inject, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectID, Repository } from 'typeorm';
+import { FindConditions } from 'typeorm/find-options/FindConditions';
 
 export class OrderService {
   @InjectRepository(Order, 'mongodb')
@@ -52,75 +54,33 @@ export class OrderService {
   }
 
   public async get_list_by_user(token: string): Promise<ResGetOrderList[]> {
-    const res: ResGetOrderList[] = [];
-
     const id: number = this.token_service.get_id_by_token(token);
     const f_user: User = await this.u_repo.findOne(id);
     if (!f_user) {
       throw new ForbiddenException();
     }
-
-    const f_orders: Order[] = await this.od_repo.find({ u_id: f_user.u_id });
-    if (!f_orders) {
-      throw new NotFoundException();
-    }
-
-    for (const e_od of f_orders) {
-      e_od.od_id = e_od._id;
-    }
-
-    for (const e_od of f_orders) {
-      for (const e of ['_id', 'u_id', 'r_id']) {
-        Reflect.deleteProperty(e_od, e);
-      }
-      res.push({
-        ...e_od, create_time: e_od.od_id.getTimestamp(),
-        od_id: e_od.od_id.toString(),
-      });
-    }
-    return res;
+    return this.get_list(id, EnumUserType.NORMAL);
   }
 
   public async get_list_by_restaurant(token: string): Promise<ResGetOrderList[]> {
-    const res: ResGetOrderList[] = [];
-
     const id: number = this.token_service.get_id_by_token(token);
     const f_restaurant: Restaurant = await this.r_repo.findOne(id);
     if (!f_restaurant) {
       throw new ForbiddenException();
     }
 
-    const f_orders: Order[] = await this.od_repo.find({ r_id: f_restaurant.r_id });
-    if (!f_orders) {
-      throw new NotFoundException();
-    }
-
-    for (const e_od of f_orders) {
-      e_od.od_id = e_od._id;
-    }
-
-    for (const e_od of f_orders) {
-      for (const e of ['_id', 'u_id', 'r_id']) {
-        Reflect.deleteProperty(e_od, e);
-      }
-      res.push({
-        ...e_od, create_time: e_od.od_id.getTimestamp(),
-        od_id: e_od.od_id.toString(),
-      });
-    }
-
-    return res;
+    return this.get_list(id, EnumUserType.NORMAL);
   }
 
   public async edit_order_status(payload: DtoEditOrderStatus): Promise<void> {
     await this.od_repo.update(payload.od_id, payload);
   }
 
-  // only use in test
-
   public async remove_order(od_id: ObjectID | string): Promise<void> {
     await this.od_repo.delete(od_id);
   }
+
+  // only use in test
 
   public async get_orders_by_restaurant_user(r_token: string, u_token: string): Promise<Order[]> {
     let id: number = this.token_service.get_id_by_token(r_token);
@@ -133,5 +93,36 @@ export class OrderService {
       e_od.od_id = e_od._id;
     }
     return f_orders;
+  }
+
+  private async get_list(id: number, user_type: EnumUserType): Promise<ResGetOrderList[]> {
+    const res: ResGetOrderList[] = [];
+
+    const find_option: FindConditions<Order> = {};
+    if (user_type === EnumUserType.NORMAL) {
+      find_option.u_id = id;
+    } else {
+      find_option.r_id = id;
+    }
+
+    const f_orders: Order[] = await this.od_repo.find(find_option);
+    if (!f_orders) {
+      throw new NotFoundException();
+    }
+
+    for (const e_od of f_orders) {
+      e_od.od_id = e_od._id;
+    }
+
+    for (const e_od of f_orders) {
+      for (const e of ['_id', 'u_id', 'r_id']) {
+        Reflect.deleteProperty(e_od, e);
+      }
+      res.push({
+        ...e_od, create_time: e_od.od_id.getTimestamp(),
+        od_id: e_od.od_id.toString(),
+      });
+    }
+    return res;
   }
 }

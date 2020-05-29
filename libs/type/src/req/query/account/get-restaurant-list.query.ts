@@ -1,5 +1,5 @@
 import { IsEnum, IsString } from 'class-validator';
-import { EnumSortOption } from '../../../sort-option.enum';
+import { EnumSortOption } from '../../../enum';
 
 export class QueryGetRestaurantList {
   @IsString()

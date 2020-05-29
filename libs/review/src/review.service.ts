@@ -1,5 +1,6 @@
 import { Order, ReplyReview, Restaurant, Review, User } from '@app/entity';
 import { TokenService } from '@app/token';
+import { EnumUserType } from '@app/type';
 import {
   DtoEditReplyReview,
   DtoEditReview,
@@ -11,7 +12,7 @@ import {
 import { ResGetReviewList, ResGetReviewStatistic } from '@app/type/res';
 import { ConflictException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, FindConditions } from 'typeorm';
 
 @Injectable()
 export class ReviewService {
@@ -104,15 +105,21 @@ export class ReviewService {
     await this.rv_repo.delete(f_review.rv_id);
   }
 
-  public async get_review_list_by_user(token: string): Promise<ResGetReviewList[]> {
-    const id: number = this.token_service.get_id_by_token(token);
-    const f_user: User = await this.u_repo.findOne(id);
+  public async get_review_list(id: number, user_type: EnumUserType): Promise<ResGetReviewList[]> {
+    const find_option: FindConditions<Review> = {};
+
+    if (user_type === EnumUserType.NORMAL) {
+      find_option.user = { u_id: id };
+    } else {
+      find_option.restaurant = { r_id: id };
+    }
+
     const f_reviews: Review[] = await this.rv_repo.find({
       join: {
         alias: 'Review',
         leftJoinAndSelect: { ReplyReview: 'Review.reply_review' },
       },
-      where: { user: f_user },
+      where: find_option,
     });
     if (!f_reviews) {
       throw new NotFoundException();
@@ -128,31 +135,14 @@ export class ReviewService {
     return f_reviews;
   }
 
+  public async get_review_list_by_user(token: string): Promise<ResGetReviewList[]> {
+    const id: number = this.token_service.get_id_by_token(token);
+    return this.get_review_list(id, EnumUserType.NORMAL);
+  }
+
   public async get_review_list_by_restaurant(token: string): Promise<ResGetReviewList[]> {
     const id: number = this.token_service.get_id_by_token(token);
-    const f_restaurant: Restaurant = await this.r_repo.findOne(id);
-    if (!f_restaurant) {
-      throw new ForbiddenException();
-    }
-    const f_reviews: Review[] = await this.rv_repo.find({
-      join: {
-        alias: 'Review',
-        leftJoinAndSelect: { ReplyReview: 'Review.reply_review' },
-      },
-      where: { restaurant: f_restaurant },
-    });
-    if (!f_reviews) {
-      throw new NotFoundException();
-    }
-    for (const e_rv of f_reviews) {
-      if (!e_rv.is_edited) {
-        Reflect.deleteProperty(e_rv, 'edit_time');
-      }
-      if (e_rv.reply_review && !e_rv.reply_review.is_edited) {
-        Reflect.deleteProperty(e_rv.reply_review, 'edit_time');
-      }
-    }
-    return f_reviews;
+    return this.get_review_list(id, EnumUserType.RESTAURANT);
   }
 
   public async get_review_statistic(param: string | QueryGetReviewStatistic): Promise<ResGetReviewStatistic> {
