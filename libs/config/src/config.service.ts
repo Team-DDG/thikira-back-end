@@ -8,6 +8,7 @@ import { resolve } from 'path';
 import { fileExistsSync } from 'tsconfig-paths/lib/filesystem';
 import { NodeEnv } from './node-env.enum';
 import { randomBytes } from 'crypto';
+import { mongodb_entities, mysql_entities } from '@app/entity';
 
 export type Config = Record<string, string>;
 
@@ -58,6 +59,7 @@ export class ConfigService {
 
     this.mysql_config = {
       database: this.MYSQL_SCHEMA,
+      entities: mysql_entities,
       host: this.MYSQL_HOST,
       name: 'mysql',
       password: this.MYSQL_PASS,
@@ -67,6 +69,7 @@ export class ConfigService {
       username: this.MYSQL_USER,
     };
     this.mongodb_config = {
+      entities: mongodb_entities,
       name: 'mongodb',
       synchronize: true,
       type: 'mongodb',

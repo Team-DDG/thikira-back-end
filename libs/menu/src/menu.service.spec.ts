@@ -75,16 +75,8 @@ describe('MenuService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         MenuModule, RestaurantModule, TestUtilModule, TokenModule,
-        TypeOrmModule.forRoot({
-          ...config.mysql_config,
-          entities: mysql_entities,
-          name: 'mysql',
-        }),
-        TypeOrmModule.forRoot({
-          ...config.mongodb_config,
-          entities: mongodb_entities,
-          name: 'mongodb',
-        }),
+        TypeOrmModule.forRoot(config.mysql_config),
+        TypeOrmModule.forRoot(config.mongodb_config),
         TypeOrmModule.forFeature(mysql_entities, 'mysql'),
         TypeOrmModule.forFeature(mongodb_entities, 'mongodb'),
         UtilModule,
