@@ -4,8 +4,11 @@ import { UtilModule } from '@app/util';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EventService } from './event.service';
+import { RestaurantEventController } from './restaurant-event.controller';
+import { UserEventController } from './user-coupon.controller';
 
 @Module({
+  controllers: [RestaurantEventController, UserEventController],
   exports: [EventService],
   imports: [
     AuthModule,
