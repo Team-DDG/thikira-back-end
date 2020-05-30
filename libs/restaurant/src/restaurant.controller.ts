@@ -1,4 +1,3 @@
-import { LocalAuthGuard } from '@app/auth';
 import { Header } from '@app/type/etc';
 import {
   DtoCheckPassword,
@@ -23,7 +22,6 @@ import {
   Post,
   Query,
   ValidationPipe,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -122,7 +120,6 @@ export class RestaurantController {
     return this.restaurantService.refresh(this.utilService.getTokenBody(token));
   }
 
-  @UseGuards(LocalAuthGuard)
   @Post('auth/sign_in')
   @ApiOperation({ summary: '업체 로그인' })
   @ApiCreatedResponse({ type: ResSignIn })
