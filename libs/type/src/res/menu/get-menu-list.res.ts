@@ -9,7 +9,7 @@ export class ResGetMenuList {
   @ApiProperty()
   public readonly image: string;
   @ApiProperty()
-  public readonly m_id: number;
+  public readonly menuId: number;
   @ApiProperty()
   public readonly name: string;
   @ApiProperty()

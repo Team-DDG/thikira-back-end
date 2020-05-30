@@ -1,5 +1,5 @@
 import { config } from '@app/config';
-import { mongodb_entities, mysql_entities } from '@app/entity';
+import { mongodbEntities, mysqlEntities } from '@app/entity';
 import { RestaurantModule } from '@app/restaurant';
 import { TestUtilModule, TestUtilService } from '@app/test-util';
 import { TokenModule } from '@app/token';
@@ -14,7 +14,7 @@ import { UserService } from './user.service';
 
 describe('UserService', () => {
   let service: UserService;
-  const test_u: DtoCreateUser = {
+  const testUser: DtoCreateUser = {
     email: 'user_test@gmail.com',
     nickname: 'user_test',
     password: 'user_test',
@@ -25,10 +25,10 @@ describe('UserService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         RestaurantModule, TestUtilModule, TokenModule,
-        TypeOrmModule.forRoot(config.mysql_config),
-        TypeOrmModule.forRoot(config.mongodb_config),
-        TypeOrmModule.forFeature(mysql_entities, 'mysql'),
-        TypeOrmModule.forFeature(mongodb_entities, 'mongodb'),
+        TypeOrmModule.forRoot(config.mysqlConfig),
+        TypeOrmModule.forRoot(config.mongodbConfig),
+        TypeOrmModule.forFeature(mysqlEntities, 'mysql'),
+        TypeOrmModule.forFeature(mongodbEntities, 'mongodb'),
         UserModule, UtilModule,
       ],
       providers: [UserService],
@@ -43,81 +43,81 @@ describe('UserService', () => {
   });
 
   it('Should success refresh()', async () => {
-    await service.check_email({ email: test_u.email });
-    await service.create(test_u);
-    const { refresh_token }: ResSignIn = await service.sign_in({
-      email: test_u.email, password: test_u.password,
+    await service.checkEmail({ email: testUser.email });
+    await service.create(testUser);
+    const { refreshToken }: ResSignIn = await service.signIn({
+      email: testUser.email, password: testUser.password,
     });
-    await expect(service.check_email({ email: test_u.email })).rejects.toThrow();
+    await expect(service.checkEmail({ email: testUser.email })).rejects.toThrow();
 
-    const { access_token }: ResRefresh = service.refresh(refresh_token);
-    await service.leave(access_token);
+    const { accessToken }: ResRefresh = service.refresh(refreshToken);
+    await service.leave(accessToken);
   });
 
-  it('Should success edit_info()', async () => {
+  it('Should success editInfo()', async () => {
     const restaurant: { email: string; nickname: string } = {
-      email: `2${test_u.email}`, nickname: `${test_u.nickname}_2`,
+      email: `2${testUser.email}`, nickname: `${testUser.nickname}_2`,
     };
-    await service.check_email({ email: restaurant.email });
-    await service.create({ ...test_u, ...restaurant });
-    const { access_token }: ResSignIn = await service.sign_in({
-      email: restaurant.email, password: test_u.password,
+    await service.checkEmail({ email: restaurant.email });
+    await service.create({ ...testUser, ...restaurant });
+    const { accessToken }: ResSignIn = await service.signIn({
+      email: restaurant.email, password: testUser.password,
     });
 
-    const edit_data: DtoEditUserInfo = {
+    const editData: DtoEditUserInfo = {
       nickname: '업체',
       phone: '01012345679',
     };
-    await service.edit(access_token, edit_data);
+    await service.edit(accessToken, editData);
 
-    const f_restaurant: ResLoadUser = await service.load(access_token);
-    const [req_r, res_r] = TestUtilService.make_comparable(f_restaurant, edit_data, [
-      'add_parcel', 'add_street', 'category', 'create_time',
-    ]);
-    expect(req_r).toStrictEqual(res_r);
+    const foundRestaurant: ResLoadUser = await service.load(accessToken);
+    const [requestRestaurant, responseRestaurant] = TestUtilService
+      .makeElementComparable(foundRestaurant, editData,
+        ['addParcel', 'addStreet', 'category', 'createTime']);
+    expect(requestRestaurant).toStrictEqual(responseRestaurant);
 
-    await service.leave(access_token);
+    await service.leave(accessToken);
   });
 
-  it('Should success edit_address()', async () => {
+  it('Should success editAddress()', async () => {
     const restaurant: { email: string; nickname: string } = {
-      email: `3${test_u.email}`, nickname: `${test_u.nickname}_3`,
+      email: `3${testUser.email}`, nickname: `${testUser.nickname}_3`,
     };
-    await service.check_email({ email: restaurant.email });
-    await service.create({ ...test_u, ...restaurant });
-    const { access_token }: ResSignIn = await service.sign_in({
-      email: restaurant.email, password: test_u.password,
+    await service.checkEmail({ email: restaurant.email });
+    await service.create({ ...testUser, ...restaurant });
+    const { accessToken }: ResSignIn = await service.signIn({
+      email: restaurant.email, password: testUser.password,
     });
 
-    const edit_data: DtoEditAddress = {
-      add_parcel: '경기도 어딘가',
-      add_street: '경기도 어딘가',
+    const editData: DtoEditAddress = {
+      addParcel: '경기도 어딘가',
+      addStreet: '경기도 어딘가',
     };
-    await service.edit(access_token, edit_data);
+    await service.edit(accessToken, editData);
 
-    const f_restaurant: ResLoadUser = await service.load(access_token);
-    expect(f_restaurant.add_street).toEqual(edit_data.add_street);
-    expect(f_restaurant.add_parcel).toEqual(edit_data.add_parcel);
+    const foundRestaurant: ResLoadUser = await service.load(accessToken);
+    expect(foundRestaurant.addStreet).toEqual(editData.addStreet);
+    expect(foundRestaurant.addParcel).toEqual(editData.addParcel);
 
-    await service.leave(access_token);
+    await service.leave(accessToken);
   });
 
-  it('Should success edit_password()', async () => {
+  it('Should success editPassword()', async () => {
     const restaurant: { email: string; nickname: string } = {
-      email: `4${test_u.email}`, nickname: `${test_u.nickname}_4`,
+      email: `4${testUser.email}`, nickname: `${testUser.nickname}_4`,
     };
-    await service.check_email({ email: restaurant.email });
-    await service.create({ ...test_u, ...restaurant });
-    const { access_token }: ResSignIn = await service.sign_in({
-      email: restaurant.email, password: test_u.password,
+    await service.checkEmail({ email: restaurant.email });
+    await service.create({ ...testUser, ...restaurant });
+    const { accessToken }: ResSignIn = await service.signIn({
+      email: restaurant.email, password: testUser.password,
     });
 
-    await service.check_password(access_token, { password: test_u.password });
-    const edit_data: DtoEditPassword = { password: `${test_u.password}_edit` };
-    await service.edit_password(access_token, edit_data);
+    await service.checkPassword(accessToken, { password: testUser.password });
+    const editData: DtoEditPassword = { password: `${testUser.password}_edit` };
+    await service.editPassword(accessToken, editData);
 
-    await service.sign_in({ ...edit_data, email: restaurant.email });
+    await service.signIn({ ...editData, email: restaurant.email });
 
-    await service.leave(access_token);
+    await service.leave(accessToken);
   });
 });

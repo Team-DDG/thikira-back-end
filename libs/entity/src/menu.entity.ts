@@ -5,7 +5,7 @@ import { MenuCategory } from './menu-category.entity';
 @Entity()
 export class Menu {
   @PrimaryGeneratedColumn()
-  public m_id: number;
+  public menuId: number;
   @Column()
   public description: string;
   @Column()
@@ -18,9 +18,9 @@ export class Menu {
   public group: Group[];
   @ManyToOne(
     () => MenuCategory,
-    (menu_category: MenuCategory) => menu_category.menu,
+    (menuCategory: MenuCategory) => menuCategory.menu,
     { nullable: false },
   )
-  @JoinColumn({ name: 'mc_id' })
-  public menu_category: MenuCategory;
+  @JoinColumn({ name: 'menuCategoryId' })
+  public menuCategory: MenuCategory;
 }

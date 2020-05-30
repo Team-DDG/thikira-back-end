@@ -1,7 +1,7 @@
 export class OrderUserClass {
-  public u_id: number;
-  public add_street: string;
-  public add_parcel: string;
+  public userId: number;
+  public addStreet: string;
+  public addParcel: string;
   public nickname: string;
   public phone: string;
 }

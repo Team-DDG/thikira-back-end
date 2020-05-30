@@ -5,13 +5,13 @@ export class DtoCreateRestaurant {
   @ApiProperty() @IsString()
   public readonly area: string;
   @ApiProperty() @IsString()
-  public readonly add_street: string;
+  public readonly addStreet: string;
   @ApiProperty() @IsString()
-  public readonly add_parcel: string;
+  public readonly addParcel: string;
   @ApiProperty() @IsString()
   public readonly category: string;
   @ApiProperty() @IsString()
-  public readonly close_time: string;
+  public readonly closeTime: string;
   @ApiProperty() @IsString()
   public readonly description: string;
   @ApiProperty() @IsEmail()
@@ -19,19 +19,19 @@ export class DtoCreateRestaurant {
   @ApiProperty() @IsUrl()
   public readonly image: string;
   @ApiProperty() @IsNumber()
-  public readonly min_price: number;
+  public readonly minPrice: number;
   @ApiProperty() @IsString()
   public readonly name: string;
   @ApiProperty() @IsBoolean()
-  public readonly online_payment: boolean;
+  public readonly onlinePayment: boolean;
   @ApiProperty() @IsBoolean()
-  public readonly offline_payment: boolean;
+  public readonly offlinePayment: boolean;
   @ApiProperty() @IsString()
-  public readonly open_time: string;
+  public readonly openTime: string;
   @ApiProperty() @IsNumberString()
   public readonly phone: string;
   @ApiProperty() @IsString()
-  public readonly day_off: string;
+  public readonly dayOff: string;
   @ApiProperty() @IsString()
   public readonly password: string;
 }

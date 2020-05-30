@@ -1,5 +1,5 @@
 import { config } from '@app/config';
-import { Coupon, mongodb_entities, mysql_entities } from '@app/entity';
+import { Coupon, mongodbEntities, mysqlEntities } from '@app/entity';
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
 import { TokenModule } from '@app/token';
 import { DtoCreateRestaurant, DtoUploadCoupon } from '@app/type/req';
@@ -12,46 +12,46 @@ import { CouponModule } from './coupon.module';
 import { CouponService } from './coupon.service';
 
 describe('CouponService', () => {
-  let r_service: RestaurantService;
+  let restaurantService: RestaurantService;
   let service: CouponService;
-  const test_r: DtoCreateRestaurant = {
-    add_parcel: 'a',
-    add_street: 'b',
+  const testRestaurant: DtoCreateRestaurant = {
+    addParcel: 'a',
+    addStreet: 'b',
     area: 'coupon',
     category: 'coupon_test',
-    close_time: 'e',
-    day_off: 'f',
+    closeTime: 'element',
+    dayOff: 'f',
     description: 'group',
     email: 'coupon_test@gmail.com',
     image: 'image.url',
-    min_price: 10000,
+    minPrice: 10000,
     name: 'coupon_test',
-    offline_payment: false,
-    online_payment: false,
-    open_time: 'i',
+    offlinePayment: false,
+    onlinePayment: false,
+    openTime: 'i',
     password: 'coupon_test',
     phone: '01012345678',
   };
-  const test_c: DtoUploadCoupon = {
-    discount_amount: 500,
-    expired_day: new Date(Date.now() + 86400000),
+  const testCoupon: DtoUploadCoupon = {
+    discountAmount: 500,
+    expiredDay: new Date(Date.now() + 86400000),
   };
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         CouponModule, RestaurantModule, TokenModule,
-        TypeOrmModule.forRoot(config.mysql_config),
-        TypeOrmModule.forRoot(config.mongodb_config),
-        TypeOrmModule.forFeature(mysql_entities, 'mysql'),
-        TypeOrmModule.forFeature(mongodb_entities, 'mongodb'),
+        TypeOrmModule.forRoot(config.mysqlConfig),
+        TypeOrmModule.forRoot(config.mongodbConfig),
+        TypeOrmModule.forFeature(mysqlEntities, 'mysql'),
+        TypeOrmModule.forFeature(mongodbEntities, 'mongodb'),
         UtilModule,
       ],
       providers: [CouponService],
     }).compile();
 
     service = module.get<CouponService>(CouponService);
-    r_service = module.get<RestaurantService>(RestaurantService);
+    restaurantService = module.get<RestaurantService>(RestaurantService);
   });
 
   afterAll(async () => {
@@ -60,22 +60,22 @@ describe('CouponService', () => {
   });
 
   it('Should success get()', async () => {
-    await r_service.create(test_r);
-    const { access_token }: ResSignIn = await r_service.sign_in({
-      email: test_r.email,
-      password: test_r.password,
+    await restaurantService.create(testRestaurant);
+    const { accessToken }: ResSignIn = await restaurantService.signIn({
+      email: testRestaurant.email,
+      password: testRestaurant.password,
     });
 
-    await service.upload(access_token, test_c);
+    await service.upload(accessToken, testCoupon);
 
-    const f_coupon: ResGetCoupon = await service.get(access_token);
-    if (test_c.discount_amount !== f_coupon.discount_amount) {
+    const foundCoupon: ResGetCoupon = await service.get(accessToken);
+    if (testCoupon.discountAmount !== foundCoupon.discountAmount) {
       throw Error();
     }
 
-    const { c_id }: Coupon = await service.get_coupon(test_c.discount_amount);
-    await service.remove(c_id);
+    const { couponId }: Coupon = await service.getCoupon(testCoupon.discountAmount);
+    await service.remove(couponId);
 
-    await r_service.leave(access_token);
+    await restaurantService.leave(accessToken);
   });
 });

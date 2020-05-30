@@ -4,7 +4,7 @@ import { IsString } from 'class-validator';
 
 export class DtoEditOrderStatus {
   @ApiProperty() @IsString()
-  public readonly od_id: string;
+  public readonly orderId: string;
   @ApiProperty({ enum: EnumOrderStatus, type: 'enum' })
   @IsString()
   public readonly status: EnumOrderStatus;

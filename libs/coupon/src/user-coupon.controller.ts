@@ -6,7 +6,6 @@ import {
   Controller,
   Get,
   Headers,
-  HttpCode,
   Inject,
   InternalServerErrorException,
   Query,
@@ -19,24 +18,24 @@ import { CouponService } from './coupon.service';
 @Controller('api/user/coupon')
 export class UserCouponController {
   @Inject()
-  private readonly c_service: CouponService;
+  private readonly couponService: CouponService;
   @Inject()
-  private readonly util_service: UtilService;
+  private readonly utilService: UtilService;
 
   @Get()
-  @HttpCode(200)
+
   @ApiOperation({ summary: '쿠폰 조회' })
   @ApiBearerAuth()
   @ApiOkResponse({ type: ResGetCoupon })
   @ApiNotFoundResponse()
-  public async get_coupon(
+  public async getCoupon(
     @Headers() header: Header,
     @Query(new ValidationPipe()) query: QueryGetCoupon,
   ): Promise<ResGetCoupon> {
     try {
-      return this.c_service.get(query);
-    } catch (e) {
-      throw new InternalServerErrorException(e.message);
+      return this.couponService.get(query);
+    } catch (element) {
+      throw new InternalServerErrorException(element.message);
     }
   }
 }

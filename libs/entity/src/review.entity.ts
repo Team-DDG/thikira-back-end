@@ -12,34 +12,34 @@ import {
 @Entity()
 export class Review {
   @PrimaryGeneratedColumn()
-  public rv_id: number;
+  public reviewId: number;
   @Column()
   public content: string;
   @CreateDateColumn()
-  public create_time: Date;
+  public createTime: Date;
   @Column({ nullable: true })
-  public edit_time?: Date;
+  public editTime?: Date;
   @Column({ nullable: true })
   public image?: string;
   @Column({ default: false })
-  public is_edited: boolean;
+  public isEdited: boolean;
   @Column({ type: 'float' })
   public star: number;
   @OneToOne(() => ReplyReview,
-    (reply_review: ReplyReview) => reply_review.review,
+    (replyReview: ReplyReview) => replyReview.review,
     { nullable: true },
   )
-  public reply_review?: ReplyReview;
+  public replyReview?: ReplyReview;
   @ManyToOne(
     () => Restaurant,
     (restaurant: Restaurant) => restaurant.review,
     { nullable: false })
-  @JoinColumn({ name: 'r_id' })
+  @JoinColumn({ name: 'restaurantId' })
   public restaurant: Restaurant;
   @ManyToOne(
     () => User,
     (user: User) => user.review,
     { nullable: false })
-  @JoinColumn({ name: 'u_id' })
+  @JoinColumn({ name: 'userId' })
   public user: User;
 }

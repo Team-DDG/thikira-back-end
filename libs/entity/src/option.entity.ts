@@ -4,12 +4,12 @@ import { Group } from './group.entity';
 @Entity()
 export class Option {
   @PrimaryGeneratedColumn()
-  public o_id: number;
+  public optionId: number;
   @Column()
   public name: string;
   @Column()
   public price: number;
   @ManyToOne(() => Group, (group: Group) => group.option, { nullable: false })
-  @JoinColumn({ name: 'g_id' })
+  @JoinColumn({ name: 'groupId' })
   public group: Group;
 }

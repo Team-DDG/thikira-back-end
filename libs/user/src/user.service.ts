@@ -18,106 +18,106 @@ import { ObjectID, Repository } from 'typeorm';
 @Injectable()
 export class UserService {
   @InjectRepository(Order, 'mongodb')
-  private readonly od_repo: Repository<Order>;
+  private readonly orderRepo: Repository<Order>;
   @InjectRepository(User, 'mysql')
-  private readonly u_repo: Repository<User>;
+  private readonly userRepo: Repository<User>;
   @Inject()
-  private readonly token_service: TokenService;
+  private readonly tokenService: TokenService;
   @Inject()
-  private readonly util_service: UtilService;
+  private readonly utilService: UtilService;
 
-  public async check_email(query: QueryCheckEmail): Promise<void> {
-    const f_user: User = await this.u_repo.findOne({ email: query.email });
-    if (f_user) {
+  public async checkEmail(query: QueryCheckEmail): Promise<void> {
+    const foundUser: User = await this.userRepo.findOne({ email: query.email });
+    if (foundUser) {
       throw new ConflictException();
     }
   }
 
   public async create(payload: DtoCreateUser): Promise<void> {
-    const f_user: User = await this.u_repo.findOne({ nickname: payload.nickname });
-    if (f_user) {
+    const foundUser: User = await this.userRepo.findOne({ nickname: payload.nickname });
+    if (foundUser) {
       throw new ConflictException();
     }
 
     const user: User = new User();
-    Object.assign(user, { ...payload, password: this.util_service.encode(payload.password) });
-    await this.u_repo.insert(user);
+    Object.assign(user, { ...payload, password: this.utilService.encode(payload.password) });
+    await this.userRepo.insert(user);
   }
 
-  public async sign_in(payload: DtoSignIn): Promise<ResSignIn> {
-    const f_user: User = await this.u_repo.findOne({ email: payload.email });
-    if (!f_user ||
-      f_user.password !== this.util_service.encode(payload.password)) {
+  public async signIn(payload: DtoSignIn): Promise<ResSignIn> {
+    const foundUser: User = await this.userRepo.findOne({ email: payload.email });
+    if (!foundUser ||
+      foundUser.password !== this.utilService.encode(payload.password)) {
       throw new NotFoundException();
     }
 
     return {
-      access_token: this.token_service.create_token(f_user.u_id, TokenTypeEnum.access),
-      refresh_token: this.token_service.create_token(f_user.u_id, TokenTypeEnum.refresh),
+      accessToken: this.tokenService.createToken(foundUser.userId, TokenTypeEnum.access),
+      refreshToken: this.tokenService.createToken(foundUser.userId, TokenTypeEnum.refresh),
     };
   }
 
   public refresh(token: string): ResRefresh {
-    const id: number = this.token_service.get_id_by_token(token);
-    return { access_token: this.token_service.create_token(id, TokenTypeEnum.access) };
+    const id: number = this.tokenService.getIdByToken(token);
+    return { accessToken: this.tokenService.createToken(id, TokenTypeEnum.access) };
   }
 
-  public async check_password(token: string, payload: DtoCheckPassword): Promise<void> {
-    const id: number = this.token_service.get_id_by_token(token);
-    const f_user: User = await this.u_repo.findOne(id);
+  public async checkPassword(token: string, payload: DtoCheckPassword): Promise<void> {
+    const id: number = this.tokenService.getIdByToken(token);
+    const foundUser: User = await this.userRepo.findOne(id);
 
-    if (!f_user || this.util_service.encode(payload.password) !== f_user.password) {
+    if (!foundUser || this.utilService.encode(payload.password) !== foundUser.password) {
       throw new ForbiddenException();
     }
   }
 
   public async edit(token: string, payload: DtoEditUserInfo | DtoEditAddress): Promise<void> {
-    const id: number = this.token_service.get_id_by_token(token);
-    await this.u_repo.update(id, payload);
+    const id: number = this.tokenService.getIdByToken(token);
+    await this.userRepo.update(id, payload);
   }
 
-  public async edit_password(token: string, payload: DtoEditPassword): Promise<void> {
-    const id: number = this.token_service.get_id_by_token(token);
-    await this.u_repo.update(id, {
-      password: this.util_service.encode(payload.password),
+  public async editPassword(token: string, payload: DtoEditPassword): Promise<void> {
+    const id: number = this.tokenService.getIdByToken(token);
+    await this.userRepo.update(id, {
+      password: this.utilService.encode(payload.password),
     });
   }
 
   public async load(token: string): Promise<ResLoadUser> {
-    const id: number = this.token_service.get_id_by_token(token);
-    const f_user: User = await this.u_repo.findOne(id);
-    if (!f_user) {
+    const id: number = this.tokenService.getIdByToken(token);
+    const foundUser: User = await this.userRepo.findOne(id);
+    if (!foundUser) {
       throw new ForbiddenException();
     }
-    for (const e of ['u_id', 'email', 'password']) {
-      Reflect.deleteProperty(f_user, e);
+    for (const element of ['userId', 'email', 'password']) {
+      Reflect.deleteProperty(foundUser, element);
     }
-    return f_user;
+    return foundUser;
   }
 
   public async leave(token: string): Promise<void> {
-    const id: number = this.token_service.get_id_by_token(token);
-    const f_user: User = await this.u_repo.findOne(id);
-    if (!f_user) {
+    const id: number = this.tokenService.getIdByToken(token);
+    const foundUser: User = await this.userRepo.findOne(id);
+    if (!foundUser) {
       throw new ForbiddenException();
     }
 
-    const f_orders: Order[] = await this.od_repo.find({ u_id: f_user.u_id });
+    const foundOrders: Order[] = await this.orderRepo.find({ userId: foundUser.userId });
 
-    if (f_orders) {
-      const od_ids: ObjectID[] = [];
-      for (const e_od of f_orders) {
-        od_ids.push(e_od.od_id);
+    if (foundOrders) {
+      const orderIds: ObjectID[] = [];
+      for (const elementOrder of foundOrders) {
+        orderIds.push(elementOrder.orderId);
       }
-      await this.od_repo.delete(od_ids);
+      await this.orderRepo.delete(orderIds);
     }
-    await this.u_repo.delete(id);
+    await this.userRepo.delete(id);
   }
 
   // use only in test
 
   public async get(token: string): Promise<User> {
-    const id: number = this.token_service.get_id_by_token(token);
-    return this.u_repo.findOne(id);
+    const id: number = this.tokenService.getIdByToken(token);
+    return this.userRepo.findOne(id);
   }
 }

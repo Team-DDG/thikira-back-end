@@ -31,13 +31,13 @@ export class DtoOrderMenu {
 
 export class DtoUploadOrder {
   @ApiProperty() @IsNumber()
-  public readonly r_id: number;
+  public readonly restaurantId: number;
   @ApiProperty() @IsNumber()
-  public readonly discount_amount: number;
+  public readonly discountAmount: number;
   @ApiProperty({ type: [DtoOrderMenu] })
   @IsArray() @IsOptional()
   public readonly menu?: DtoOrderMenu[];
   @ApiProperty({ enum: EnumPaymentType, type: 'enum' })
   @IsString()
-  public readonly payment_type: EnumPaymentType;
+  public readonly paymentType: EnumPaymentType;
 }

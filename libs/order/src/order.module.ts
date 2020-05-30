@@ -1,4 +1,4 @@
-import { mongodb_entities, mysql_entities } from '@app/entity';
+import { mongodbEntities, mysqlEntities } from '@app/entity';
 import { TokenModule } from '@app/token';
 import { UserModule } from '@app/user';
 import { UtilModule } from '@app/util';
@@ -13,8 +13,8 @@ import { UserOrderController } from './user-order.controller';
   exports: [OrderService],
   imports: [
     TokenModule,
-    TypeOrmModule.forFeature(mysql_entities, 'mysql'),
-    TypeOrmModule.forFeature(mongodb_entities, 'mongodb'),
+    TypeOrmModule.forFeature(mysqlEntities, 'mysql'),
+    TypeOrmModule.forFeature(mongodbEntities, 'mongodb'),
     UserModule, UtilModule,
   ],
   providers: [OrderService],

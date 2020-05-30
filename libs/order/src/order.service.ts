@@ -11,117 +11,119 @@ import { FindConditions } from 'typeorm/find-options/FindConditions';
 
 export class OrderService {
   @InjectRepository(Order, 'mongodb')
-  private readonly od_repo: Repository<Order>;
+  private readonly orderRepo: Repository<Order>;
   @InjectRepository(Restaurant, 'mysql')
-  private readonly r_repo: Repository<Restaurant>;
+  private readonly restaurantRepo: Repository<Restaurant>;
   @InjectRepository(User, 'mysql')
-  private readonly u_repo: Repository<User>;
+  private readonly userRepo: Repository<User>;
   @Inject()
-  private readonly token_service: TokenService;
+  private readonly tokenService: TokenService;
 
   public async upload(token: string, payload: DtoUploadOrder): Promise<void> {
-    const id: number = this.token_service.get_id_by_token(token);
-    const f_user: User = await this.u_repo.findOne(id);
-    if (!f_user) {
+    const id: number = this.tokenService.getIdByToken(token);
+    const foundUser: User = await this.userRepo.findOne(id);
+    if (!foundUser) {
       throw new ForbiddenException();
     }
-    const user_data: OrderUserClass = f_user;
-    for (const e of ['email', 'password', 'create_time']) {
-      Reflect.deleteProperty(user_data, e);
+    const userData: OrderUserClass = foundUser;
+    for (const element of ['email', 'password', 'createTime']) {
+      Reflect.deleteProperty(userData, element);
     }
 
     const option: Order = new Order();
-    Object.assign(option, { ...user_data, order_detail: [], total_price: 0 });
-    for (const e_m of payload.menu) {
-      let sub_price: number = e_m.price;
-      if (e_m.group) {
-        for (const e_g of e_m.group) {
-          for (const e_o of e_g.option) {
-            sub_price += e_o.price;
+    Object.assign(option, { ...userData, orderDetail: [], totalPrice: 0 });
+    for (const elementMenu of payload.menu) {
+      let subPrice: number = elementMenu.price;
+      if (elementMenu.group) {
+        for (const elementGroup of elementMenu.group) {
+          for (const elementOption of elementGroup.option) {
+            subPrice += elementOption.price;
           }
         }
       }
-      sub_price *= e_m.quantity;
-      option.total_price += sub_price;
-      option.order_detail.push({ ...e_m, sub_price });
+      subPrice *= elementMenu.quantity;
+      option.totalPrice += subPrice;
+      option.orderDetail.push({ ...elementMenu, subPrice });
     }
-    option.total_price -= payload.discount_amount;
-    for (const e of ['menu']) {
-      Reflect.deleteProperty(payload, e);
+    option.totalPrice -= payload.discountAmount;
+    for (const element of ['menu']) {
+      Reflect.deleteProperty(payload, element);
     }
     Object.assign(option, payload);
-    await this.od_repo.insert(option);
+    await this.orderRepo.insert(option);
   }
 
-  public async get_list_by_user(token: string): Promise<ResGetOrderList[]> {
-    const id: number = this.token_service.get_id_by_token(token);
-    const f_user: User = await this.u_repo.findOne(id);
-    if (!f_user) {
+  public async getListByUser(token: string): Promise<ResGetOrderList[]> {
+    const id: number = this.tokenService.getIdByToken(token);
+    const foundUser: User = await this.userRepo.findOne(id);
+    if (!foundUser) {
       throw new ForbiddenException();
     }
-    return this.get_list(id, EnumUserType.NORMAL);
+    return this.getList(id, EnumUserType.NORMAL);
   }
 
-  public async get_list_by_restaurant(token: string): Promise<ResGetOrderList[]> {
-    const id: number = this.token_service.get_id_by_token(token);
-    const f_restaurant: Restaurant = await this.r_repo.findOne(id);
-    if (!f_restaurant) {
+  public async getListByRestaurant(token: string): Promise<ResGetOrderList[]> {
+    const id: number = this.tokenService.getIdByToken(token);
+    const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
+    if (!foundRestaurant) {
       throw new ForbiddenException();
     }
 
-    return this.get_list(id, EnumUserType.RESTAURANT);
+    return this.getList(id, EnumUserType.RESTAURANT);
   }
 
-  public async edit_order_status(payload: DtoEditOrderStatus): Promise<void> {
-    await this.od_repo.update(payload.od_id, payload);
+  public async editOrderStatus(payload: DtoEditOrderStatus): Promise<void> {
+    await this.orderRepo.update(payload.orderId, payload);
   }
 
-  public async remove_order(od_id: ObjectID | string): Promise<void> {
-    await this.od_repo.delete(od_id);
+  public async removeOrder(orderId: ObjectID | string): Promise<void> {
+    await this.orderRepo.delete(orderId);
   }
 
   // only use in test
 
-  public async get_orders_by_restaurant_user(r_token: string, u_token: string): Promise<Order[]> {
-    let id: number = this.token_service.get_id_by_token(r_token);
-    const f_restaurant: Restaurant = await this.r_repo.findOne(id);
-    id = this.token_service.get_id_by_token(u_token);
-    const f_user: User = await this.u_repo.findOne(id);
+  public async getOrderListByRestaurantUser(restaurantToken: string, userToken: string): Promise<Order[]> {
+    let id: number = this.tokenService.getIdByToken(restaurantToken);
+    const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
+    id = this.tokenService.getIdByToken(userToken);
+    const foundUser: User = await this.userRepo.findOne(id);
 
-    const f_orders: Order[] = await this.od_repo.find({ r_id: f_restaurant.r_id, u_id: f_user.u_id });
-    for (const e_od of f_orders) {
-      e_od.od_id = e_od._id;
+    const foundOrders: Order[] = await this.orderRepo.find({
+      restaurantId: foundRestaurant.restaurantId, userId: foundUser.userId,
+    });
+    for (const elementOrder of foundOrders) {
+      elementOrder.orderId = elementOrder._id;
     }
-    return f_orders;
+    return foundOrders;
   }
 
-  private async get_list(id: number, user_type: EnumUserType): Promise<ResGetOrderList[]> {
+  private async getList(id: number, userType: EnumUserType): Promise<ResGetOrderList[]> {
     const res: ResGetOrderList[] = [];
 
-    const find_option: FindConditions<Order> = {};
-    if (user_type === EnumUserType.NORMAL) {
-      find_option.u_id = id;
+    const findOption: FindConditions<Order> = {};
+    if (userType === EnumUserType.NORMAL) {
+      findOption.userId = id;
     } else {
-      find_option.r_id = id;
+      findOption.restaurantId = id;
     }
 
-    const f_orders: Order[] = await this.od_repo.find(find_option);
+    const foundOrders: Order[] = await this.orderRepo.find(findOption);
 
-    if (!f_orders) {
+    if (!foundOrders) {
       throw new NotFoundException();
     }
 
-    for (const e_od of f_orders) {
-      e_od.od_id = e_od._id;
+    for (const elementOrder of foundOrders) {
+      elementOrder.orderId = elementOrder._id;
     }
 
-    for (const e_od of f_orders) {
-      for (const e of ['_id', 'u_id', 'r_id']) {
-        Reflect.deleteProperty(e_od, e);
+    for (const elementOrder of foundOrders) {
+      for (const element of ['_id', 'userId', 'restaurantId']) {
+        Reflect.deleteProperty(elementOrder, element);
       }
       res.push({
-        ...e_od, create_time: e_od.od_id.getTimestamp(),
-        od_id: e_od.od_id.toString(),
+        ...elementOrder, createTime: elementOrder.orderId.getTimestamp(),
+        orderId: elementOrder.orderId.toString(),
       });
     }
     return res;

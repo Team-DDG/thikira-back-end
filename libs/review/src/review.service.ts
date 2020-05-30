@@ -17,150 +17,154 @@ import { Repository, FindConditions } from 'typeorm';
 @Injectable()
 export class ReviewService {
   @InjectRepository(Order, 'mongodb')
-  private readonly od_repo: Repository<Order>;
+  private readonly orderRepo: Repository<Order>;
   @InjectRepository(Restaurant, 'mysql')
-  private readonly r_repo: Repository<Restaurant>;
+  private readonly restaurantRepo: Repository<Restaurant>;
   @InjectRepository(Review, 'mysql')
-  private readonly rv_repo: Repository<Review>;
+  private readonly reviewRepo: Repository<Review>;
   @InjectRepository(ReplyReview, 'mysql')
-  private readonly rr_repo: Repository<ReplyReview>;
+  private readonly replyReviewRepo: Repository<ReplyReview>;
   @InjectRepository(User, 'mysql')
-  private readonly u_repo: Repository<User>;
+  private readonly userRepo: Repository<User>;
   @Inject()
-  private readonly token_service: TokenService;
+  private readonly tokenService: TokenService;
 
   // review
 
-  public async check_review(token: string, payload: QueryCheckReview): Promise<void> {
-    const id: number = this.token_service.get_id_by_token(token);
-    const f_user: User = await this.u_repo.findOne(id);
-    if (!f_user) {
+  public async checkReview(token: string, payload: QueryCheckReview): Promise<void> {
+    const id: number = this.tokenService.getIdByToken(token);
+    const foundUser: User = await this.userRepo.findOne(id);
+    if (!foundUser) {
       throw new ForbiddenException();
     }
-    const f_restaurant: Restaurant = await this.r_repo.findOne(parseInt(payload.r_id));
-    if (!f_restaurant) {
+    const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(parseInt(payload.restaurantId));
+    if (!foundRestaurant) {
       throw new NotFoundException();
     }
-    const f_order: Order[] = await this.od_repo.find({ r_id: f_restaurant.r_id, u_id: f_user.u_id });
+    const foundOrder: Order[] = await this.orderRepo.find({
+      restaurantId: foundRestaurant.restaurantId, userId: foundUser.userId,
+    });
 
-    if (1 > f_order.length) {
+    if (1 > foundOrder.length) {
       throw new ForbiddenException('user haven\'t order by the restaurant');
     }
-    const f_review: Review = await this.rv_repo.findOne({ restaurant: f_restaurant, user: f_user });
-    if (f_review) {
+    const foundReview: Review = await this.reviewRepo.findOne({
+      restaurant: foundRestaurant, user: foundUser,
+    });
+    if (foundReview) {
       throw new ConflictException();
     }
   }
 
-  public async upload_review(token: string, payload: DtoUploadReview): Promise<void> {
-    const id: number = this.token_service.get_id_by_token(token);
-    const f_user: User = await this.u_repo.findOne(id);
-    if (!f_user) {
+  public async uploadReview(token: string, payload: DtoUploadReview): Promise<void> {
+    const id: number = this.tokenService.getIdByToken(token);
+    const foundUser: User = await this.userRepo.findOne(id);
+    if (!foundUser) {
       throw new ForbiddenException();
     }
 
-    const f_restaurant: Restaurant = await this.r_repo.findOne(payload.r_id);
-    if (!f_restaurant) {
+    const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(payload.restaurantId);
+    if (!foundRestaurant) {
       throw new NotFoundException();
     }
 
     const review: Review = new Review();
-    for (const e of ['r_id']) {
-      Reflect.deleteProperty(payload, e);
+    for (const element of ['restaurantId']) {
+      Reflect.deleteProperty(payload, element);
     }
-    Object.assign(review, { ...payload, restaurant: f_restaurant, user: f_user });
-    await this.rv_repo.insert(review);
+    Object.assign(review, { ...payload, restaurant: foundRestaurant, user: foundUser });
+    await this.reviewRepo.insert(review);
   }
 
-  public async edit_review(token: string, payload: DtoEditReview): Promise<void> {
-    const id: number = this.token_service.get_id_by_token(token);
-    const f_user: User = await this.u_repo.findOne(id);
-    const f_review: Review = await this.rv_repo.findOne({ user: f_user });
-    if (!f_review) {
+  public async editReview(token: string, payload: DtoEditReview): Promise<void> {
+    const id: number = this.tokenService.getIdByToken(token);
+    const foundUser: User = await this.userRepo.findOne(id);
+    const foundReview: Review = await this.reviewRepo.findOne({ user: foundUser });
+    if (!foundReview) {
       throw new NotFoundException();
     }
-    await this.rv_repo.update(f_review.rv_id, {
-      ...payload, edit_time: new Date(), is_edited: true,
+    await this.reviewRepo.update(foundReview.reviewId, {
+      ...payload, editTime: new Date(), isEdited: true,
     });
   }
 
-  public async remove_review(token: string): Promise<void> {
-    const id: number = this.token_service.get_id_by_token(token);
-    const f_user: User = await this.u_repo.findOne(id);
-    const f_review: Review = await this.rv_repo.findOne({
+  public async removeReview(token: string): Promise<void> {
+    const id: number = this.tokenService.getIdByToken(token);
+    const foundUser: User = await this.userRepo.findOne(id);
+    const foundReview: Review = await this.reviewRepo.findOne({
       join: {
         alias: 'Review',
         leftJoinAndSelect: {
-          ReplyReview: 'Review.reply_review',
+          ReplyReview: 'Review.replyReview',
         },
       },
-      where: { user: f_user },
+      where: { user: foundUser },
     });
-    if (!f_review) {
+    if (!foundReview) {
       throw new NotFoundException();
     }
-    if (f_review.reply_review) {
-      await this.rr_repo.delete(f_review.reply_review.rr_id);
+    if (foundReview.replyReview) {
+      await this.replyReviewRepo.delete(foundReview.replyReview.restaurantId);
     }
-    await this.rv_repo.delete(f_review.rv_id);
+    await this.reviewRepo.delete(foundReview.reviewId);
   }
 
-  public async get_review_list(id: number, user_type: EnumUserType): Promise<ResGetReviewList[]> {
-    const find_option: FindConditions<Review> = {};
+  public async getReviewList(id: number, userType: EnumUserType): Promise<ResGetReviewList[]> {
+    const findOption: FindConditions<Review> = {};
 
-    if (user_type === EnumUserType.NORMAL) {
-      find_option.user = { u_id: id };
+    if (userType === EnumUserType.NORMAL) {
+      findOption.user = { userId: id };
     } else {
-      find_option.restaurant = { r_id: id };
+      findOption.restaurant = { restaurantId: id };
     }
 
-    const f_reviews: Review[] = await this.rv_repo.find({
+    const foundReviews: Review[] = await this.reviewRepo.find({
       join: {
         alias: 'Review',
-        leftJoinAndSelect: { ReplyReview: 'Review.reply_review' },
+        leftJoinAndSelect: { ReplyReview: 'Review.replyReview' },
       },
-      where: find_option,
+      where: findOption,
     });
-    if (!f_reviews) {
+    if (!foundReviews) {
       throw new NotFoundException();
     }
-    for (const e_rv of f_reviews) {
-      if (!e_rv.is_edited) {
-        Reflect.deleteProperty(e_rv, 'edit_time');
+    for (const elementReview of foundReviews) {
+      if (!elementReview.isEdited) {
+        Reflect.deleteProperty(elementReview, 'editTime');
       }
-      if (e_rv.reply_review && !e_rv.reply_review.is_edited) {
-        Reflect.deleteProperty(e_rv.reply_review, 'edit_time');
+      if (elementReview.replyReview && !elementReview.replyReview.isEdited) {
+        Reflect.deleteProperty(elementReview.replyReview, 'editTime');
       }
     }
-    return f_reviews;
+    return foundReviews;
   }
 
-  public async get_review_list_by_user(token: string): Promise<ResGetReviewList[]> {
-    const id: number = this.token_service.get_id_by_token(token);
-    return this.get_review_list(id, EnumUserType.NORMAL);
+  public async getReviewListByUser(token: string): Promise<ResGetReviewList[]> {
+    const id: number = this.tokenService.getIdByToken(token);
+    return this.getReviewList(id, EnumUserType.NORMAL);
   }
 
-  public async get_review_list_by_restaurant(token: string): Promise<ResGetReviewList[]> {
-    const id: number = this.token_service.get_id_by_token(token);
-    return this.get_review_list(id, EnumUserType.RESTAURANT);
+  public async getReviewListByRestaurant(token: string): Promise<ResGetReviewList[]> {
+    const id: number = this.tokenService.getIdByToken(token);
+    return this.getReviewList(id, EnumUserType.RESTAURANT);
   }
 
-  public async get_review_statistic(param: string | QueryGetReviewStatistic): Promise<ResGetReviewStatistic> {
-    let f_restaurant: Restaurant;
+  public async getReviewStatistic(param: string | QueryGetReviewStatistic): Promise<ResGetReviewStatistic> {
+    let foundRestaurant: Restaurant;
     if ('string' === typeof param) {
-      const id: number = this.token_service.get_id_by_token(param);
-      f_restaurant = await this.r_repo.findOne(id);
+      const id: number = this.tokenService.getIdByToken(param);
+      foundRestaurant = await this.restaurantRepo.findOne(id);
     } else {
-      f_restaurant = await this.r_repo.findOne(parseInt(param.r_id));
+      foundRestaurant = await this.restaurantRepo.findOne(parseInt(param.restaurantId));
     }
-    const f_reviews: Review[] = await this.rv_repo.find({
+    const foundReviews: Review[] = await this.reviewRepo.find({
       join: {
         alias: 'Review',
-        leftJoinAndSelect: { ReplyReview: 'Review.reply_review' },
+        leftJoinAndSelect: { ReplyReview: 'Review.replyReview' },
       },
-      where: { restaurant: f_restaurant },
+      where: { restaurant: foundRestaurant },
     });
-    if (1 > f_reviews.length) {
+    if (1 > foundReviews.length) {
       throw new NotFoundException();
     }
     const star: number[] = [];
@@ -168,12 +172,12 @@ export class ReviewService {
     for (const loop of [0, 1, 2, 3, 4, 5]) {
       star[loop] = 0;
     }
-    for (const loop_review of f_reviews) {
-      star[Math.floor(loop_review.star)] += 1;
-      mean += loop_review.star;
+    for (const elementReview of foundReviews) {
+      star[Math.floor(elementReview.star)] += 1;
+      mean += elementReview.star;
     }
 
-    mean /= f_reviews.length;
+    mean /= foundReviews.length;
     return {
       five: star[5],
       four: star[4],
@@ -185,42 +189,42 @@ export class ReviewService {
     };
   }
 
-  // reply_review
+  // replyReview
 
-  public async upload_reply_review(token: string, payload: DtoUploadReplyReview): Promise<void> {
-    const f_review: Review = await this.rv_repo.findOne(payload.rv_id, {
+  public async uploadReplyReview(token: string, payload: DtoUploadReplyReview): Promise<void> {
+    const foundReview: Review = await this.reviewRepo.findOne(payload.reviewId, {
       join: {
         alias: 'Review',
-        leftJoinAndSelect: { ReplyReview: 'Review.reply_review' },
+        leftJoinAndSelect: { ReplyReview: 'Review.replyReview' },
       },
     });
-    if (!f_review) {
+    if (!foundReview) {
       throw new NotFoundException();
     }
-    const id: number = this.token_service.get_id_by_token(token);
-    const f_restaurant: Restaurant = await this.r_repo.findOne(id);
+    const id: number = this.tokenService.getIdByToken(token);
+    const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
 
-    const reply_review: ReplyReview = new ReplyReview();
-    Object.assign(reply_review, { ...payload, restaurant: f_restaurant, review: f_review });
-    await this.rr_repo.insert(reply_review);
+    const replyReview: ReplyReview = new ReplyReview();
+    Object.assign(replyReview, { ...payload, restaurant: foundRestaurant, review: foundReview });
+    await this.replyReviewRepo.insert(replyReview);
   }
 
-  public async edit_reply_review(token: string, payload: DtoEditReplyReview): Promise<void> {
-    const id: number = this.token_service.get_id_by_token(token);
-    const f_restaurant: Restaurant = await this.r_repo.findOne(id);
-    const f_reply_review: ReplyReview = await this.rr_repo.findOne({ restaurant: f_restaurant });
-    if (!f_reply_review) {
+  public async editReplyReview(token: string, payload: DtoEditReplyReview): Promise<void> {
+    const id: number = this.tokenService.getIdByToken(token);
+    const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
+    const foundReplyReview: ReplyReview = await this.replyReviewRepo.findOne({ restaurant: foundRestaurant });
+    if (!foundReplyReview) {
       throw new NotFoundException();
     }
-    await this.rr_repo.update(f_reply_review.rr_id, {
-      ...payload, edit_time: new Date(), is_edited: true,
+    await this.replyReviewRepo.update(foundReplyReview.restaurantId, {
+      ...payload, editTime: new Date(), isEdited: true,
     });
   }
 
-  public async remove_reply_review(token: string): Promise<void> {
-    const id: number = this.token_service.get_id_by_token(token);
-    const f_restaurant: Restaurant = await this.r_repo.findOne(id);
-    const f_reply_review: ReplyReview = await this.rr_repo.findOne({ restaurant: f_restaurant });
-    await this.rr_repo.delete(f_reply_review.rr_id);
+  public async removeReplyReview(token: string): Promise<void> {
+    const id: number = this.tokenService.getIdByToken(token);
+    const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
+    const foundReplyReview: ReplyReview = await this.replyReviewRepo.findOne({ restaurant: foundRestaurant });
+    await this.replyReviewRepo.delete(foundReplyReview.restaurantId);
   }
 }

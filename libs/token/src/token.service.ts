@@ -6,24 +6,24 @@ import { TokenTypeEnum } from './token-type.enum';
 @Injectable()
 export class TokenService {
   @Inject()
-  private readonly jwt_service: JwtService;
+  private readonly jwtService: JwtService;
 
-  public create_token(id: number, type: TokenTypeEnum): string {
-    return this.jwt_service.sign({ id }, {
+  public createToken(id: number, type: TokenTypeEnum): string {
+    return this.jwtService.sign({ id }, {
       expiresIn: type === TokenTypeEnum.access ? '30 min' : '14 days',
     });
   }
 
-  public get_iat(token: string): number {
-    const { iat }: ParsedTokenClass = this.jwt_service.verify(token);
+  public getIat(token: string): number {
+    const { iat }: ParsedTokenClass = this.jwtService.verify(token);
     return iat;
   }
 
-  public get_id_by_token(token: string): number {
+  public getIdByToken(token: string): number {
     try {
-      const { id }: ParsedTokenClass = this.jwt_service.verify(token);
+      const { id }: ParsedTokenClass = this.jwtService.verify(token);
       return id;
-    } catch (e) {
+    } catch (element) {
       return null;
     }
   }

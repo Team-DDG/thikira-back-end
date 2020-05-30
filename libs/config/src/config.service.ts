@@ -1,4 +1,4 @@
-import { mongodb_entities, mysql_entities } from '@app/entity';
+import { mongodbEntities, mysqlEntities } from '@app/entity';
 import { Injectable } from '@nestjs/common';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { IsEnum, IsNumberString, IsOptional, IsString, validateSync } from 'class-validator';
@@ -38,18 +38,18 @@ export class ConfigService {
   public readonly NODE_ENV: NodeEnv;
   @IsOptional() @IsNumberString()
   public readonly PORT?: string = '3000';
-  public readonly mysql_config: TypeOrmModuleOptions;
-  public readonly mongodb_config: TypeOrmModuleOptions;
+  public readonly mysqlConfig: TypeOrmModuleOptions;
+  public readonly mongodbConfig: TypeOrmModuleOptions;
 
-  public constructor(file_path?: string, custom_config?: Config) {
+  public constructor(filePath?: string, customConfig?: Config) {
     let env: DotenvParseOutput;
-    if (file_path && fileExistsSync(file_path)) {
-      env = parse(readFileSync(file_path));
+    if (filePath && fileExistsSync(filePath)) {
+      env = parse(readFileSync(filePath));
     }
 
     Object.assign(this, {
       NODE_ENV: NodeEnv.development,
-      ...env, ...process.env, ...custom_config,
+      ...env, ...process.env, ...customConfig,
     });
 
     const errors: ValidationError[] = validateSync(this);
@@ -57,9 +57,9 @@ export class ConfigService {
       throw new Error(errors[0].toString());
     }
 
-    this.mysql_config = {
+    this.mysqlConfig = {
       database: this.MYSQL_SCHEMA,
-      entities: mysql_entities,
+      entities: mysqlEntities,
       host: this.MYSQL_HOST,
       name: 'mysql',
       password: this.MYSQL_PASS,
@@ -68,8 +68,8 @@ export class ConfigService {
       type: this.MYSQL_TYPE,
       username: this.MYSQL_USER,
     };
-    this.mongodb_config = {
-      entities: mongodb_entities,
+    this.mongodbConfig = {
+      entities: mongodbEntities,
       name: 'mongodb',
       synchronize: true,
       type: 'mongodb',

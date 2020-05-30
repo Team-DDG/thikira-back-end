@@ -3,7 +3,7 @@ import { IsNumber, IsString } from 'class-validator';
 
 export class DtoUploadReplyReview {
   @ApiProperty() @IsNumber()
-  public readonly rv_id: number;
+  public readonly reviewId: number;
   @ApiProperty() @IsString()
   public readonly content: string;
 }

@@ -1,5 +1,5 @@
 import { config } from '@app/config';
-import { mongodb_entities, mysql_entities } from '@app/entity';
+import { mongodbEntities, mysqlEntities } from '@app/entity';
 import { TestUtilModule, TestUtilService } from '@app/test-util';
 import { TokenModule } from '@app/token';
 import { DtoCreateRestaurant, DtoEditAddress, DtoEditPassword, DtoEditRestaurantInfo } from '@app/type/req';
@@ -13,21 +13,21 @@ import { RestaurantService } from './restaurant.service';
 
 describe('RestaurantService', () => {
   let service: RestaurantService;
-  const test_r: DtoCreateRestaurant = {
-    add_parcel: '경기도 이천시 증포동 404-9',
-    add_street: '경기 이천시 아리역로 25 남구빌딩',
+  const testRestaurant: DtoCreateRestaurant = {
+    addParcel: '경기도 이천시 증포동 404-9',
+    addStreet: '경기 이천시 아리역로 25 남구빌딩',
     area: '증포동, 창전동',
     category: '치킨',
-    close_time: '00:00',
-    day_off: '주일날은 교회에 갑니다.',
+    closeTime: '00:00',
+    dayOff: '주일날은 교회에 갑니다.',
     description: '증포동 bbq 입니다.',
     email: 'restaurant_test@gmail.com',
     image: 'image_url',
-    min_price: 17500,
+    minPrice: 17500,
     name: 'restaurant_test',
-    offline_payment: false,
-    online_payment: true,
-    open_time: '15:00',
+    offlinePayment: false,
+    onlinePayment: true,
+    openTime: '15:00',
     password: 'restaurant_test',
     phone: '01012345678',
   };
@@ -36,10 +36,10 @@ describe('RestaurantService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         RestaurantModule, TestUtilModule, TokenModule,
-        TypeOrmModule.forRoot(config.mysql_config),
-        TypeOrmModule.forRoot(config.mongodb_config),
-        TypeOrmModule.forFeature(mysql_entities, 'mysql'),
-        TypeOrmModule.forFeature(mongodb_entities, 'mongodb'),
+        TypeOrmModule.forRoot(config.mysqlConfig),
+        TypeOrmModule.forRoot(config.mongodbConfig),
+        TypeOrmModule.forFeature(mysqlEntities, 'mysql'),
+        TypeOrmModule.forFeature(mongodbEntities, 'mongodb'),
         UtilModule,
       ],
       providers: [RestaurantService],
@@ -54,92 +54,92 @@ describe('RestaurantService', () => {
   });
 
   it('Should success refresh()', async () => {
-    await service.check_email({ email: test_r.email });
-    await service.create(test_r);
+    await service.checkEmail({ email: testRestaurant.email });
+    await service.create(testRestaurant);
 
-    const { refresh_token }: ResSignIn = await service.sign_in({
-      email: test_r.email, password: test_r.password,
+    const { refreshToken }: ResSignIn = await service.signIn({
+      email: testRestaurant.email, password: testRestaurant.password,
     });
-    await expect(service.check_email({ email: test_r.email })).rejects.toThrow();
+    await expect(service.checkEmail({ email: testRestaurant.email })).rejects.toThrow();
 
-    const { access_token }: ResRefresh = service.refresh(refresh_token);
-    await service.leave(access_token);
+    const { accessToken }: ResRefresh = service.refresh(refreshToken);
+    await service.leave(accessToken);
   });
 
-  it('Should success edit_info()', async () => {
+  it('Should success editInfo()', async () => {
     const restaurant: { email: string; name: string } = {
-      email: `2${test_r.email}`, name: `${test_r.name}_2`,
+      email: `2${testRestaurant.email}`, name: `${testRestaurant.name}_2`,
     };
-    await service.check_email({ email: restaurant.email });
-    await service.create({ ...test_r, ...restaurant });
-    const { access_token }: ResSignIn = await service.sign_in({
-      email: restaurant.email, password: test_r.password,
+    await service.checkEmail({ email: restaurant.email });
+    await service.create({ ...testRestaurant, ...restaurant });
+    const { accessToken }: ResSignIn = await service.signIn({
+      email: restaurant.email, password: testRestaurant.password,
     });
 
-    const edit_data: DtoEditRestaurantInfo = {
+    const editData: DtoEditRestaurantInfo = {
       area: '창전동',
-      close_time: '00:00',
-      day_off: '절에 다닙니다.',
+      closeTime: '00:00',
+      dayOff: '절에 다닙니다.',
       description: '증포동 bbq 입니다.',
       image: 'url.image',
-      min_price: 20000,
+      minPrice: 20000,
       name: '업체',
-      offline_payment: true,
-      online_payment: false,
-      open_time: '15:00',
+      offlinePayment: true,
+      onlinePayment: false,
+      openTime: '15:00',
       phone: '01012345679',
     };
-    await service.edit(access_token, edit_data);
+    await service.edit(accessToken, editData);
 
-    const f_restaurant: ResLoadRestaurant = await service.load(access_token);
-    const [req_r, res_r] = TestUtilService.make_comparable(f_restaurant, edit_data, [
-      'add_parcel', 'add_street', 'category', 'create_time', 'email',
-    ]);
-    expect(req_r).toStrictEqual(res_r);
+    const foundRestaurant: ResLoadRestaurant = await service.load(accessToken);
+    const [requestRestaurant, responseRestaurant] = TestUtilService
+      .makeElementComparable(foundRestaurant, editData,
+        ['addParcel', 'addStreet', 'category', 'createTime', 'email']);
+    expect(requestRestaurant).toStrictEqual(responseRestaurant);
 
-    await service.leave(access_token);
+    await service.leave(accessToken);
   });
 
-  it('Should success edit_address()', async () => {
+  it('Should success editAddress()', async () => {
     const restaurant: { email: string; name: string } = {
-      email: `3${test_r.email}`, name: `${test_r.name}_3`,
+      email: `3${testRestaurant.email}`, name: `${testRestaurant.name}_3`,
     };
-    await service.check_email({ email: restaurant.email });
-    await service.create({ ...test_r, ...restaurant });
-    const { access_token }: ResSignIn = await service.sign_in({
-      email: restaurant.email, password: test_r.password,
+    await service.checkEmail({ email: restaurant.email });
+    await service.create({ ...testRestaurant, ...restaurant });
+    const { accessToken }: ResSignIn = await service.signIn({
+      email: restaurant.email, password: testRestaurant.password,
     });
 
-    const edit_data: DtoEditAddress = {
-      add_parcel: '경기도 어딘가',
-      add_street: '경기도 어딘가',
+    const editData: DtoEditAddress = {
+      addParcel: '경기도 어딘가',
+      addStreet: '경기도 어딘가',
     };
-    await service.edit(access_token, edit_data);
+    await service.edit(accessToken, editData);
 
-    const f_restaurant: ResLoadRestaurant = await service.load(access_token);
-    for (const e of ['add_street', 'add_parcel']) {
-      expect(f_restaurant[e]).toEqual(edit_data[e]);
+    const foundRestaurant: ResLoadRestaurant = await service.load(accessToken);
+    for (const element of ['addStreet', 'addParcel']) {
+      expect(foundRestaurant[element]).toEqual(editData[element]);
     }
 
-    await service.leave(access_token);
+    await service.leave(accessToken);
   });
 
-  it('Should success edit_password()', async () => {
+  it('Should success editPassword()', async () => {
     const restaurant: { email: string; name: string } = {
-      email: `4${test_r.email}`, name: `${test_r.name}_4`,
+      email: `4${testRestaurant.email}`, name: `${testRestaurant.name}_4`,
     };
-    await service.check_email({ email: restaurant.email });
-    await service.create({ ...test_r, ...restaurant });
-    const { access_token }: ResSignIn = await service.sign_in({
-      email: restaurant.email, password: test_r.password,
+    await service.checkEmail({ email: restaurant.email });
+    await service.create({ ...testRestaurant, ...restaurant });
+    const { accessToken }: ResSignIn = await service.signIn({
+      email: restaurant.email, password: testRestaurant.password,
     });
 
-    await service.check_password(access_token, { password: test_r.password });
-    const edit_data: DtoEditPassword = { password: `${test_r.password}_edit` };
-    await service.edit_password(access_token, edit_data);
+    await service.checkPassword(accessToken, { password: testRestaurant.password });
+    const editData: DtoEditPassword = { password: `${testRestaurant.password}_edit` };
+    await service.editPassword(accessToken, editData);
 
-    await service.sign_in({ ...edit_data, email: restaurant.email });
+    await service.signIn({ ...editData, email: restaurant.email });
 
-    await service.leave(access_token);
+    await service.leave(accessToken);
   });
 });

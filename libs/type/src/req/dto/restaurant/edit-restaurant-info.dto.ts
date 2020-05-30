@@ -5,23 +5,23 @@ export class DtoEditRestaurantInfo {
   @ApiProperty() @IsString() @IsOptional()
   public readonly area?: string;
   @ApiProperty() @IsString() @IsOptional()
-  public readonly close_time?: string;
+  public readonly closeTime?: string;
   @ApiProperty() @IsString() @IsOptional()
-  public readonly day_off?: string;
+  public readonly dayOff?: string;
   @ApiProperty() @IsString() @IsOptional()
   public readonly description?: string;
   @ApiProperty() @IsUrl() @IsOptional()
   public readonly image?: string;
   @ApiProperty() @IsNumber() @IsOptional()
-  public readonly min_price?: number;
+  public readonly minPrice?: number;
   @ApiProperty() @IsString() @IsOptional()
   public readonly name?: string;
   @ApiProperty() @IsBoolean() @IsOptional()
-  public readonly offline_payment?: boolean;
+  public readonly offlinePayment?: boolean;
   @ApiProperty() @IsBoolean() @IsOptional()
-  public readonly online_payment?: boolean;
+  public readonly onlinePayment?: boolean;
   @ApiProperty() @IsString() @IsOptional()
-  public readonly open_time?: string;
+  public readonly openTime?: string;
   @ApiProperty() @IsNumberString() @IsOptional()
   public readonly phone?: string;
 }

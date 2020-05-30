@@ -2,11 +2,11 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class ResLoadUser {
   @ApiProperty()
-  public readonly add_parcel: string;
+  public readonly addParcel: string;
   @ApiProperty()
-  public readonly add_street: string;
+  public readonly addStreet: string;
   @ApiProperty()
-  public readonly create_time: Date;
+  public readonly createTime: Date;
   @ApiProperty()
   public readonly nickname: string;
   @ApiProperty()

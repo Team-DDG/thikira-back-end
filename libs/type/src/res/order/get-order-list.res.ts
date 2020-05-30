@@ -3,25 +3,25 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class ResGetOrderList {
   @ApiProperty()
-  public readonly od_id: string;
+  public readonly orderId: string;
   @ApiProperty()
-  public readonly add_street: string;
+  public readonly addStreet: string;
   @ApiProperty()
-  public readonly add_parcel: string;
+  public readonly addParcel: string;
   @ApiProperty()
-  public readonly create_time: Date;
+  public readonly createTime: Date;
   @ApiProperty()
-  public readonly discount_amount: number;
+  public readonly discountAmount: number;
   @ApiProperty()
   public readonly nickname: string;
   @ApiProperty({ type: [OrderDetail] })
-  public readonly order_detail: OrderDetail[];
+  public readonly orderDetail: OrderDetail[];
   @ApiProperty()
-  public readonly payment_type: EnumPaymentType = EnumPaymentType.OFFLINE;
+  public readonly paymentType: EnumPaymentType = EnumPaymentType.OFFLINE;
   @ApiProperty()
   public readonly phone: string;
   @ApiProperty()
   public readonly status: EnumOrderStatus = EnumOrderStatus.NOT_PAYMENT;
   @ApiProperty()
-  public readonly total_price: number;
+  public readonly totalPrice: number;
 }

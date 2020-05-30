@@ -7,7 +7,6 @@ import {
   Controller,
   Get,
   Headers,
-  HttpCode,
   Inject,
   InternalServerErrorException,
   Patch,
@@ -22,36 +21,34 @@ export class RestaurantOrderController {
   @Inject()
   private readonly od_service: OrderService;
   @Inject()
-  private readonly util_service: UtilService;
-
-  @Get()
-  @HttpCode(200)
-  @ApiOperation({ summary: '주문 조회' })
-  @ApiBearerAuth()
-  @ApiOkResponse({ type: [ResGetOrderList] })
-  @ApiForbiddenResponse()
-  public async get_orders(@Headers() header: Header): Promise<ResGetOrderList[]> {
-    try {
-      return this.od_service.get_list_by_restaurant(this.util_service.get_token_body(header));
-    } catch (e) {
-      throw new InternalServerErrorException(e.message);
-    }
-  }
+  private readonly utilService: UtilService;
 
   @Patch('status')
-  @HttpCode(200)
   @ApiOperation({ summary: '주문 상태 수정' })
   @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
-  public async edit_order_status(
+  public async editOrderStatus(
     @Headers() header: Header,
     @Body(new ValidationPipe()) payload: DtoEditOrderStatus,
   ): Promise<void> {
     try {
-      return this.od_service.edit_order_status(payload);
-    } catch (e) {
-      throw new InternalServerErrorException(e.message);
+      return this.od_service.editOrderStatus(payload);
+    } catch (element) {
+      throw new InternalServerErrorException(element.message);
+    }
+  }
+
+  @Get()
+  @ApiOperation({ summary: '주문 조회' })
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: [ResGetOrderList] })
+  @ApiForbiddenResponse()
+  public async getOrderList(@Headers() header: Header): Promise<ResGetOrderList[]> {
+    try {
+      return this.od_service.getListByRestaurant(this.utilService.getTokenBody(header));
+    } catch (element) {
+      throw new InternalServerErrorException(element.message);
     }
   }
 }

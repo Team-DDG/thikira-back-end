@@ -3,7 +3,7 @@ import { IsNumber, IsOptional, IsString, IsUrl } from 'class-validator';
 
 export class DtoUploadReview {
   @ApiProperty() @IsNumber()
-  public readonly r_id: number;
+  public readonly restaurantId: number;
   @ApiProperty() @IsString()
   public readonly content: string;
   @ApiProperty() @IsUrl() @IsOptional()

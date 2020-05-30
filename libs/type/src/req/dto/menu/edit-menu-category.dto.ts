@@ -3,7 +3,7 @@ import { IsNumber, IsString } from 'class-validator';
 
 export class DtoEditMenuCategory {
   @ApiProperty() @IsNumber()
-  public readonly mc_id: number;
+  public readonly menuCategoryId: number;
   @ApiProperty() @IsString()
   public readonly name: string;
 }

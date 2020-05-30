@@ -3,9 +3,9 @@ import { ResGetOptionList } from './get-option-list.res';
 
 export class ResGetGroupList {
   @ApiProperty()
-  public readonly g_id: number;
+  public readonly groupId: number;
   @ApiProperty()
-  public readonly max_count: number;
+  public readonly maxCount: number;
   @ApiProperty()
   public readonly name: string;
   @ApiProperty()

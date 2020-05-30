@@ -3,9 +3,9 @@ import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class DtoEditGroup {
   @ApiProperty() @IsNumber()
-  public readonly g_id: number;
+  public readonly groupId: number;
   @ApiProperty() @IsNumber() @IsOptional()
-  public readonly max_count?: number;
+  public readonly maxCount?: number;
   @ApiProperty() @IsString() @IsOptional()
   public readonly name?: string;
 }

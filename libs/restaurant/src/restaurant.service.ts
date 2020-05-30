@@ -19,111 +19,111 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class RestaurantService {
   @InjectRepository(Coupon, 'mysql')
-  private readonly c_repo: Repository<Coupon>;
+  private readonly couponRepo: Repository<Coupon>;
   @InjectRepository(Group, 'mysql')
-  private readonly g_repo: Repository<Group>;
+  private readonly groupRepo: Repository<Group>;
   @InjectRepository(Menu, 'mysql')
-  private readonly m_repo: Repository<Menu>;
+  private readonly menuRepo: Repository<Menu>;
   @InjectRepository(MenuCategory, 'mysql')
-  private readonly mc_repo: Repository<MenuCategory>;
+  private readonly menuCategoryRepo: Repository<MenuCategory>;
   @InjectRepository(Option, 'mysql')
-  private readonly o_repo: Repository<Option>;
+  private readonly optionRepo: Repository<Option>;
   @InjectRepository(Restaurant, 'mysql')
-  private readonly r_repo: Repository<Restaurant>;
+  private readonly restaurantRepo: Repository<Restaurant>;
   @Inject()
-  private readonly token_service: TokenService;
+  private readonly tokenService: TokenService;
   @Inject()
-  private readonly util_service: UtilService;
+  private readonly utilService: UtilService;
 
-  public async check_email(query: QueryCheckEmail): Promise<void> {
-    const f_restaurant: Restaurant = await this.r_repo.findOne({ email: query.email });
-    if (f_restaurant) {
+  public async checkEmail(query: QueryCheckEmail): Promise<void> {
+    const foundRestaurant: Restaurant = await this.restaurantRepo.findOne({ email: query.email });
+    if (foundRestaurant) {
       throw new ConflictException();
     }
   }
 
   public async create(payload: DtoCreateRestaurant): Promise<void> {
-    const f_restaurant: Restaurant = await this.r_repo.findOne({ name: payload.name });
-    if (f_restaurant) {
+    const foundRestaurant: Restaurant = await this.restaurantRepo.findOne({ name: payload.name });
+    if (foundRestaurant) {
       throw new ConflictException();
     }
 
     const restaurant: Restaurant = new Restaurant();
-    Object.assign(restaurant, { ...payload, password: this.util_service.encode(payload.password) });
-    await this.r_repo.insert(restaurant);
+    Object.assign(restaurant, { ...payload, password: this.utilService.encode(payload.password) });
+    await this.restaurantRepo.insert(restaurant);
   }
 
-  public async sign_in(payload: DtoSignIn): Promise<ResSignIn> {
-    const f_restaurant: Restaurant = await this.r_repo.findOne({ email: payload.email });
-    if (!f_restaurant || f_restaurant.password !== this.util_service.encode(payload.password)) {
+  public async signIn(payload: DtoSignIn): Promise<ResSignIn> {
+    const foundRestaurant: Restaurant = await this.restaurantRepo.findOne({ email: payload.email });
+    if (!foundRestaurant || foundRestaurant.password !== this.utilService.encode(payload.password)) {
       throw new NotFoundException();
     }
 
     return {
-      access_token: this.token_service.create_token(f_restaurant.r_id, TokenTypeEnum.access),
-      refresh_token: this.token_service.create_token(f_restaurant.r_id, TokenTypeEnum.refresh),
+      accessToken: this.tokenService.createToken(foundRestaurant.restaurantId, TokenTypeEnum.access),
+      refreshToken: this.tokenService.createToken(foundRestaurant.restaurantId, TokenTypeEnum.refresh),
     };
   }
 
   public refresh(token: string): ResRefresh {
-    const r_id: number = this.token_service.get_id_by_token(token);
-    return { access_token: this.token_service.create_token(r_id, TokenTypeEnum.access) };
+    const restaurantId: number = this.tokenService.getIdByToken(token);
+    return { accessToken: this.tokenService.createToken(restaurantId, TokenTypeEnum.access) };
   }
 
-  public async check_password(token: string, payload: DtoCheckPassword): Promise<void> {
-    const id: number = this.token_service.get_id_by_token(token);
-    const f_restaurant: Restaurant = await this.r_repo.findOne(id);
-    if (this.util_service.encode(payload.password) !== f_restaurant.password) {
+  public async checkPassword(token: string, payload: DtoCheckPassword): Promise<void> {
+    const id: number = this.tokenService.getIdByToken(token);
+    const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
+    if (this.utilService.encode(payload.password) !== foundRestaurant.password) {
       throw new ForbiddenException();
     }
   }
 
   public async edit(token: string, payload: DtoEditRestaurantInfo | DtoEditAddress): Promise<void> {
-    const id: number = this.token_service.get_id_by_token(token);
-    await this.r_repo.update(id, payload);
+    const id: number = this.tokenService.getIdByToken(token);
+    await this.restaurantRepo.update(id, payload);
   }
 
-  public async edit_password(token: string, payload: DtoEditPassword): Promise<void> {
-    const id: number = this.token_service.get_id_by_token(token);
-    await this.r_repo.update(id, {
-      password: this.util_service.encode(payload.password),
+  public async editPassword(token: string, payload: DtoEditPassword): Promise<void> {
+    const id: number = this.tokenService.getIdByToken(token);
+    await this.restaurantRepo.update(id, {
+      password: this.utilService.encode(payload.password),
     });
   }
 
   public async load(token: string): Promise<ResLoadRestaurant> {
-    const id: number = this.token_service.get_id_by_token(token);
-    const f_restaurant: Restaurant = await this.r_repo.findOne(id);
-    for (const e of ['coupon', 'password', 'r_id']) {
-      Reflect.deleteProperty(f_restaurant, e);
+    const id: number = this.tokenService.getIdByToken(token);
+    const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
+    for (const element of ['coupon', 'password', 'restaurantId']) {
+      Reflect.deleteProperty(foundRestaurant, element);
     }
-    return f_restaurant;
+    return foundRestaurant;
   }
 
-  public async get_list(param: QueryGetRestaurantList): Promise<ResGetRestaurantList[]> {
-    const f_restaurant: Restaurant[] = await this.r_repo.find({ category: param.category });
-    for (const e_r of f_restaurant) {
-      for (const e of ['password']) {
-        Reflect.deleteProperty(e_r, e);
+  public async getList(param: QueryGetRestaurantList): Promise<ResGetRestaurantList[]> {
+    const foundRestaurant: Restaurant[] = await this.restaurantRepo.find({ category: param.category });
+    for (const elementRestaurant of foundRestaurant) {
+      for (const element of ['password']) {
+        Reflect.deleteProperty(elementRestaurant, element);
       }
     }
-    return f_restaurant;
+    return foundRestaurant;
   }
 
   public async leave(token: string): Promise<void> {
-    const id: number = this.token_service.get_id_by_token(token);
-    const f_restaurant: Restaurant = await this.r_repo.findOne(id);
-    if (!f_restaurant) {
+    const id: number = this.tokenService.getIdByToken(token);
+    const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
+    if (!foundRestaurant) {
       throw new ForbiddenException();
     }
 
-    const f_coupons: Coupon[] = await this.c_repo.find({ restaurant: f_restaurant });
-    if (f_coupons) {
-      for (const e_c of f_coupons) {
-        await this.c_repo.delete(e_c.c_id);
+    const foundCoupons: Coupon[] = await this.couponRepo.find({ restaurant: foundRestaurant });
+    if (foundCoupons) {
+      for (const elementCoupon of foundCoupons) {
+        await this.couponRepo.delete(elementCoupon.couponId);
       }
     }
 
-    const f_m_categories: MenuCategory[] = await this.mc_repo.find({
+    const foundMenuCategoryList: MenuCategory[] = await this.menuCategoryRepo.find({
       join: {
         alias: 'MenuCategory',
         leftJoinAndSelect: {
@@ -133,45 +133,45 @@ export class RestaurantService {
           Option: 'Group.option',
         },
       },
-      where: { restaurant: f_restaurant },
+      where: { restaurant: foundRestaurant },
     });
 
-    if (0 < f_m_categories.length) {
-      const mc_ids: number[] = [];
-      for (const e_mc of f_m_categories) {
-        mc_ids.push(e_mc.mc_id);
-        if (0 < e_mc.menu.length) {
-          const m_ids: number[] = [];
-          for (const e_m of e_mc.menu) {
-            m_ids.push(e_m.m_id);
-            if (0 < e_m.group.length) {
-              const g_ids: number[] = [];
-              for (const e_g of e_m.group) {
-                g_ids.push(e_g.g_id);
-                if (0 < e_g.option.length) {
-                  const o_ids: number[] = [];
-                  for (const e_o of e_g.option) {
-                    o_ids.push(e_o.o_id);
+    if (0 < foundMenuCategoryList.length) {
+      const menuCategoryIds: number[] = [];
+      for (const elementMenuCategory of foundMenuCategoryList) {
+        menuCategoryIds.push(elementMenuCategory.menuCategoryId);
+        if (0 < elementMenuCategory.menu.length) {
+          const menuIds: number[] = [];
+          for (const elementMenu of elementMenuCategory.menu) {
+            menuIds.push(elementMenu.menuId);
+            if (0 < elementMenu.group.length) {
+              const groupIds: number[] = [];
+              for (const elementGroup of elementMenu.group) {
+                groupIds.push(elementGroup.groupId);
+                if (0 < elementGroup.option.length) {
+                  const optionIds: number[] = [];
+                  for (const elementOption of elementGroup.option) {
+                    optionIds.push(elementOption.optionId);
                   }
-                  await this.o_repo.delete(o_ids);
+                  await this.optionRepo.delete(optionIds);
                 }
               }
-              await this.g_repo.delete(g_ids);
+              await this.groupRepo.delete(groupIds);
             }
           }
-          await this.m_repo.delete(m_ids);
+          await this.menuRepo.delete(menuIds);
         }
       }
-      await this.mc_repo.delete(mc_ids);
+      await this.menuCategoryRepo.delete(menuCategoryIds);
     }
 
-    await this.r_repo.delete(id);
+    await this.restaurantRepo.delete(id);
   }
 
   // use only in test
 
   public async get(token: string): Promise<Restaurant> {
-    const id: number = this.token_service.get_id_by_token(token);
-    return this.r_repo.findOne(id);
+    const id: number = this.tokenService.getIdByToken(token);
+    return this.restaurantRepo.findOne(id);
   }
 }
