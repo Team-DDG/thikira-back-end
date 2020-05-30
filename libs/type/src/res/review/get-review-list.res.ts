@@ -2,32 +2,32 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class ResReplyReview {
   @ApiProperty()
-  public readonly rr_id: number;
+  public readonly restaurantId: number;
   @ApiProperty()
   public readonly content: string;
   @ApiProperty()
-  public readonly create_time: Date;
+  public readonly createTime: Date;
   @ApiProperty()
-  public readonly edit_time?: Date;
+  public readonly editTime?: Date;
   @ApiProperty()
-  public readonly is_edited: boolean;
+  public readonly isEdited: boolean;
 }
 
 export class ResGetReviewList {
   @ApiProperty()
-  public readonly rv_id: number;
+  public readonly reviewId: number;
   @ApiProperty()
   public readonly content: string;
   @ApiProperty()
-  public readonly create_time: Date;
+  public readonly createTime: Date;
   @ApiProperty()
-  public readonly edit_time?: Date;
+  public readonly editTime?: Date;
   @ApiProperty()
   public readonly image?: string;
   @ApiProperty()
-  public readonly is_edited: boolean;
+  public readonly isEdited: boolean;
   @ApiProperty()
   public readonly star: number;
   @ApiProperty({ type: ResReplyReview })
-  public readonly reply_review?: ResReplyReview;
+  public readonly replyReview?: ResReplyReview;
 }

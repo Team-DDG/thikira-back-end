@@ -4,7 +4,7 @@ import { UploadOptionClass } from './upload-option.class';
 
 export class UploadGroupClass {
   @ApiProperty() @IsNumber()
-  public readonly max_count: number;
+  public readonly maxCount: number;
   @ApiProperty() @IsString()
   public readonly name: string;
   @ApiProperty() @IsArray() @IsOptional()

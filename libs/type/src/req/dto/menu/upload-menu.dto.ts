@@ -4,7 +4,7 @@ import { IsArray, IsNumber, IsOptional, IsString, IsUrl } from 'class-validator'
 
 export class DtoUploadMenu {
   @ApiProperty() @IsNumber()
-  public readonly mc_id: number;
+  public readonly menuCategoryId: number;
   @ApiProperty() @IsString()
   public readonly description: string;
   @ApiProperty() @IsUrl()

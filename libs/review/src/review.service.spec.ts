@@ -1,5 +1,5 @@
 import { config } from '@app/config';
-import { EnumPaymentType, mongodb_entities, mysql_entities, Order, Restaurant } from '@app/entity';
+import { EnumPaymentType, mongodbEntities, mysqlEntities, Order, Restaurant } from '@app/entity';
 import { MenuModule } from '@app/menu';
 import { OrderModule, OrderService } from '@app/order';
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
@@ -24,11 +24,11 @@ import { ReviewModule } from './review.module';
 import { ReviewService } from './review.service';
 
 describe('ReviewService', () => {
-  let od_service: OrderService;
-  let r_service: RestaurantService;
+  let orderService: OrderService;
+  let restaurantService: RestaurantService;
   let service: ReviewService;
-  const test_od: DtoUploadOrder = {
-    discount_amount: 500,
+  const testOrder: DtoUploadOrder = {
+    discountAmount: 500,
     menu: [{
       group: [{
         name: '치킨 유형',
@@ -45,63 +45,63 @@ describe('ReviewService', () => {
       price: 500,
       quantity: 3,
     }],
-    payment_type: EnumPaymentType.ONLINE,
-    r_id: 0,
+    paymentType: EnumPaymentType.ONLINE,
+    restaurantId: 0,
   };
-  const test_r: DtoCreateRestaurant = {
-    add_parcel: 'a',
-    add_street: 'b',
+  const testRestaurant: DtoCreateRestaurant = {
+    addParcel: 'a',
+    addStreet: 'b',
     area: 'c',
     category: 'review_test',
-    close_time: 'e',
-    day_off: 'f',
+    closeTime: 'element',
+    dayOff: 'f',
     description: 'g',
     email: 'review_test@gmail.com',
     image: 'image.url',
-    min_price: 10000,
+    minPrice: 10000,
     name: 'review_test',
-    offline_payment: false,
-    online_payment: false,
-    open_time: 'i',
+    offlinePayment: false,
+    onlinePayment: false,
+    openTime: 'i',
     password: 'review_test',
     phone: '01012345678',
   };
-  const test_rr: DtoUploadReplyReview = {
+  const testReplyReview: DtoUploadReplyReview = {
     content: '감사합니다',
-    rv_id: null,
+    reviewId: null,
   };
-  const test_rv: DtoUploadReview = {
+  const testReview: DtoUploadReview = {
     content: '감사합니다',
     image: 'image.url',
-    r_id: null,
+    restaurantId: null,
     star: 5,
   };
-  const test_u: DtoCreateUser = {
+  const testUser: DtoCreateUser = {
     email: 'review_test',
     nickname: 'review_test',
     password: 'review_test',
     phone: '01012345678',
   };
-  let u_service: UserService;
+  let userService: UserService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         MenuModule, OrderModule, RestaurantModule,
         ReviewModule, TestUtilModule, TokenModule,
-        TypeOrmModule.forRoot(config.mysql_config),
-        TypeOrmModule.forRoot(config.mongodb_config),
-        TypeOrmModule.forFeature(mysql_entities, 'mysql'),
-        TypeOrmModule.forFeature(mongodb_entities, 'mongodb'),
+        TypeOrmModule.forRoot(config.mysqlConfig),
+        TypeOrmModule.forRoot(config.mongodbConfig),
+        TypeOrmModule.forFeature(mysqlEntities, 'mysql'),
+        TypeOrmModule.forFeature(mongodbEntities, 'mongodb'),
         UserModule, UtilModule,
       ],
       providers: [OrderService],
     }).compile();
 
     service = module.get<ReviewService>(ReviewService);
-    od_service = module.get<OrderService>(OrderService);
-    r_service = module.get<RestaurantService>(RestaurantService);
-    u_service = module.get<UserService>(UserService);
+    orderService = module.get<OrderService>(OrderService);
+    restaurantService = module.get<RestaurantService>(RestaurantService);
+    userService = module.get<UserService>(UserService);
   });
 
   afterAll(async () => {
@@ -109,180 +109,181 @@ describe('ReviewService', () => {
     await getConnection('mongodb').close();
   });
 
-  it('Should success upload_review', async () => {
-    await u_service.create(test_u);
-    const u_token: string = (await u_service.sign_in({
-      email: test_u.email, password: test_u.password,
-    })).access_token;
+  it('Should success uploadReview', async () => {
+    await userService.create(testUser);
+    const userToken: string = (await userService.signIn({
+      email: testUser.email, password: testUser.password,
+    })).accessToken;
 
-    await r_service.create(test_r);
-    const r_token: string = (await r_service.sign_in({
-      email: test_r.email, password: test_r.password,
-    })).access_token;
-    const { r_id }: Restaurant = await r_service.get(r_token);
+    await restaurantService.create(testRestaurant);
+    const restaurantToken: string = (await restaurantService.signIn({
+      email: testRestaurant.email, password: testRestaurant.password,
+    })).accessToken;
+    const { restaurantId }: Restaurant = await restaurantService.get(restaurantToken);
 
-    await expect(service.check_review(u_token, { r_id: r_id.toString() })).rejects.toThrow();
+    await expect(service.checkReview(userToken, { restaurantId: restaurantId.toString() })).rejects.toThrow();
 
-    await od_service.upload(u_token, { ...test_od, r_id });
+    await orderService.upload(userToken, { ...testOrder, restaurantId });
 
-    await service.check_review(u_token, { r_id: r_id.toString() });
-    await service.upload_review(u_token, { ...test_rv, r_id });
+    await service.checkReview(userToken, { restaurantId: restaurantId.toString() });
+    await service.uploadReview(userToken, { ...testReview, restaurantId });
 
-    await expect(service.check_review(u_token, { r_id: r_id.toString() })).rejects.toThrow();
+    await expect(service.checkReview(userToken, { restaurantId: restaurantId.toString() })).rejects.toThrow();
 
-    const f_review: ResGetReviewList = (await service.get_review_list_by_user(u_token))[0];
-    const [req_rv, res_rv] = TestUtilService.make_comparable(test_rv, f_review, [
-      'r_id', 'rv_id', 'create_time', 'edit_time', 'is_edited', 'reply_review',
+    const [foundReview]: ResGetReviewList[] = await service.getReviewListByUser(userToken);
+    const [requestReview, responseReview] = TestUtilService.makeElementComparable(testReview, foundReview, [
+      'restaurantId', 'reviewId', 'createTime', 'editTime', 'isEdited', 'replyReview',
     ]);
 
-    expect(req_rv).toStrictEqual(res_rv);
+    expect(requestReview).toStrictEqual(responseReview);
 
-    await service.remove_review(u_token);
+    await service.removeReview(userToken);
 
-    const f_order: Order = (await od_service.get_orders_by_restaurant_user(r_token, u_token))[0];
-    await od_service.remove_order(f_order.od_id);
+    const [foundOrder]: Order[] = await orderService.getOrderListByRestaurantUser(restaurantToken, userToken);
+    await orderService.removeOrder(foundOrder.orderId);
 
-    await u_service.leave(u_token);
-    await r_service.leave(r_token);
+    await userService.leave(userToken);
+    await restaurantService.leave(restaurantToken);
   });
 
-  it('Should success edit_review', async () => {
+  it('Should success editReview', async () => {
     const user: { email: string; nickname: string } = {
-      email: `2${test_u.email}`, nickname: `${test_u.nickname}_2`,
+      email: `2${testUser.email}`, nickname: `${testUser.nickname}_2`,
     };
-    await u_service.create({ ...test_u, ...user });
-    const u_token: string = (await u_service.sign_in({
-      email: user.email, password: test_u.password,
-    })).access_token;
+    await userService.create({ ...testUser, ...user });
+    const userToken: string = (await userService.signIn({
+      email: user.email, password: testUser.password,
+    })).accessToken;
 
     const restaurant: { email: string; name: string } = {
-      email: `2${test_r.email}`, name: `${test_r.name}_2`,
+      email: `2${testRestaurant.email}`, name: `${testRestaurant.name}_2`,
     };
-    await r_service.create({ ...test_r, ...restaurant });
-    const r_token: string = (await r_service.sign_in({
-      email: restaurant.email, password: test_r.password,
-    })).access_token;
-    const { r_id }: Restaurant = await r_service.get(r_token);
+    await restaurantService.create({ ...testRestaurant, ...restaurant });
+    const restaurantToken: string = (await restaurantService.signIn({
+      email: restaurant.email, password: testRestaurant.password,
+    })).accessToken;
+    const { restaurantId }: Restaurant = await restaurantService.get(restaurantToken);
 
-    await od_service.upload(u_token, { ...test_od, r_id });
+    await orderService.upload(userToken, { ...testOrder, restaurantId });
 
-    await service.check_review(u_token, { r_id: r_id.toString() });
-    await service.upload_review(u_token, { ...test_rv, r_id });
+    await service.checkReview(userToken, { restaurantId: restaurantId.toString() });
+    await service.uploadReview(userToken, { ...testReview, restaurantId });
 
-    const edit_data: DtoEditReview = {
+    const editData: DtoEditReview = {
       content: '구욷!', image: 'url.image', star: 3.5,
     };
-    await service.edit_review(u_token, edit_data);
+    await service.editReview(userToken, editData);
 
-    const f_review: ResGetReviewList = (await service.get_review_list_by_user(u_token))[0];
+    const [foundReview]: ResGetReviewList[] = await service.getReviewListByUser(userToken);
 
-    expect(f_review.is_edited).toEqual(true);
-    expect(f_review.edit_time).toBeDefined();
+    expect(foundReview.isEdited).toEqual(true);
+    expect(foundReview.editTime).toBeDefined();
 
-    const [req_rv, res_rv] = TestUtilService.make_comparable(edit_data, f_review, [
-      'rv_id', 'create_time', 'edit_time', 'is_edited', 'reply_review',
+    const [requestReview, responseReview] = TestUtilService.makeElementComparable(editData, foundReview, [
+      'reviewId', 'createTime', 'editTime', 'isEdited', 'replyReview',
     ]);
 
-    expect(req_rv).toStrictEqual(res_rv);
+    expect(requestReview).toStrictEqual(responseReview);
 
-    await service.remove_review(u_token);
+    await service.removeReview(userToken);
 
-    const f_order: Order = (await od_service.get_orders_by_restaurant_user(r_token, u_token))[0];
-    await od_service.remove_order(f_order.od_id);
+    const [foundOrder]: Order[] = await orderService.getOrderListByRestaurantUser(restaurantToken, userToken);
+    await orderService.removeOrder(foundOrder.orderId);
 
-    await u_service.leave(u_token);
-    await r_service.leave(r_token);
+    await userService.leave(userToken);
+    await restaurantService.leave(restaurantToken);
   });
 
-  it('Should success upload_reply_review', async () => {
+  it('Should success uploadReplyReview', async () => {
     const user: { email: string; nickname: string } = {
-      email: `3${test_u.email}`, nickname: `${test_u.nickname}_3`,
+      email: `3${testUser.email}`, nickname: `${testUser.nickname}_3`,
     };
-    await u_service.create({ ...test_u, ...user });
-    const u_token: string = (await u_service.sign_in({
-      email: user.email, password: test_u.password,
-    })).access_token;
+    await userService.create({ ...testUser, ...user });
+    const userToken: string = (await userService.signIn({
+      email: user.email, password: testUser.password,
+    })).accessToken;
 
     const restaurant: { email: string; name: string } = {
-      email: `3${test_r.email}`, name: `${test_r.name}_3`,
+      email: `3${testRestaurant.email}`, name: `${testRestaurant.name}_3`,
     };
-    await r_service.create({ ...test_r, ...restaurant });
-    const r_token: string = (await r_service.sign_in({
-      email: restaurant.email, password: test_r.password,
-    })).access_token;
-    const { r_id }: Restaurant = await r_service.get(r_token);
+    await restaurantService.create({ ...testRestaurant, ...restaurant });
+    const restaurantToken: string = (await restaurantService.signIn({
+      email: restaurant.email, password: testRestaurant.password,
+    })).accessToken;
+    const { restaurantId }: Restaurant = await restaurantService.get(restaurantToken);
 
-    await od_service.upload(u_token, { ...test_od, r_id });
+    await orderService.upload(userToken, { ...testOrder, restaurantId });
 
-    await service.check_review(u_token, { r_id: r_id.toString() });
-    await service.upload_review(u_token, { ...test_rv, r_id });
+    await service.checkReview(userToken, { restaurantId: restaurantId.toString() });
+    await service.uploadReview(userToken, { ...testReview, restaurantId });
 
-    const { rv_id }: ResGetReviewList = (await service.get_review_list_by_user(u_token))[0];
-    await service.upload_reply_review(r_token, { ...test_rr, rv_id });
+    const [{ reviewId }]: ResGetReviewList[] = await service.getReviewListByUser(userToken);
+    await service.uploadReplyReview(restaurantToken, { ...testReplyReview, reviewId });
 
-    const f_review: ResGetReviewList = (await service.get_review_list_by_user(u_token))[0];
-    const [req_rr, res_rr] = TestUtilService.make_comparable(test_rr, f_review.reply_review, [
-      'rv_id', 'rr_id', 'create_time', 'edit_time', 'is_edited',
-    ]);
+    const [foundReview]: ResGetReviewList[] = await service.getReviewListByUser(userToken);
+    const [requestReplyReview, responseReplyReview] = TestUtilService
+      .makeElementComparable(testReplyReview, foundReview.replyReview, [
+        'reviewId', 'restaurantId', 'createTime', 'editTime', 'isEdited',
+      ]);
 
-    expect(req_rr).toStrictEqual(res_rr);
+    expect(requestReplyReview).toStrictEqual(responseReplyReview);
 
-    await service.remove_reply_review(r_token);
-    await service.remove_review(u_token);
+    await service.removeReplyReview(restaurantToken);
+    await service.removeReview(userToken);
 
-    const f_order: Order = (await od_service.get_orders_by_restaurant_user(r_token, u_token))[0];
-    await od_service.remove_order(f_order.od_id);
+    const [foundOrder]: Order[] = await orderService.getOrderListByRestaurantUser(restaurantToken, userToken);
+    await orderService.removeOrder(foundOrder.orderId);
 
-    await u_service.leave(u_token);
-    await r_service.leave(r_token);
+    await userService.leave(userToken);
+    await restaurantService.leave(restaurantToken);
   });
 
-  it('Should success edit_reply_review', async () => {
+  it('Should success editReplyReview', async () => {
     const user: { email: string; nickname: string } = {
-      email: `4${test_u.email}`, nickname: `${test_u.nickname}_4`,
+      email: `4${testUser.email}`, nickname: `${testUser.nickname}_4`,
     };
-    await u_service.create({ ...test_u, ...user });
-    const u_token: string = (await u_service.sign_in({
-      email: user.email, password: test_u.password,
-    })).access_token;
+    await userService.create({ ...testUser, ...user });
+    const userToken: string = (await userService.signIn({
+      email: user.email, password: testUser.password,
+    })).accessToken;
 
     const restaurant: { email: string; name: string } = {
-      email: `4${test_r.email}`, name: `${test_r.name}_4`,
+      email: `4${testRestaurant.email}`, name: `${testRestaurant.name}_4`,
     };
-    await r_service.create({ ...test_r, ...restaurant });
-    const r_token: string = (await r_service.sign_in({
-      email: restaurant.email, password: test_r.password,
-    })).access_token;
-    const { r_id }: Restaurant = await r_service.get(r_token);
+    await restaurantService.create({ ...testRestaurant, ...restaurant });
+    const restaurantToken: string = (await restaurantService.signIn({
+      email: restaurant.email, password: testRestaurant.password,
+    })).accessToken;
+    const { restaurantId }: Restaurant = await restaurantService.get(restaurantToken);
 
-    await od_service.upload(u_token, { ...test_od, r_id });
+    await orderService.upload(userToken, { ...testOrder, restaurantId });
 
-    await service.check_review(u_token, { r_id: r_id.toString() });
-    await service.upload_review(u_token, { ...test_rv, r_id });
+    await service.checkReview(userToken, { restaurantId: restaurantId.toString() });
+    await service.uploadReview(userToken, { ...testReview, restaurantId });
 
-    const { rv_id }: ResGetReviewList = (await service.get_review_list_by_user(u_token))[0];
-    await service.upload_reply_review(r_token, { ...test_rr, rv_id });
+    const [{ reviewId }]: ResGetReviewList[] = await service.getReviewListByUser(userToken);
+    await service.uploadReplyReview(restaurantToken, { ...testReplyReview, reviewId });
 
-    const edit_data: DtoEditReplyReview = { content: '죄송합니다' };
-    await service.edit_reply_review(r_token, edit_data);
+    const editData: DtoEditReplyReview = { content: '죄송합니다' };
+    await service.editReplyReview(restaurantToken, editData);
 
-    const f_review: ResGetReviewList = (await service.get_review_list_by_user(u_token))[0];
+    const [foundReview]: ResGetReviewList[] = await service.getReviewListByUser(userToken);
 
-    expect(f_review.reply_review.is_edited).toEqual(true);
-    expect(f_review.reply_review.edit_time).toBeDefined();
+    expect(foundReview.replyReview.isEdited).toEqual(true);
+    expect(foundReview.replyReview.editTime).toBeDefined();
 
-    const [req_rr, res_rr] = TestUtilService.make_comparable(edit_data, f_review.reply_review, [
-      'rv_id', 'rr_id', 'create_time', 'edit_time', 'is_edited',
-    ]);
+    const [requestReplyReview, responseReplyReview] = TestUtilService
+      .makeElementComparable(editData, foundReview.replyReview,
+        ['reviewId', 'restaurantId', 'createTime', 'editTime', 'isEdited']);
 
-    expect(req_rr).toStrictEqual(res_rr);
+    expect(requestReplyReview).toStrictEqual(responseReplyReview);
 
-    await service.remove_review(u_token);
+    await service.removeReview(userToken);
 
-    const f_order: Order = (await od_service.get_orders_by_restaurant_user(r_token, u_token))[0];
-    await od_service.remove_order(f_order.od_id);
+    const [foundOrder]: Order[] = await orderService.getOrderListByRestaurantUser(restaurantToken, userToken);
+    await orderService.removeOrder(foundOrder.orderId);
 
-    await u_service.leave(u_token);
-    await r_service.leave(r_token);
+    await userService.leave(userToken);
+    await restaurantService.leave(restaurantToken);
   });
 });

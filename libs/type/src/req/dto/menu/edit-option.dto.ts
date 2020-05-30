@@ -3,7 +3,7 @@ import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class DtoEditOption {
   @ApiProperty() @IsNumber()
-  public readonly o_id: number;
+  public readonly optionId: number;
   @ApiProperty() @IsString() @IsOptional()
   public readonly name?: string;
   @ApiProperty() @IsNumber() @IsOptional()

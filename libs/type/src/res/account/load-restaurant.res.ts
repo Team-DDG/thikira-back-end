@@ -2,19 +2,19 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class ResLoadRestaurant {
   @ApiProperty()
-  public readonly add_parcel: string;
+  public readonly addParcel: string;
   @ApiProperty()
-  public readonly add_street: string;
+  public readonly addStreet: string;
   @ApiProperty()
   public readonly area: string;
   @ApiProperty()
   public readonly category: string;
   @ApiProperty()
-  public readonly close_time: string;
+  public readonly closeTime: string;
   @ApiProperty()
-  public readonly create_time: Date;
+  public readonly createTime: Date;
   @ApiProperty()
-  public readonly day_off: string;
+  public readonly dayOff: string;
   @ApiProperty()
   public readonly description: string;
   @ApiProperty()
@@ -22,15 +22,15 @@ export class ResLoadRestaurant {
   @ApiProperty()
   public readonly image: string;
   @ApiProperty()
-  public readonly min_price: number;
+  public readonly minPrice: number;
   @ApiProperty()
   public readonly name: string;
   @ApiProperty()
-  public readonly offline_payment: boolean;
+  public readonly offlinePayment: boolean;
   @ApiProperty()
-  public readonly online_payment: boolean;
+  public readonly onlinePayment: boolean;
   @ApiProperty()
-  public readonly open_time: string;
+  public readonly openTime: string;
   @ApiProperty()
   public readonly phone: string;
 }

@@ -4,11 +4,11 @@ import { Review } from './review.entity';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  public u_id: number;
+  public userId: number;
   @Column({ nullable: true })
-  public add_street: string = null;
+  public addStreet: string = null;
   @Column({ nullable: true })
-  public add_parcel: string = null;
+  public addParcel: string = null;
   @Column()
   public email: string;
   @Column()
@@ -18,7 +18,7 @@ export class User {
   @Column()
   public nickname: string;
   @CreateDateColumn()
-  public create_time: Date;
+  public createTime: Date;
   @OneToMany(() => Review, (review: Review) => review.user)
   public review: Review[];
 }

@@ -7,19 +7,19 @@ import { Review } from './review.entity';
 @Entity()
 export class Restaurant {
   @PrimaryGeneratedColumn()
-  public r_id: number;
+  public restaurantId: number;
   @Column()
   public area: string;
   @Column()
-  public add_street: string;
+  public addStreet: string;
   @Column()
-  public add_parcel: string;
+  public addParcel: string;
   @Column()
   public category: string;
   @Column()
-  public close_time: string;
+  public closeTime: string;
   @CreateDateColumn()
-  public create_time: Date;
+  public createTime: Date;
   @Column()
   public description: string;
   @Column()
@@ -29,25 +29,25 @@ export class Restaurant {
   @Column()
   public phone: string;
   @Column()
-  public min_price: number;
+  public minPrice: number;
   @Column()
-  public day_off: string;
+  public dayOff: string;
   @Column()
-  public online_payment: boolean;
+  public onlinePayment: boolean;
   @Column()
-  public offline_payment: boolean;
+  public offlinePayment: boolean;
   @Column()
-  public open_time: string;
+  public openTime: string;
   @Column()
   public password: string;
   @Column()
   public image: string;
   @OneToMany(() => Coupon, (coupon: Coupon) => coupon.restaurant)
   public coupon: Coupon[];
-  @OneToMany(() => MenuCategory, (menu_category: MenuCategory) => menu_category.restaurant)
-  public menu_category: MenuCategory[];
-  @OneToMany(() => ReplyReview, (reply_review: ReplyReview) => reply_review.restaurant)
-  public reply_review: MenuCategory[];
+  @OneToMany(() => MenuCategory, (menuCategory: MenuCategory) => menuCategory.restaurant)
+  public menuCategory: MenuCategory[];
+  @OneToMany(() => ReplyReview, (replyReview: ReplyReview) => replyReview.restaurant)
+  public replyReview: MenuCategory[];
   @OneToMany(() => Review, (review: Review) => review.restaurant)
   public review: Review[];
 }

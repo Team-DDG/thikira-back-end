@@ -12,22 +12,22 @@ import {
 @Entity()
 export class ReplyReview {
   @PrimaryGeneratedColumn()
-  public rr_id: number;
+  public restaurantId: number;
   @Column()
   public content: string;
   @CreateDateColumn()
-  public create_time: Date;
+  public createTime: Date;
   @Column({ nullable: true })
-  public edit_time?: Date;
+  public editTime?: Date;
   @Column({ default: false })
-  public is_edited: boolean;
+  public isEdited: boolean;
   @ManyToOne(
     () => Restaurant,
-    (restaurant: Restaurant) => restaurant.reply_review,
+    (restaurant: Restaurant) => restaurant.replyReview,
     { nullable: false })
-  @JoinColumn({ name: 'r_id' })
+  @JoinColumn({ name: 'restaurantId' })
   public restaurant: Restaurant;
-  @OneToOne(() => Review, (review: Review) => review.reply_review)
-  @JoinColumn({ name: 'rv_id' })
+  @OneToOne(() => Review, (review: Review) => review.replyReview)
+  @JoinColumn({ name: 'reviewId' })
   public review: Review;
 }

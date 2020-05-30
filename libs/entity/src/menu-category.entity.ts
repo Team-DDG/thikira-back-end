@@ -5,16 +5,16 @@ import { Restaurant } from './restaurant.entity';
 @Entity()
 export class MenuCategory {
   @PrimaryGeneratedColumn()
-  public mc_id: number;
+  public menuCategoryId: number;
   @Column()
   public name: string;
-  @OneToMany(() => Menu, (menu: Menu) => menu.menu_category)
+  @OneToMany(() => Menu, (menu: Menu) => menu.menuCategory)
   public menu: Menu[];
   @ManyToOne(
     () => Restaurant,
-    (restaurant: Restaurant) => restaurant.menu_category,
+    (restaurant: Restaurant) => restaurant.menuCategory,
     { nullable: false },
   )
-  @JoinColumn({ name: 'r_id' })
+  @JoinColumn({ name: 'restaurantId' })
   public restaurant: Restaurant;
 }

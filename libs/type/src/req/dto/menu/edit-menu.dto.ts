@@ -3,7 +3,7 @@ import { IsNumber, IsOptional, IsString, IsUrl } from 'class-validator';
 
 export class DtoEditMenu {
   @ApiProperty() @IsNumber()
-  public readonly m_id: number;
+  public readonly menuId: number;
   @ApiProperty() @IsString() @IsOptional()
   public readonly description?: string;
   @ApiProperty() @IsUrl() @IsOptional()

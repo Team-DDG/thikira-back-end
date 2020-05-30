@@ -9,8 +9,8 @@ import { Restaurant } from './restaurant.entity';
 import { Review } from './review.entity';
 import { User } from './user.entity';
 
-export const mongodb_entities: Function[] = [Order];
+export const mongodbEntities: Function[] = [Order];
 
-export const mysql_entities: Function[] = [
+export const mysqlEntities: Function[] = [
   Coupon, Group, Menu, MenuCategory, Option, ReplyReview, Restaurant, Review, User,
 ];

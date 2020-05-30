@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class ResGetCoupon {
   @ApiProperty()
-  public readonly discount_amount: number;
+  public readonly discountAmount: number;
   @ApiProperty()
-  public readonly expired_day: Date;
+  public readonly expiredDay: Date;
 }

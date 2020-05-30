@@ -4,9 +4,9 @@ import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class DtoUploadGroup {
   @ApiProperty() @IsNumber()
-  public readonly m_id: number;
+  public readonly menuId: number;
   @ApiProperty() @IsNumber()
-  public readonly max_count: number;
+  public readonly maxCount: number;
   @ApiProperty() @IsString()
   public readonly name: string;
   @ApiProperty() @IsArray() @IsOptional()

@@ -17,7 +17,7 @@ module.exports = {
     '@typescript-eslint/ban-ts-comment': 'error',
     '@typescript-eslint/ban-types': 'error',
     '@typescript-eslint/brace-style': 'error',
-    '@typescript-eslint/camelcase': 'off',
+    '@typescript-eslint/camelcase': 'error',
     '@typescript-eslint/consistent-type-assertions': 'error',
     '@typescript-eslint/consistent-type-definitions': 'error',
     '@typescript-eslint/comma-spacing': 'error',

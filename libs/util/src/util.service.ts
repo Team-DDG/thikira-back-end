@@ -12,10 +12,10 @@ export class UtilService {
     this.secret = config.JWT_SECRET ? Buffer.from(config.JWT_SECRET) : randomBytes(16);
   }
 
-  public static parse_ids(ids: string): number[] {
+  public static parselementIds(ids: string): number[] {
     const res: number[] = [];
-    for (const e_id of ids.split(',')) {
-      res.push(parseInt(e_id));
+    for (const elementId of ids.split(',')) {
+      res.push(parseInt(elementId));
     }
     return res;
   }
@@ -24,7 +24,7 @@ export class UtilService {
     return createHash(config.ENCRYPTION).update(content).digest('base64');
   }
 
-  public get_token_body(header: Header): string {
+  public getTokenBody(header: Header): string {
     let token: string;
     if (header.authorization) {
       token = header.authorization;

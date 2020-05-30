@@ -1,6 +1,6 @@
 export class EditUserClass {
-  public readonly add_street?: string;
-  public readonly add_parcel?: string;
+  public readonly addStreet?: string;
+  public readonly addParcel?: string;
   public readonly nickname?: string;
   public readonly phone?: string;
   public readonly password?: string;

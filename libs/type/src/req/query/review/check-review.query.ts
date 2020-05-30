@@ -3,5 +3,5 @@ import { IsNumberString } from 'class-validator';
 
 export class QueryCheckReview {
   @ApiProperty() @IsNumberString()
-  public readonly r_id: string;
+  public readonly restaurantId: string;
 }

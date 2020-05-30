@@ -3,7 +3,7 @@ import { IsNumber, IsString } from 'class-validator';
 
 export class DtoUploadOption {
   @ApiProperty() @IsNumber()
-  public readonly g_id: number;
+  public readonly groupId: number;
   @ApiProperty() @IsString()
   public readonly name: string;
   @ApiProperty() @IsNumber()
