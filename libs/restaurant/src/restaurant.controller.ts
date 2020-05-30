@@ -44,18 +44,20 @@ export class RestaurantController {
   @Inject()
   private readonly utilService: UtilService;
 
-  @Get('auth')
-
-  @ApiOperation({ summary: '업체 접근 토큰 확인' })
+  @Get()
+  @ApiOperation({ summary: '업체 정보 조회' })
   @ApiBearerAuth()
-  @ApiOkResponse()
-  @ApiForbiddenResponse()
-  public auth(): void {
-
+  @ApiOkResponse({ type: ResLoadRestaurant })
+  @ApiNotFoundResponse()
+  public async get(@Headers() header: Header): Promise<ResLoadRestaurant> {
+    try {
+      return this.restaurantService.load(this.utilService.getTokenBody(header));
+    } catch (element) {
+      throw new InternalServerErrorException(element.message);
+    }
   }
 
   @Patch('address')
-
   @ApiOperation({ summary: '업체 주소 수정' })
   @ApiBearerAuth()
   @ApiOkResponse()
@@ -71,8 +73,16 @@ export class RestaurantController {
     }
   }
 
-  @Get('auth/email')
+  @Get('auth')
+  @ApiOperation({ summary: '업체 접근 토큰 확인' })
+  @ApiBearerAuth()
+  @ApiOkResponse()
+  @ApiForbiddenResponse()
+  public auth(): void {
 
+  }
+
+  @Get('auth/email')
   @ApiOperation({ summary: '업체 이메일 중복 확인' })
   @ApiQuery({ name: 'email' })
   @ApiOkResponse()
@@ -96,6 +106,27 @@ export class RestaurantController {
   ): Promise<void> {
     try {
       return this.restaurantService.checkPassword(this.utilService.getTokenBody(header), payload);
+    } catch (element) {
+      throw new InternalServerErrorException(element.message);
+    }
+  }
+
+  @Get('auth/refresh')
+  @ApiOperation({ summary: '업체 토큰 재발급' })
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: ResRefresh })
+  @ApiForbiddenResponse()
+  public refresh(@Headers() token: Header): ResRefresh {
+    return this.restaurantService.refresh(this.utilService.getTokenBody(token));
+  }
+
+  @Post('auth/sign_in')
+  @ApiOperation({ summary: '업체 로그인' })
+  @ApiCreatedResponse({ type: ResSignIn })
+  @ApiNotFoundResponse()
+  public async signIn(@Body(new ValidationPipe()) payload: DtoSignIn): Promise<ResSignIn> {
+    try {
+      return this.restaurantService.signIn(payload);
     } catch (element) {
       throw new InternalServerErrorException(element.message);
     }
@@ -129,35 +160,6 @@ export class RestaurantController {
     }
   }
 
-  @Patch('password')
-  @ApiOperation({ summary: '업체 비밀번호 수정' })
-  @ApiBearerAuth()
-  @ApiOkResponse()
-  @ApiForbiddenResponse()
-  public async editPassword(
-    @Headers() header: Header,
-    @Body(new ValidationPipe()) payload: DtoEditPassword,
-  ): Promise<void> {
-    try {
-      return this.restaurantService.editPassword(this.utilService.getTokenBody(header), payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
-    }
-  }
-
-  @Get()
-  @ApiOperation({ summary: '업체 정보 조회' })
-  @ApiBearerAuth()
-  @ApiOkResponse({ type: ResLoadRestaurant })
-  @ApiNotFoundResponse()
-  public async get(@Headers() header: Header): Promise<ResLoadRestaurant> {
-    try {
-      return this.restaurantService.load(this.utilService.getTokenBody(header));
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
-    }
-  }
-
   @Delete('leave')
   @ApiOperation({ summary: '업체 회원 탈퇴' })
   @ApiBearerAuth()
@@ -172,22 +174,17 @@ export class RestaurantController {
     }
   }
 
-  @Get('auth/refresh')
-  @ApiOperation({ summary: '업체 토큰 재발급' })
+  @Patch('password')
+  @ApiOperation({ summary: '업체 비밀번호 수정' })
   @ApiBearerAuth()
-  @ApiOkResponse({ type: ResRefresh })
+  @ApiOkResponse()
   @ApiForbiddenResponse()
-  public refresh(@Headers() token: Header): ResRefresh {
-    return this.restaurantService.refresh(this.utilService.getTokenBody(token));
-  }
-
-  @Post('auth/sign_in')
-  @ApiOperation({ summary: '업체 로그인' })
-  @ApiCreatedResponse({ type: ResSignIn })
-  @ApiNotFoundResponse()
-  public async signIn(@Body(new ValidationPipe()) payload: DtoSignIn): Promise<ResSignIn> {
+  public async editPassword(
+    @Headers() header: Header,
+    @Body(new ValidationPipe()) payload: DtoEditPassword,
+  ): Promise<void> {
     try {
-      return this.restaurantService.signIn(payload);
+      return this.restaurantService.editPassword(this.utilService.getTokenBody(header), payload);
     } catch (element) {
       throw new InternalServerErrorException(element.message);
     }

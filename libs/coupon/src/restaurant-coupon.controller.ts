@@ -12,7 +12,14 @@ import {
   Post,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiCreatedResponse,
+} from '@nestjs/swagger';
 import { CouponService } from './coupon.service';
 
 @ApiTags('restaurant/coupon')
@@ -24,7 +31,6 @@ export class RestaurantCouponController {
   private readonly utilService: UtilService;
 
   @Get()
-
   @ApiOperation({ summary: '업체 쿠폰 조회' })
   @ApiBearerAuth()
   @ApiOkResponse()
@@ -38,10 +44,9 @@ export class RestaurantCouponController {
   }
 
   @Post()
-
   @ApiOperation({ summary: '업체 쿠폰 등록' })
   @ApiBearerAuth()
-  @ApiOkResponse()
+  @ApiCreatedResponse()
   public async uploadCoupon(
     @Headers() header: Header,
     @Body(new ValidationPipe()) payload: DtoUploadCoupon,

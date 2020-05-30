@@ -23,7 +23,6 @@ export class UserCouponController {
   private readonly utilService: UtilService;
 
   @Get()
-
   @ApiOperation({ summary: '쿠폰 조회' })
   @ApiBearerAuth()
   @ApiOkResponse({ type: ResGetCoupon })

@@ -50,6 +50,19 @@ export class UserController {
   @Inject()
   private readonly utilService: UtilService;
 
+  @Get()
+  @ApiOperation({ summary: '정보 조회' })
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: ResLoadUser })
+  @ApiNotFoundResponse()
+  public async get(@Headers() header: Header): Promise<ResLoadUser> {
+    try {
+      return this.userService.load(this.utilService.getTokenBody(header));
+    } catch (element) {
+      throw new InternalServerErrorException(element.message);
+    }
+  }
+
   @Get('auth')
   @ApiOperation({ summary: '접근 토큰 확인' })
   @ApiBearerAuth()
@@ -89,13 +102,22 @@ export class UserController {
     }
   }
 
-  @Post('create')
-  @ApiOperation({ summary: '회원가입' })
-  @ApiCreatedResponse()
-  @ApiConflictResponse()
-  public async create(@Body(new ValidationPipe()) payload: DtoCreateUser): Promise<void> {
+  @Get('auth/refresh')
+  @ApiOperation({ summary: '토큰 재발급' })
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: ResRefresh })
+  @ApiForbiddenResponse()
+  public refresh(@Headers() header: Header): ResRefresh {
+    return this.userService.refresh(this.utilService.getTokenBody(header));
+  }
+
+  @Post('auth/sign_in')
+  @ApiOperation({ summary: '로그인' })
+  @ApiCreatedResponse({ type: ResSignIn })
+  @ApiNotFoundResponse()
+  public async signIn(@Body(new ValidationPipe()) payload: DtoSignIn): Promise<ResSignIn> {
     try {
-      return this.userService.create(payload);
+      return this.userService.signIn(payload);
     } catch (element) {
       throw new InternalServerErrorException(element.message);
     }
@@ -109,6 +131,47 @@ export class UserController {
   public async editAddress(
     @Headers() header: Header,
     @Body(new ValidationPipe()) payload: DtoEditAddress,
+  ): Promise<void> {
+    try {
+      return this.userService.edit(this.utilService.getTokenBody(header), payload);
+    } catch (element) {
+      throw new InternalServerErrorException(element.message);
+    }
+  }
+
+  @Post('create')
+  @ApiOperation({ summary: '회원가입' })
+  @ApiCreatedResponse()
+  @ApiConflictResponse()
+  public async create(@Body(new ValidationPipe()) payload: DtoCreateUser): Promise<void> {
+    try {
+      return this.userService.create(payload);
+    } catch (element) {
+      throw new InternalServerErrorException(element.message);
+    }
+  }
+
+  @Delete('leave')
+  @ApiOperation({ summary: '회원 탈퇴' })
+  @ApiBearerAuth()
+  @ApiOkResponse()
+  @ApiForbiddenResponse()
+  public async leave(@Headers() header: Header): Promise<void> {
+    try {
+      return this.userService.leave(this.utilService.getTokenBody(header));
+    } catch (element) {
+      throw new InternalServerErrorException(element.message);
+    }
+  }
+
+  @Patch('info')
+  @ApiOperation({ summary: '정보 수정' })
+  @ApiBearerAuth()
+  @ApiOkResponse()
+  @ApiForbiddenResponse()
+  public async editProfile(
+    @Headers() header: Header,
+    @Body(new ValidationPipe()) payload: DtoEditUserInfo,
   ): Promise<void> {
     try {
       return this.userService.edit(this.utilService.getTokenBody(header), payload);
@@ -133,35 +196,6 @@ export class UserController {
     }
   }
 
-  @Patch('info')
-  @ApiOperation({ summary: '정보 수정' })
-  @ApiBearerAuth()
-  @ApiOkResponse()
-  @ApiForbiddenResponse()
-  public async editProfile(
-    @Headers() header: Header,
-    @Body(new ValidationPipe()) payload: DtoEditUserInfo,
-  ): Promise<void> {
-    try {
-      return this.userService.edit(this.utilService.getTokenBody(header), payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
-    }
-  }
-
-  @Get()
-  @ApiOperation({ summary: '정보 조회' })
-  @ApiBearerAuth()
-  @ApiOkResponse({ type: ResLoadUser })
-  @ApiNotFoundResponse()
-  public async get(@Headers() header: Header): Promise<ResLoadUser> {
-    try {
-      return this.userService.load(this.utilService.getTokenBody(header));
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
-    }
-  }
-
   @Get('restaurant')
   @ApiOperation({ summary: '업체 리스트 조회' })
   @ApiBearerAuth()
@@ -175,40 +209,6 @@ export class UserController {
   ): Promise<ResGetRestaurantList[]> {
     try {
       return this.restaurantService.getList(query);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
-    }
-  }
-
-  @Delete('leave')
-  @ApiOperation({ summary: '회원 탈퇴' })
-  @ApiBearerAuth()
-  @ApiOkResponse()
-  @ApiForbiddenResponse()
-  public async leave(@Headers() header: Header): Promise<void> {
-    try {
-      return this.userService.leave(this.utilService.getTokenBody(header));
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
-    }
-  }
-
-  @Get('auth/refresh')
-  @ApiOperation({ summary: '토큰 재발급' })
-  @ApiBearerAuth()
-  @ApiOkResponse({ type: ResRefresh })
-  @ApiForbiddenResponse()
-  public refresh(@Headers() header: Header): ResRefresh {
-    return this.userService.refresh(this.utilService.getTokenBody(header));
-  }
-
-  @Post('auth/sign_in')
-  @ApiOperation({ summary: '로그인' })
-  @ApiCreatedResponse({ type: ResSignIn })
-  @ApiNotFoundResponse()
-  public async signIn(@Body(new ValidationPipe()) payload: DtoSignIn): Promise<ResSignIn> {
-    try {
-      return this.userService.signIn(payload);
     } catch (element) {
       throw new InternalServerErrorException(element.message);
     }

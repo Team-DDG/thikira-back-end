@@ -77,55 +77,6 @@ export class RestaurantMenuController {
     }
   }
 
-  @Patch()
-  @ApiOperation({ summary: '메뉴 수정' })
-  @ApiBearerAuth()
-  @ApiOkResponse()
-  @ApiForbiddenResponse()
-  public async editMenu(
-    @Headers() header: Header,
-    @Body(new ValidationPipe()) payload: DtoEditMenu,
-  ): Promise<void> {
-    try {
-      return this.menuService.editMenu(payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
-    }
-  }
-
-  @Patch('category')
-  @ApiOperation({ summary: '메뉴 카테고리 수정' })
-  @ApiBearerAuth()
-  @ApiOkResponse()
-  @ApiForbiddenResponse()
-  @ApiConflictResponse()
-  public async editMenuCategory(
-    @Headers() header: Header,
-    @Body(new ValidationPipe()) payload: DtoEditMenuCategory,
-  ): Promise<void> {
-    try {
-      return this.menuService.editMenuCategory(payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
-    }
-  }
-
-  @Patch('option')
-  @ApiOperation({ summary: '옵션 수정' })
-  @ApiBearerAuth()
-  @ApiOkResponse()
-  @ApiForbiddenResponse()
-  public async editOption(
-    @Headers() header: Header,
-    @Body(new ValidationPipe()) payload: DtoEditOption,
-  ): Promise<void> {
-    try {
-      return this.menuService.editOption(payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
-    }
-  }
-
   @Get('group')
   @ApiOperation({ summary: '그룹 리스트 불러오기' })
   @ApiBearerAuth()
@@ -143,53 +94,6 @@ export class RestaurantMenuController {
     }
   }
 
-  @Get()
-  @ApiOperation({ summary: '메뉴 리스트 불러오기' })
-  @ApiBearerAuth()
-  @ApiQuery({ name: 'menuCategoryId' })
-  @ApiOkResponse({ type: [ResGetMenuList] })
-  @ApiForbiddenResponse()
-  public async getMenuList(
-    @Headers() header: Header,
-    @Query(new ValidationPipe()) query: QueryGetMenuList,
-  ): Promise<ResGetMenuList[]> {
-    try {
-      return this.menuService.getMenuList(query);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
-    }
-  }
-
-  @Get('category')
-  @ApiOperation({ summary: '메뉴 카테고리 리스트 불러오기' })
-  @ApiBearerAuth()
-  @ApiOkResponse({ type: [ResGetMenuCategoryList] })
-  @ApiForbiddenResponse()
-  public async getMenuCategoryList(@Headers() header: Header): Promise<ResGetMenuCategoryList[]> {
-    try {
-      return this.menuService.getMenuCategoryList(this.utilService.getTokenBody(header));
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
-    }
-  }
-
-  @Get('option')
-  @ApiOperation({ summary: '옵션 리스트 불러오기' })
-  @ApiBearerAuth()
-  @ApiQuery({ name: 'groupId' })
-  @ApiOkResponse({ type: [ResGetOptionList] })
-  @ApiForbiddenResponse()
-  public async getOptionList(
-    @Headers() header: Header,
-    @Query(new ValidationPipe()) query: QueryGetOptionList,
-  ): Promise<ResGetOptionList[]> {
-    try {
-      return this.menuService.getOptionList(query);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
-    }
-  }
-
   @Delete('group/:groupId')
   @ApiOperation({ summary: '그룹 삭제' })
   @ApiBearerAuth()
@@ -201,55 +105,6 @@ export class RestaurantMenuController {
   ): Promise<void> {
     try {
       return this.menuService.removeGroup(UtilService.parselementIds(param.groupId));
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
-    }
-  }
-
-  @Delete(':menuId')
-  @ApiOperation({ summary: '메뉴 삭제' })
-  @ApiBearerAuth()
-  @ApiOkResponse()
-  @ApiForbiddenResponse()
-  public async removeMenu(
-    @Headers() header: Header,
-    @Param(new ValidationPipe()) param: ParamRemoveMenu,
-  ): Promise<void> {
-    try {
-      return this.menuService.removeMenu(UtilService.parselementIds(param.menuId));
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
-    }
-  }
-
-  @Delete('category/:menuCategoryId')
-  @ApiOperation({ summary: '메뉴 카테고리 삭제' })
-  @ApiBearerAuth()
-  @ApiOkResponse()
-  @ApiForbiddenResponse()
-  public async removeMenuCategory(
-    @Headers() header: Header,
-    @Param(new ValidationPipe()) param: ParamRemoveMenuCategory,
-  ): Promise<void> {
-    try {
-
-      return this.menuService.removeMenuCategory(UtilService.parselementIds(param.menuCategoryId));
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
-    }
-  }
-
-  @Delete('option/:optionId')
-  @ApiOperation({ summary: '옵션 삭제' })
-  @ApiBearerAuth()
-  @ApiOkResponse()
-  @ApiForbiddenResponse()
-  public async removeOption(
-    @Headers() header: Header,
-    @Param(new ValidationPipe()) param: ParamRemoveOption,
-  ): Promise<void> {
-    try {
-      return this.menuService.removeOption(UtilService.parselementIds(param.optionId));
     } catch (element) {
       throw new InternalServerErrorException(element.message);
     }
@@ -272,6 +127,55 @@ export class RestaurantMenuController {
     }
   }
 
+  @Patch()
+  @ApiOperation({ summary: '메뉴 수정' })
+  @ApiBearerAuth()
+  @ApiOkResponse()
+  @ApiForbiddenResponse()
+  public async editMenu(
+    @Headers() header: Header,
+    @Body(new ValidationPipe()) payload: DtoEditMenu,
+  ): Promise<void> {
+    try {
+      return this.menuService.editMenu(payload);
+    } catch (element) {
+      throw new InternalServerErrorException(element.message);
+    }
+  }
+
+  @Get()
+  @ApiOperation({ summary: '메뉴 리스트 불러오기' })
+  @ApiBearerAuth()
+  @ApiQuery({ name: 'menuCategoryId' })
+  @ApiOkResponse({ type: [ResGetMenuList] })
+  @ApiForbiddenResponse()
+  public async getMenuList(
+    @Headers() header: Header,
+    @Query(new ValidationPipe()) query: QueryGetMenuList,
+  ): Promise<ResGetMenuList[]> {
+    try {
+      return this.menuService.getMenuList(query);
+    } catch (element) {
+      throw new InternalServerErrorException(element.message);
+    }
+  }
+
+  @Delete(':menuId')
+  @ApiOperation({ summary: '메뉴 삭제' })
+  @ApiBearerAuth()
+  @ApiOkResponse()
+  @ApiForbiddenResponse()
+  public async removeMenu(
+    @Headers() header: Header,
+    @Param(new ValidationPipe()) param: ParamRemoveMenu,
+  ): Promise<void> {
+    try {
+      return this.menuService.removeMenu(UtilService.parselementIds(param.menuId));
+    } catch (element) {
+      throw new InternalServerErrorException(element.message);
+    }
+  }
+
   @Post()
   @ApiOperation({ summary: '메뉴 업로드' })
   @ApiBearerAuth()
@@ -289,6 +193,53 @@ export class RestaurantMenuController {
     }
   }
 
+  @Patch('category')
+  @ApiOperation({ summary: '메뉴 카테고리 수정' })
+  @ApiBearerAuth()
+  @ApiOkResponse()
+  @ApiForbiddenResponse()
+  @ApiConflictResponse()
+  public async editMenuCategory(
+    @Headers() header: Header,
+    @Body(new ValidationPipe()) payload: DtoEditMenuCategory,
+  ): Promise<void> {
+    try {
+      return this.menuService.editMenuCategory(payload);
+    } catch (element) {
+      throw new InternalServerErrorException(element.message);
+    }
+  }
+
+  @Get('category')
+  @ApiOperation({ summary: '메뉴 카테고리 리스트 불러오기' })
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: [ResGetMenuCategoryList] })
+  @ApiForbiddenResponse()
+  public async getMenuCategoryList(@Headers() header: Header): Promise<ResGetMenuCategoryList[]> {
+    try {
+      return this.menuService.getMenuCategoryList(this.utilService.getTokenBody(header));
+    } catch (element) {
+      throw new InternalServerErrorException(element.message);
+    }
+  }
+
+  @Delete('category/:menuCategoryId')
+  @ApiOperation({ summary: '메뉴 카테고리 삭제' })
+  @ApiBearerAuth()
+  @ApiOkResponse()
+  @ApiForbiddenResponse()
+  public async removeMenuCategory(
+    @Headers() header: Header,
+    @Param(new ValidationPipe()) param: ParamRemoveMenuCategory,
+  ): Promise<void> {
+    try {
+
+      return this.menuService.removeMenuCategory(UtilService.parselementIds(param.menuCategoryId));
+    } catch (element) {
+      throw new InternalServerErrorException(element.message);
+    }
+  }
+
   @Post('category')
   @ApiOperation({ summary: '메뉴 카테고리 업로드' })
   @ApiBearerAuth()
@@ -301,6 +252,55 @@ export class RestaurantMenuController {
   ): Promise<ResUploadMenuCategory> {
     try {
       return this.menuService.uploadMenuCategory(this.utilService.getTokenBody(header), payload);
+    } catch (element) {
+      throw new InternalServerErrorException(element.message);
+    }
+  }
+
+  @Patch('option')
+  @ApiOperation({ summary: '옵션 수정' })
+  @ApiBearerAuth()
+  @ApiOkResponse()
+  @ApiForbiddenResponse()
+  public async editOption(
+    @Headers() header: Header,
+    @Body(new ValidationPipe()) payload: DtoEditOption,
+  ): Promise<void> {
+    try {
+      return this.menuService.editOption(payload);
+    } catch (element) {
+      throw new InternalServerErrorException(element.message);
+    }
+  }
+
+  @Get('option')
+  @ApiOperation({ summary: '옵션 리스트 불러오기' })
+  @ApiBearerAuth()
+  @ApiQuery({ name: 'groupId' })
+  @ApiOkResponse({ type: [ResGetOptionList] })
+  @ApiForbiddenResponse()
+  public async getOptionList(
+    @Headers() header: Header,
+    @Query(new ValidationPipe()) query: QueryGetOptionList,
+  ): Promise<ResGetOptionList[]> {
+    try {
+      return this.menuService.getOptionList(query);
+    } catch (element) {
+      throw new InternalServerErrorException(element.message);
+    }
+  }
+
+  @Delete('option/:optionId')
+  @ApiOperation({ summary: '옵션 삭제' })
+  @ApiBearerAuth()
+  @ApiOkResponse()
+  @ApiForbiddenResponse()
+  public async removeOption(
+    @Headers() header: Header,
+    @Param(new ValidationPipe()) param: ParamRemoveOption,
+  ): Promise<void> {
+    try {
+      return this.menuService.removeOption(UtilService.parselementIds(param.optionId));
     } catch (element) {
       throw new InternalServerErrorException(element.message);
     }

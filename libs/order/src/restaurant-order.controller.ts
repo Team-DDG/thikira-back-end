@@ -23,6 +23,19 @@ export class RestaurantOrderController {
   @Inject()
   private readonly utilService: UtilService;
 
+  @Get()
+  @ApiOperation({ summary: '주문 조회' })
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: [ResGetOrderList] })
+  @ApiForbiddenResponse()
+  public async getOrderList(@Headers() header: Header): Promise<ResGetOrderList[]> {
+    try {
+      return this.od_service.getListByRestaurant(this.utilService.getTokenBody(header));
+    } catch (element) {
+      throw new InternalServerErrorException(element.message);
+    }
+  }
+
   @Patch('status')
   @ApiOperation({ summary: '주문 상태 수정' })
   @ApiBearerAuth()
@@ -34,19 +47,6 @@ export class RestaurantOrderController {
   ): Promise<void> {
     try {
       return this.od_service.editOrderStatus(payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
-    }
-  }
-
-  @Get()
-  @ApiOperation({ summary: '주문 조회' })
-  @ApiBearerAuth()
-  @ApiOkResponse({ type: [ResGetOrderList] })
-  @ApiForbiddenResponse()
-  public async getOrderList(@Headers() header: Header): Promise<ResGetOrderList[]> {
-    try {
-      return this.od_service.getListByRestaurant(this.utilService.getTokenBody(header));
     } catch (element) {
       throw new InternalServerErrorException(element.message);
     }
