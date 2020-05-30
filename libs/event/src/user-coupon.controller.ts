@@ -1,7 +1,7 @@
 import { ResGetEventList } from '@app/type';
 import { UtilService } from '@app/util';
 import { Controller, Get, Inject, InternalServerErrorException } from '@nestjs/common';
-import { ApiBearerAuth, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { EventService } from './event.service';
 
 @ApiTags('user/event')
@@ -14,7 +14,6 @@ export class UserEventController {
 
   @Get()
   @ApiOperation({ summary: '쿠폰 조회' })
-  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiNotFoundResponse()
   public async getEventList(): Promise<ResGetEventList[]> {

@@ -45,7 +45,6 @@ export class RestaurantEventController {
 
   @Post()
   @ApiOperation({ summary: '업체 이벤트 등록' })
-  @ApiBearerAuth()
   @ApiCreatedResponse()
   public async uploadEvent(
     @Headers() header: Header,
