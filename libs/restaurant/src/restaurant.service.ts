@@ -93,7 +93,7 @@ export class RestaurantService {
   public async load(token: string): Promise<ResLoadRestaurant> {
     const id: number = this.token_service.get_id_by_token(token);
     const f_restaurant: Restaurant = await this.r_repo.findOne(id);
-    for (const e of ['coupon', 'email', 'password', 'r_id']) {
+    for (const e of ['coupon', 'password', 'r_id']) {
       Reflect.deleteProperty(f_restaurant, e);
     }
     return f_restaurant;

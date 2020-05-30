@@ -18,6 +18,8 @@ export class ResLoadRestaurant {
   @ApiProperty()
   public readonly description: string;
   @ApiProperty()
+  public readonly email: string;
+  @ApiProperty()
   public readonly image: string;
   @ApiProperty()
   public readonly min_price: number;
