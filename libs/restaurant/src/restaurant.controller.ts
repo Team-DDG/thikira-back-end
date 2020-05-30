@@ -44,71 +44,6 @@ export class RestaurantController {
   @Inject()
   private readonly util_service: UtilService;
 
-  @Get('auth/email')
-  @HttpCode(200)
-  @ApiOperation({ summary: '업체 이메일 중복 확인' })
-  @ApiQuery({ name: 'email' })
-  @ApiOkResponse()
-  @ApiConflictResponse()
-  public async check_email(@Query(new ValidationPipe()) query: QueryCheckEmail): Promise<void> {
-    try {
-      return this.r_service.check_email(query);
-    } catch (e) {
-      throw new InternalServerErrorException(e.message);
-    }
-  }
-
-  @Post('create')
-  @HttpCode(200)
-  @ApiOperation({ summary: '업체 회원가입' })
-  @ApiOkResponse()
-  @ApiConflictResponse()
-  public async create(@Body(new ValidationPipe()) payload: DtoCreateRestaurant): Promise<void> {
-    try {
-      return this.r_service.create(payload);
-    } catch (e) {
-      throw new InternalServerErrorException(e.message);
-    }
-  }
-
-  @Post('auth/sign_in')
-  @HttpCode(200)
-  @ApiOperation({ summary: '업체 로그인' })
-  @ApiOkResponse({ type: ResSignIn })
-  @ApiNotFoundResponse()
-  public async sign_in(@Body(new ValidationPipe()) payload: DtoSignIn): Promise<ResSignIn> {
-    try {
-      return this.r_service.sign_in(payload);
-    } catch (e) {
-      throw new InternalServerErrorException(e.message);
-    }
-  }
-
-  @Get('auth/refresh')
-  @HttpCode(200)
-  @ApiOperation({ summary: '업체 토큰 재발급' })
-  @ApiBearerAuth()
-  @ApiOkResponse({ type: ResRefresh })
-  @ApiForbiddenResponse()
-  public refresh(@Headers() token: Header): ResRefresh {
-    return this.r_service.refresh(this.util_service.get_token_body(token));
-  }
-
-  @Delete('leave')
-  @HttpCode(200)
-  @ApiOperation({ summary: '업체 회원 탈퇴' })
-  @ApiBearerAuth()
-  @ApiOkResponse()
-  @ApiForbiddenResponse()
-  public async leave(@Headers() token: Header): Promise<void> {
-    try {
-      return this.r_service.leave(
-        this.util_service.get_token_body(token));
-    } catch (e) {
-      throw new InternalServerErrorException(e.message);
-    }
-  }
-
   @Get('auth')
   @HttpCode(200)
   @ApiOperation({ summary: '업체 접근 토큰 확인' })
@@ -136,35 +71,28 @@ export class RestaurantController {
     }
   }
 
-  @Patch('password')
+  @Get('auth/email')
   @HttpCode(200)
-  @ApiOperation({ summary: '업체 비밀번호 수정' })
-  @ApiBearerAuth()
+  @ApiOperation({ summary: '업체 이메일 중복 확인' })
+  @ApiQuery({ name: 'email' })
   @ApiOkResponse()
-  @ApiForbiddenResponse()
-  public async edit_password(
-    @Headers() header: Header,
-    @Body(new ValidationPipe()) payload: DtoEditPassword,
-  ): Promise<void> {
+  @ApiConflictResponse()
+  public async check_email(@Query(new ValidationPipe()) query: QueryCheckEmail): Promise<void> {
     try {
-      return this.r_service.edit_password(this.util_service.get_token_body(header), payload);
+      return this.r_service.check_email(query);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
   }
 
-  @Patch('info')
+  @Post('create')
   @HttpCode(200)
-  @ApiOperation({ summary: '업체 정보 수정' })
-  @ApiBearerAuth()
+  @ApiOperation({ summary: '업체 회원가입' })
   @ApiOkResponse()
-  @ApiForbiddenResponse()
-  public async edit_info(
-    @Headers() header: Header,
-    @Body(new ValidationPipe()) payload: DtoEditRestaurantInfo,
-  ): Promise<void> {
+  @ApiConflictResponse()
+  public async create(@Body(new ValidationPipe()) payload: DtoCreateRestaurant): Promise<void> {
     try {
-      return this.r_service.edit(this.util_service.get_token_body(header), payload);
+      return this.r_service.create(payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -187,6 +115,40 @@ export class RestaurantController {
     }
   }
 
+  @Patch('info')
+  @HttpCode(200)
+  @ApiOperation({ summary: '업체 정보 수정' })
+  @ApiBearerAuth()
+  @ApiOkResponse()
+  @ApiForbiddenResponse()
+  public async edit_info(
+    @Headers() header: Header,
+    @Body(new ValidationPipe()) payload: DtoEditRestaurantInfo,
+  ): Promise<void> {
+    try {
+      return this.r_service.edit(this.util_service.get_token_body(header), payload);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
+    }
+  }
+
+  @Patch('password')
+  @HttpCode(200)
+  @ApiOperation({ summary: '업체 비밀번호 수정' })
+  @ApiBearerAuth()
+  @ApiOkResponse()
+  @ApiForbiddenResponse()
+  public async edit_password(
+    @Headers() header: Header,
+    @Body(new ValidationPipe()) payload: DtoEditPassword,
+  ): Promise<void> {
+    try {
+      return this.r_service.edit_password(this.util_service.get_token_body(header), payload);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
+    }
+  }
+
   @Get()
   @HttpCode(200)
   @ApiOperation({ summary: '업체 정보 조회' })
@@ -199,5 +161,43 @@ export class RestaurantController {
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
+  }
+
+  @Delete('leave')
+  @HttpCode(200)
+  @ApiOperation({ summary: '업체 회원 탈퇴' })
+  @ApiBearerAuth()
+  @ApiOkResponse()
+  @ApiForbiddenResponse()
+  public async leave(@Headers() token: Header): Promise<void> {
+    try {
+      return this.r_service.leave(
+        this.util_service.get_token_body(token));
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
+    }
+  }
+
+  @Post('auth/sign_in')
+  @HttpCode(200)
+  @ApiOperation({ summary: '업체 로그인' })
+  @ApiOkResponse({ type: ResSignIn })
+  @ApiNotFoundResponse()
+  public async sign_in(@Body(new ValidationPipe()) payload: DtoSignIn): Promise<ResSignIn> {
+    try {
+      return this.r_service.sign_in(payload);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
+    }
+  }
+
+  @Get('auth/refresh')
+  @HttpCode(200)
+  @ApiOperation({ summary: '업체 토큰 재발급' })
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: ResRefresh })
+  @ApiForbiddenResponse()
+  public refresh(@Headers() token: Header): ResRefresh {
+    return this.r_service.refresh(this.util_service.get_token_body(token));
   }
 }

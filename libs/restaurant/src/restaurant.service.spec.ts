@@ -93,7 +93,7 @@ describe('RestaurantService', () => {
 
     const f_restaurant: ResLoadRestaurant = await service.load(access_token);
     const [req_r, res_r] = TestUtilService.make_comparable(f_restaurant, edit_data, [
-      'add_parcel', 'add_street', 'category', 'create_time',
+      'add_parcel', 'add_street', 'category', 'create_time', 'email',
     ]);
     expect(req_r).toStrictEqual(res_r);
 
@@ -117,8 +117,9 @@ describe('RestaurantService', () => {
     await service.edit(access_token, edit_data);
 
     const f_restaurant: ResLoadRestaurant = await service.load(access_token);
-    expect(f_restaurant.add_street).toEqual(edit_data.add_street);
-    expect(f_restaurant.add_parcel).toEqual(edit_data.add_parcel);
+    for (const e of ['add_street', 'add_parcel']) {
+      expect(f_restaurant[e]).toEqual(edit_data[e]);
+    }
 
     await service.leave(access_token);
   });
