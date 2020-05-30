@@ -53,8 +53,8 @@ export class UserReviewController {
   ): Promise<void> {
     try {
       return this.review_service.checkReview(this.utilService.getTokenBody(header), query);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -69,8 +69,8 @@ export class UserReviewController {
   ): Promise<void> {
     try {
       return this.review_service.uploadReview(this.utilService.getTokenBody(header), payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -84,8 +84,8 @@ export class UserReviewController {
   public async getReviewList(@Headers() header: Header): Promise<ResGetReviewList[]> {
     try {
       return this.review_service.getReviewListByUser(this.utilService.getTokenBody(header));
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -102,8 +102,8 @@ export class UserReviewController {
   ): Promise<ResGetReviewStatistic> {
     try {
       return this.review_service.getReviewStatistic(query);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -118,8 +118,8 @@ export class UserReviewController {
   ): Promise<void> {
     try {
       return this.review_service.editReview(this.utilService.getTokenBody(header), payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -133,8 +133,8 @@ export class UserReviewController {
   ): Promise<void> {
     try {
       return this.review_service.removeReview(this.utilService.getTokenBody(header));
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 }

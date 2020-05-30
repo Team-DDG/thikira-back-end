@@ -1,5 +1,6 @@
+import { AuthService } from '@app/auth';
 import { Coupon, Group, Menu, MenuCategory, Option, Restaurant } from '@app/entity';
-import { TokenService } from '@app/token';
+import { ParsedTokenClass } from '@app/type/etc';
 import {
   DtoEditGroup,
   DtoEditMenu,
@@ -43,7 +44,7 @@ export class MenuService {
   @InjectRepository(Restaurant, 'mysql')
   private readonly restaurantRepo: Repository<Restaurant>;
   @Inject()
-  private readonly tokenService: TokenService;
+  private readonly tokenService: AuthService;
 
   // menuCategory
 
@@ -51,7 +52,7 @@ export class MenuService {
     token: string,
     payload: DtoUploadMenuCategory,
   ): Promise<ResUploadMenuCategory> {
-    const id: number = this.tokenService.getIdByToken(token);
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
     const foundMenuCategory: MenuCategory = await this.menuCategoryRepo.findOne({
       name: payload.name, restaurant: foundRestaurant,
@@ -71,7 +72,7 @@ export class MenuService {
   ): Promise<ResGetMenuCategoryList[]> {
     let foundRestaurant: Restaurant;
     if ('string' === typeof param) {
-      const id: number = this.tokenService.getIdByToken(param);
+      const { id }: ParsedTokenClass = this.tokenService.parseToken(param);
       foundRestaurant = await this.restaurantRepo.findOne(id);
     } else {
       foundRestaurant = await this.restaurantRepo.findOne(parseInt(param.restaurantId));

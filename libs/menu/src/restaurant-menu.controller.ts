@@ -72,8 +72,8 @@ export class RestaurantMenuController {
   ): Promise<void> {
     try {
       return this.menuService.editGroup(payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -89,8 +89,8 @@ export class RestaurantMenuController {
   ): Promise<ResGetGroupList[]> {
     try {
       return this.menuService.getGroupList(query);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -105,8 +105,8 @@ export class RestaurantMenuController {
   ): Promise<void> {
     try {
       return this.menuService.removeGroup(UtilService.parselementIds(param.groupId));
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -122,8 +122,8 @@ export class RestaurantMenuController {
   ): Promise<ResUploadGroup> {
     try {
       return this.menuService.uploadGroup(payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -138,8 +138,8 @@ export class RestaurantMenuController {
   ): Promise<void> {
     try {
       return this.menuService.editMenu(payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -155,8 +155,8 @@ export class RestaurantMenuController {
   ): Promise<ResGetMenuList[]> {
     try {
       return this.menuService.getMenuList(query);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -171,8 +171,8 @@ export class RestaurantMenuController {
   ): Promise<void> {
     try {
       return this.menuService.removeMenu(UtilService.parselementIds(param.menuId));
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -188,8 +188,8 @@ export class RestaurantMenuController {
   ): Promise<ResUploadMenu> {
     try {
       return this.menuService.uploadMenu(payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -205,8 +205,8 @@ export class RestaurantMenuController {
   ): Promise<void> {
     try {
       return this.menuService.editMenuCategory(payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -218,8 +218,8 @@ export class RestaurantMenuController {
   public async getMenuCategoryList(@Headers() header: Header): Promise<ResGetMenuCategoryList[]> {
     try {
       return this.menuService.getMenuCategoryList(this.utilService.getTokenBody(header));
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -235,8 +235,8 @@ export class RestaurantMenuController {
     try {
 
       return this.menuService.removeMenuCategory(UtilService.parselementIds(param.menuCategoryId));
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -252,8 +252,8 @@ export class RestaurantMenuController {
   ): Promise<ResUploadMenuCategory> {
     try {
       return this.menuService.uploadMenuCategory(this.utilService.getTokenBody(header), payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -268,8 +268,8 @@ export class RestaurantMenuController {
   ): Promise<void> {
     try {
       return this.menuService.editOption(payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -285,8 +285,8 @@ export class RestaurantMenuController {
   ): Promise<ResGetOptionList[]> {
     try {
       return this.menuService.getOptionList(query);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -301,8 +301,8 @@ export class RestaurantMenuController {
   ): Promise<void> {
     try {
       return this.menuService.removeOption(UtilService.parselementIds(param.optionId));
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -318,8 +318,8 @@ export class RestaurantMenuController {
   ): Promise<ResUploadOption> {
     try {
       return this.menuService.uploadOption(payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 }

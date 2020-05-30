@@ -33,8 +33,8 @@ export class UserCouponController {
   ): Promise<ResGetCoupon> {
     try {
       return this.couponService.get(query);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 }

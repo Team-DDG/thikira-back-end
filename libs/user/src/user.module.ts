@@ -1,6 +1,6 @@
+import { AuthModule } from '@app/auth';
 import { mongodbEntities, mysqlEntities } from '@app/entity';
 import { RestaurantModule } from '@app/restaurant';
-import { TokenModule } from '@app/token';
 import { UtilModule } from '@app/util';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -11,7 +11,7 @@ import { UserService } from './user.service';
   controllers: [UserController],
   exports: [UserService],
   imports: [
-    RestaurantModule, TokenModule,
+    AuthModule, RestaurantModule,
     TypeOrmModule.forFeature(mysqlEntities, 'mysql'),
     TypeOrmModule.forFeature(mongodbEntities, 'mongodb'),
     UtilModule,

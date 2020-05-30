@@ -1,5 +1,6 @@
+import { AuthService } from '@app/auth';
 import { Coupon, Restaurant } from '@app/entity';
-import { TokenService } from '@app/token';
+import { ParsedTokenClass } from '@app/type/etc';
 import { DtoUploadCoupon, QueryGetCoupon } from '@app/type/req';
 import { ResGetCoupon, ResGetCouponList } from '@app/type/res';
 import { ConflictException, ForbiddenException, Inject, NotFoundException } from '@nestjs/common';
@@ -13,10 +14,10 @@ export class CouponService {
   @InjectRepository(Restaurant, 'mysql')
   private readonly restaurantRepo: Repository<Restaurant>;
   @Inject()
-  private readonly tokenService: TokenService;
+  private readonly tokenService: AuthService;
 
   public async upload(token: string, payload: DtoUploadCoupon): Promise<void> {
-    const id: number = this.tokenService.getIdByToken(token);
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
     if (!foundRestaurant) {
       throw new ForbiddenException();
@@ -36,7 +37,7 @@ export class CouponService {
 
   public async getList(token: string): Promise<ResGetCouponList[]> {
     const res: ResGetCouponList[] = [];
-    const id: number = this.tokenService.getIdByToken(token);
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
     const foundCoupons: Coupon[] = await this.couponRepo.find({ restaurant: foundRestaurant });
 
@@ -53,7 +54,7 @@ export class CouponService {
   public async get(param: string | QueryGetCoupon): Promise<ResGetCoupon> {
     let foundRestaurant: Restaurant;
     if ('string' === typeof param) {
-      const id: number = this.tokenService.getIdByToken(param);
+      const { id }: ParsedTokenClass = this.tokenService.parseToken(param);
       foundRestaurant = await this.restaurantRepo.findOne(id);
     } else {
       foundRestaurant = await this.restaurantRepo.findOne(parseInt(param.restaurantId));

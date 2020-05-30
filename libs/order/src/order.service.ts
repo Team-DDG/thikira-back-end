@@ -1,8 +1,7 @@
+import { AuthService } from '@app/auth';
 import { Order, Restaurant, User } from '@app/entity';
-import { TokenService } from '@app/token';
-import { EnumUserType } from '@app/type';
-import { OrderUserClass } from '@app/type/etc';
-import { DtoEditOrderStatus, DtoUploadOrder } from '@app/type/req';
+import { EnumUserType, DtoUploadOrder, DtoEditOrderStatus } from '@app/type';
+import { OrderUserClass, ParsedTokenClass } from '@app/type/etc';
 import { ResGetOrderList } from '@app/type/res';
 import { ForbiddenException, Inject, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -17,10 +16,10 @@ export class OrderService {
   @InjectRepository(User, 'mysql')
   private readonly userRepo: Repository<User>;
   @Inject()
-  private readonly tokenService: TokenService;
+  private readonly tokenService: AuthService;
 
   public async upload(token: string, payload: DtoUploadOrder): Promise<void> {
-    const id: number = this.tokenService.getIdByToken(token);
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     const foundUser: User = await this.userRepo.findOne(id);
     if (!foundUser) {
       throw new ForbiddenException();
@@ -54,7 +53,7 @@ export class OrderService {
   }
 
   public async getListByUser(token: string): Promise<ResGetOrderList[]> {
-    const id: number = this.tokenService.getIdByToken(token);
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     const foundUser: User = await this.userRepo.findOne(id);
     if (!foundUser) {
       throw new ForbiddenException();
@@ -63,7 +62,7 @@ export class OrderService {
   }
 
   public async getListByRestaurant(token: string): Promise<ResGetOrderList[]> {
-    const id: number = this.tokenService.getIdByToken(token);
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
     if (!foundRestaurant) {
       throw new ForbiddenException();
@@ -83,9 +82,9 @@ export class OrderService {
   // only use in test
 
   public async getOrderListByRestaurantUser(restaurantToken: string, userToken: string): Promise<Order[]> {
-    let id: number = this.tokenService.getIdByToken(restaurantToken);
+    let { id }: ParsedTokenClass = this.tokenService.parseToken(restaurantToken);
     const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
-    id = this.tokenService.getIdByToken(userToken);
+    ({ id } = this.tokenService.parseToken(userToken));
     const foundUser: User = await this.userRepo.findOne(id);
 
     const foundOrders: Order[] = await this.orderRepo.find({

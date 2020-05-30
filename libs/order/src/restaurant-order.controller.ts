@@ -31,8 +31,8 @@ export class RestaurantOrderController {
   public async getOrderList(@Headers() header: Header): Promise<ResGetOrderList[]> {
     try {
       return this.od_service.getListByRestaurant(this.utilService.getTokenBody(header));
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -47,8 +47,8 @@ export class RestaurantOrderController {
   ): Promise<void> {
     try {
       return this.od_service.editOrderStatus(payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 }

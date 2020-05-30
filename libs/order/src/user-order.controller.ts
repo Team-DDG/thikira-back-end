@@ -38,8 +38,8 @@ export class UserOrderController {
   public async getOrderList(@Headers() header: Header): Promise<ResGetOrderList[]> {
     try {
       return this.od_service.getListByUser(this.utilService.getTokenBody(header));
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -54,8 +54,8 @@ export class UserOrderController {
   ): Promise<void> {
     try {
       return this.od_service.upload(this.utilService.getTokenBody(header), payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 }

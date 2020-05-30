@@ -1,21 +1,19 @@
 import { AuthModule } from '@app/auth';
-import { mongodbEntities, mysqlEntities } from '@app/entity';
+import { mysqlEntities, mongodbEntities } from '@app/entity';
 import { UtilModule } from '@app/util';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RestaurantController } from './restaurant.controller';
-import { RestaurantService } from './restaurant.service';
+import { EventService } from './event.service';
 
 @Module({
-  controllers: [RestaurantController],
-  exports: [RestaurantService],
+  exports: [EventService],
   imports: [
     AuthModule,
     TypeOrmModule.forFeature(mysqlEntities, 'mysql'),
     TypeOrmModule.forFeature(mongodbEntities, 'mongodb'),
     UtilModule,
   ],
-  providers: [RestaurantService],
+  providers: [EventService],
 })
-export class RestaurantModule {
+export class EventModule {
 }

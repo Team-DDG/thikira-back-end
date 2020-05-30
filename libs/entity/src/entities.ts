@@ -1,4 +1,5 @@
 import { Coupon } from './coupon.entity';
+import { Event } from './event.entity';
 import { Group } from './group.entity';
 import { MenuCategory } from './menu-category.entity';
 import { Menu } from './menu.entity';
@@ -12,5 +13,5 @@ import { User } from './user.entity';
 export const mongodbEntities: Function[] = [Order];
 
 export const mysqlEntities: Function[] = [
-  Coupon, Group, Menu, MenuCategory, Option, ReplyReview, Restaurant, Review, User,
+  Coupon, Event, Group, Menu, MenuCategory, Option, ReplyReview, Restaurant, Review, User,
 ];

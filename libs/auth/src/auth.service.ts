@@ -1,10 +1,10 @@
 import { ParsedTokenClass } from '@app/type/etc';
 import { Injectable, Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { TokenTypeEnum } from './token-type.enum';
+import { TokenTypeEnum } from './enum';
 
 @Injectable()
-export class TokenService {
+export class AuthService {
   @Inject()
   private readonly jwtService: JwtService;
 
@@ -14,16 +14,10 @@ export class TokenService {
     });
   }
 
-  public getIat(token: string): number {
-    const { iat }: ParsedTokenClass = this.jwtService.verify(token);
-    return iat;
-  }
-
-  public getIdByToken(token: string): number {
+  public parseToken(token: string): ParsedTokenClass {
     try {
-      const { id }: ParsedTokenClass = this.jwtService.verify(token);
-      return id;
-    } catch (element) {
+      return this.jwtService.verify(token);
+    } catch (e) {
       return null;
     }
   }

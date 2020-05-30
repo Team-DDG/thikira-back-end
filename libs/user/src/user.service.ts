@@ -1,5 +1,6 @@
+import { AuthService, TokenTypeEnum } from '@app/auth';
 import { Order, User } from '@app/entity';
-import { TokenService, TokenTypeEnum } from '@app/token';
+import { ParsedTokenClass } from '@app/type/etc';
 import {
   DtoCheckPassword,
   DtoCreateUser,
@@ -22,7 +23,7 @@ export class UserService {
   @InjectRepository(User, 'mysql')
   private readonly userRepo: Repository<User>;
   @Inject()
-  private readonly tokenService: TokenService;
+  private readonly tokenService: AuthService;
   @Inject()
   private readonly utilService: UtilService;
 
@@ -58,12 +59,12 @@ export class UserService {
   }
 
   public refresh(token: string): ResRefresh {
-    const id: number = this.tokenService.getIdByToken(token);
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     return { accessToken: this.tokenService.createToken(id, TokenTypeEnum.access) };
   }
 
   public async checkPassword(token: string, payload: DtoCheckPassword): Promise<void> {
-    const id: number = this.tokenService.getIdByToken(token);
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     const foundUser: User = await this.userRepo.findOne(id);
 
     if (!foundUser || this.utilService.encode(payload.password) !== foundUser.password) {
@@ -72,19 +73,19 @@ export class UserService {
   }
 
   public async edit(token: string, payload: DtoEditUserInfo | DtoEditAddress): Promise<void> {
-    const id: number = this.tokenService.getIdByToken(token);
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     await this.userRepo.update(id, payload);
   }
 
   public async editPassword(token: string, payload: DtoEditPassword): Promise<void> {
-    const id: number = this.tokenService.getIdByToken(token);
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     await this.userRepo.update(id, {
       password: this.utilService.encode(payload.password),
     });
   }
 
   public async load(token: string): Promise<ResLoadUser> {
-    const id: number = this.tokenService.getIdByToken(token);
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     const foundUser: User = await this.userRepo.findOne(id);
     if (!foundUser) {
       throw new ForbiddenException();
@@ -96,7 +97,7 @@ export class UserService {
   }
 
   public async leave(token: string): Promise<void> {
-    const id: number = this.tokenService.getIdByToken(token);
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     const foundUser: User = await this.userRepo.findOne(id);
     if (!foundUser) {
       throw new ForbiddenException();
@@ -117,7 +118,7 @@ export class UserService {
   // use only in test
 
   public async get(token: string): Promise<User> {
-    const id: number = this.tokenService.getIdByToken(token);
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     return this.userRepo.findOne(id);
   }
 }

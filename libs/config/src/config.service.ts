@@ -8,7 +8,7 @@ import { DotenvParseOutput, parse } from 'dotenv';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { fileExistsSync } from 'tsconfig-paths/lib/filesystem';
-import { NodeEnv } from './node-env.enum';
+import { NodeEnv } from './enum';
 
 export type Config = Record<string, string>;
 
@@ -16,9 +16,9 @@ export type Config = Record<string, string>;
 export class ConfigService {
   @IsString()
   public readonly ENCRYPTION: string;
-  @IsOptional() @IsString()
+  @IsString() @IsOptional()
   public readonly HOST?: string;
-  @IsOptional() @IsString()
+  @IsString() @IsOptional()
   public readonly JWT_SECRET?: string = randomBytes(16).toString();
   @IsString() @IsOptional()
   public readonly MONGODB_URL: string;
@@ -36,7 +36,7 @@ export class ConfigService {
   public readonly MYSQL_USER: string;
   @IsEnum(NodeEnv)
   public readonly NODE_ENV: NodeEnv;
-  @IsOptional() @IsNumberString()
+  @IsNumberString() @IsOptional()
   public readonly PORT?: string = '3000';
   public readonly mysqlConfig: TypeOrmModuleOptions;
   public readonly mongodbConfig: TypeOrmModuleOptions;

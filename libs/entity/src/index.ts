@@ -1,5 +1,6 @@
 export * from './coupon.entity';
 export * from './entities';
+export * from './event.entity';
 export * from './group.entity';
 export * from './menu-category.entity';
 export * from './menu.entity';

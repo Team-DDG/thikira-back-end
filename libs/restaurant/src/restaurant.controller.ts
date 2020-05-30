@@ -1,3 +1,4 @@
+import { LocalAuthGuard } from '@app/auth';
 import { Header } from '@app/type/etc';
 import {
   DtoCheckPassword,
@@ -22,6 +23,7 @@ import {
   Post,
   Query,
   ValidationPipe,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -52,8 +54,8 @@ export class RestaurantController {
   public async get(@Headers() header: Header): Promise<ResLoadRestaurant> {
     try {
       return this.restaurantService.load(this.utilService.getTokenBody(header));
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -68,8 +70,8 @@ export class RestaurantController {
   ): Promise<void> {
     try {
       return this.restaurantService.edit(this.utilService.getTokenBody(header), payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -90,8 +92,8 @@ export class RestaurantController {
   public async checkEmail(@Query(new ValidationPipe()) query: QueryCheckEmail): Promise<void> {
     try {
       return this.restaurantService.checkEmail(query);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -106,8 +108,8 @@ export class RestaurantController {
   ): Promise<void> {
     try {
       return this.restaurantService.checkPassword(this.utilService.getTokenBody(header), payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -120,6 +122,7 @@ export class RestaurantController {
     return this.restaurantService.refresh(this.utilService.getTokenBody(token));
   }
 
+  @UseGuards(LocalAuthGuard)
   @Post('auth/sign_in')
   @ApiOperation({ summary: '업체 로그인' })
   @ApiCreatedResponse({ type: ResSignIn })
@@ -127,8 +130,8 @@ export class RestaurantController {
   public async signIn(@Body(new ValidationPipe()) payload: DtoSignIn): Promise<ResSignIn> {
     try {
       return this.restaurantService.signIn(payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -139,8 +142,8 @@ export class RestaurantController {
   public async create(@Body(new ValidationPipe()) payload: DtoCreateRestaurant): Promise<void> {
     try {
       return this.restaurantService.create(payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -155,8 +158,8 @@ export class RestaurantController {
   ): Promise<void> {
     try {
       return this.restaurantService.edit(this.utilService.getTokenBody(header), payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -169,8 +172,8 @@ export class RestaurantController {
     try {
       return this.restaurantService.leave(
         this.utilService.getTokenBody(token));
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -185,8 +188,8 @@ export class RestaurantController {
   ): Promise<void> {
     try {
       return this.restaurantService.editPassword(this.utilService.getTokenBody(header), payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 }

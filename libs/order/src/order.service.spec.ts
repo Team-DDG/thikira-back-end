@@ -1,10 +1,10 @@
+import { AuthModule } from '@app/auth';
 import { config } from '@app/config';
 import { EnumPaymentType, mongodbEntities, mysqlEntities, EnumOrderStatus } from '@app/entity';
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
 import { TestUtilModule, TestUtilService } from '@app/test-util';
-import { TokenModule } from '@app/token';
-import { EnumSortOption, ResGetOrderList, ResGetRestaurantList } from '@app/type';
-import { DtoCreateRestaurant, DtoCreateUser, DtoUploadOrder } from '@app/type/req';
+import { EnumSortOption, ResGetOrderList, ResGetRestaurantList, DtoUploadOrder } from '@app/type';
+import { DtoCreateRestaurant, DtoCreateUser } from '@app/type/req';
 import { UserModule, UserService } from '@app/user';
 import { UtilModule } from '@app/util';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -64,7 +64,7 @@ describe('OrderService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        OrderModule, RestaurantModule, TestUtilModule, TokenModule,
+        OrderModule, RestaurantModule, TestUtilModule, AuthModule,
         TypeOrmModule.forRoot(config.mysqlConfig),
         TypeOrmModule.forRoot(config.mongodbConfig),
         TypeOrmModule.forFeature(mysqlEntities, 'mysql'),

@@ -1,7 +1,7 @@
+import { AuthModule } from '@app/auth';
 import { config } from '@app/config';
 import { mongodbEntities, mysqlEntities } from '@app/entity';
 import { TestUtilModule, TestUtilService } from '@app/test-util';
-import { TokenModule } from '@app/token';
 import { DtoCreateRestaurant, DtoEditAddress, DtoEditPassword, DtoEditRestaurantInfo } from '@app/type/req';
 import { ResLoadRestaurant, ResRefresh, ResSignIn } from '@app/type/res';
 import { UtilModule } from '@app/util';
@@ -35,7 +35,7 @@ describe('RestaurantService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        RestaurantModule, TestUtilModule, TokenModule,
+        RestaurantModule, TestUtilModule, AuthModule,
         TypeOrmModule.forRoot(config.mysqlConfig),
         TypeOrmModule.forRoot(config.mongodbConfig),
         TypeOrmModule.forFeature(mysqlEntities, 'mysql'),

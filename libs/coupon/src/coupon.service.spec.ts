@@ -1,7 +1,7 @@
+import { AuthModule } from '@app/auth';
 import { config } from '@app/config';
 import { Coupon, mongodbEntities, mysqlEntities } from '@app/entity';
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
-import { TokenModule } from '@app/token';
 import { DtoCreateRestaurant, DtoUploadCoupon } from '@app/type/req';
 import { ResGetCoupon, ResSignIn } from '@app/type/res';
 import { UtilModule } from '@app/util';
@@ -40,7 +40,7 @@ describe('CouponService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        CouponModule, RestaurantModule, TokenModule,
+        CouponModule, RestaurantModule, AuthModule,
         TypeOrmModule.forRoot(config.mysqlConfig),
         TypeOrmModule.forRoot(config.mongodbConfig),
         TypeOrmModule.forFeature(mysqlEntities, 'mysql'),

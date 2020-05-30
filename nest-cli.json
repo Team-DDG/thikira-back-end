@@ -4,6 +4,15 @@
     "webpack": true
   },
   "projects": {
+    "auth": {
+      "compilerOptions": {
+        "tsConfigPath": "libs/auth/tsconfig.lib.json"
+      },
+      "entryFile": "index",
+      "root": "libs/auth",
+      "sourceRoot": "libs/auth/src",
+      "type": "library"
+    },
     "config": {
       "compilerOptions": {
         "tsConfigPath": "libs/config/tsconfig.lib.json"
@@ -29,6 +38,15 @@
       "entryFile": "index",
       "root": "libs/entity",
       "sourceRoot": "libs/entity/src",
+      "type": "library"
+    },
+    "event": {
+      "compilerOptions": {
+        "tsConfigPath": "libs/event/tsconfig.lib.json"
+      },
+      "entryFile": "index",
+      "root": "libs/event",
+      "sourceRoot": "libs/event/src",
       "type": "library"
     },
     "menu": {
@@ -74,15 +92,6 @@
       "entryFile": "index",
       "root": "libs/test-util",
       "sourceRoot": "libs/test-util/src",
-      "type": "library"
-    },
-    "token": {
-      "compilerOptions": {
-        "tsConfigPath": "libs/token/tsconfig.lib.json"
-      },
-      "entryFile": "index",
-      "root": "libs/token",
-      "sourceRoot": "libs/token/src",
       "type": "library"
     },
     "type": {

@@ -38,8 +38,8 @@ export class UserMenuController {
   ): Promise<ResGetMenuList[]> {
     try {
       return this.menuService.getMenuList(query);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -55,8 +55,8 @@ export class UserMenuController {
   ): Promise<ResGetMenuCategoryList[]> {
     try {
       return this.menuService.getMenuCategoryList(query);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 

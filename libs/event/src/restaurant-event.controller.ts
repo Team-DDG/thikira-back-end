@@ -1,6 +1,6 @@
 import { Header } from '@app/type/etc';
-import { DtoUploadCoupon } from '@app/type/req';
-import { ResGetCouponList } from '@app/type/res';
+import { DtoUploadEvent } from '@app/type/req';
+import { ResGetEventList } from '@app/type/res';
 import { UtilService } from '@app/util';
 import {
   Body,
@@ -20,39 +20,39 @@ import {
   ApiTags,
   ApiCreatedResponse,
 } from '@nestjs/swagger';
-import { CouponService } from './coupon.service';
+import { EventService } from './event.service';
 
-@ApiTags('restaurant/coupon')
-@Controller('api/restaurant/coupon')
-export class RestaurantCouponController {
+@ApiTags('restaurant/event')
+@Controller('api/restaurant/event')
+export class RestaurantEventController {
   @Inject()
-  private readonly couponService: CouponService;
+  private readonly eventService: EventService;
   @Inject()
   private readonly utilService: UtilService;
 
   @Get()
-  @ApiOperation({ summary: '업체 쿠폰 조회' })
+  @ApiOperation({ summary: '업체 이벤트 조회' })
   @ApiBearerAuth()
   @ApiOkResponse()
   @ApiNotFoundResponse()
-  public async getCouponList(@Headers() header: Header): Promise<ResGetCouponList[]> {
+  public async getEventList(): Promise<ResGetEventList[]> {
     try {
-      return this.couponService.getList(this.utilService.getTokenBody(header));
+      return this.eventService.getList();
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
   }
 
   @Post()
-  @ApiOperation({ summary: '업체 쿠폰 등록' })
+  @ApiOperation({ summary: '업체 이벤트 등록' })
   @ApiBearerAuth()
   @ApiCreatedResponse()
-  public async uploadCoupon(
+  public async uploadEvent(
     @Headers() header: Header,
-    @Body(new ValidationPipe()) payload: DtoUploadCoupon,
+    @Body(new ValidationPipe()) payload: DtoUploadEvent,
   ): Promise<void> {
     try {
-      return this.couponService.upload(this.utilService.getTokenBody(header), payload);
+      return this.eventService.upload(this.utilService.getTokenBody(header), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }

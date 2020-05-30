@@ -58,8 +58,8 @@ export class UserController {
   public async get(@Headers() header: Header): Promise<ResLoadUser> {
     try {
       return this.userService.load(this.utilService.getTokenBody(header));
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -80,8 +80,8 @@ export class UserController {
   public async checkEmail(@Query(new ValidationPipe()) query: QueryCheckEmail): Promise<void> {
     try {
       return this.userService.checkEmail(query);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -97,8 +97,8 @@ export class UserController {
   ): Promise<void> {
     try {
       return this.userService.checkPassword(this.utilService.getTokenBody(header), payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -118,8 +118,8 @@ export class UserController {
   public async signIn(@Body(new ValidationPipe()) payload: DtoSignIn): Promise<ResSignIn> {
     try {
       return this.userService.signIn(payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -134,8 +134,8 @@ export class UserController {
   ): Promise<void> {
     try {
       return this.userService.edit(this.utilService.getTokenBody(header), payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -146,8 +146,8 @@ export class UserController {
   public async create(@Body(new ValidationPipe()) payload: DtoCreateUser): Promise<void> {
     try {
       return this.userService.create(payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -159,8 +159,8 @@ export class UserController {
   public async leave(@Headers() header: Header): Promise<void> {
     try {
       return this.userService.leave(this.utilService.getTokenBody(header));
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -175,8 +175,8 @@ export class UserController {
   ): Promise<void> {
     try {
       return this.userService.edit(this.utilService.getTokenBody(header), payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -191,8 +191,8 @@ export class UserController {
   ): Promise<void> {
     try {
       return this.userService.editPassword(this.utilService.getTokenBody(header), payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -209,8 +209,8 @@ export class UserController {
   ): Promise<ResGetRestaurantList[]> {
     try {
       return this.restaurantService.getList(query);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 }

@@ -1,6 +1,7 @@
+import { AuthService } from '@app/auth';
 import { Order, ReplyReview, Restaurant, Review, User } from '@app/entity';
-import { TokenService } from '@app/token';
 import { EnumUserType } from '@app/type';
+import { ParsedTokenClass } from '@app/type/etc';
 import {
   DtoEditReplyReview,
   DtoEditReview,
@@ -27,12 +28,12 @@ export class ReviewService {
   @InjectRepository(User, 'mysql')
   private readonly userRepo: Repository<User>;
   @Inject()
-  private readonly tokenService: TokenService;
+  private readonly tokenService: AuthService;
 
   // review
 
   public async checkReview(token: string, payload: QueryCheckReview): Promise<void> {
-    const id: number = this.tokenService.getIdByToken(token);
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     const foundUser: User = await this.userRepo.findOne(id);
     if (!foundUser) {
       throw new ForbiddenException();
@@ -57,7 +58,7 @@ export class ReviewService {
   }
 
   public async uploadReview(token: string, payload: DtoUploadReview): Promise<void> {
-    const id: number = this.tokenService.getIdByToken(token);
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     const foundUser: User = await this.userRepo.findOne(id);
     if (!foundUser) {
       throw new ForbiddenException();
@@ -77,7 +78,7 @@ export class ReviewService {
   }
 
   public async editReview(token: string, payload: DtoEditReview): Promise<void> {
-    const id: number = this.tokenService.getIdByToken(token);
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     const foundUser: User = await this.userRepo.findOne(id);
     const foundReview: Review = await this.reviewRepo.findOne({ user: foundUser });
     if (!foundReview) {
@@ -89,7 +90,7 @@ export class ReviewService {
   }
 
   public async removeReview(token: string): Promise<void> {
-    const id: number = this.tokenService.getIdByToken(token);
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     const foundUser: User = await this.userRepo.findOne(id);
     const foundReview: Review = await this.reviewRepo.findOne({
       join: {
@@ -140,19 +141,19 @@ export class ReviewService {
   }
 
   public async getReviewListByUser(token: string): Promise<ResGetReviewList[]> {
-    const id: number = this.tokenService.getIdByToken(token);
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     return this.getReviewList(id, EnumUserType.NORMAL);
   }
 
   public async getReviewListByRestaurant(token: string): Promise<ResGetReviewList[]> {
-    const id: number = this.tokenService.getIdByToken(token);
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     return this.getReviewList(id, EnumUserType.RESTAURANT);
   }
 
   public async getReviewStatistic(param: string | QueryGetReviewStatistic): Promise<ResGetReviewStatistic> {
     let foundRestaurant: Restaurant;
     if ('string' === typeof param) {
-      const id: number = this.tokenService.getIdByToken(param);
+      const { id }: ParsedTokenClass = this.tokenService.parseToken(param);
       foundRestaurant = await this.restaurantRepo.findOne(id);
     } else {
       foundRestaurant = await this.restaurantRepo.findOne(parseInt(param.restaurantId));
@@ -201,7 +202,7 @@ export class ReviewService {
     if (!foundReview) {
       throw new NotFoundException();
     }
-    const id: number = this.tokenService.getIdByToken(token);
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
 
     const replyReview: ReplyReview = new ReplyReview();
@@ -210,7 +211,7 @@ export class ReviewService {
   }
 
   public async editReplyReview(token: string, payload: DtoEditReplyReview): Promise<void> {
-    const id: number = this.tokenService.getIdByToken(token);
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
     const foundReplyReview: ReplyReview = await this.replyReviewRepo.findOne({ restaurant: foundRestaurant });
     if (!foundReplyReview) {
@@ -222,7 +223,7 @@ export class ReviewService {
   }
 
   public async removeReplyReview(token: string): Promise<void> {
-    const id: number = this.tokenService.getIdByToken(token);
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
     const foundReplyReview: ReplyReview = await this.replyReviewRepo.findOne({ restaurant: foundRestaurant });
     await this.replyReviewRepo.delete(foundReplyReview.restaurantId);

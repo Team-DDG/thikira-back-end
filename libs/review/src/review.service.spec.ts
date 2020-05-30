@@ -1,19 +1,19 @@
+import { AuthModule } from '@app/auth';
 import { config } from '@app/config';
 import { EnumPaymentType, mongodbEntities, mysqlEntities, Order, Restaurant } from '@app/entity';
 import { MenuModule } from '@app/menu';
 import { OrderModule, OrderService } from '@app/order';
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
 import { TestUtilModule, TestUtilService } from '@app/test-util';
-import { TokenModule } from '@app/token';
 import {
   DtoCreateRestaurant,
   DtoCreateUser,
   DtoEditReplyReview,
   DtoEditReview,
-  DtoUploadOrder,
   DtoUploadReplyReview,
   DtoUploadReview,
   ResGetReviewList,
+  DtoUploadOrder,
 } from '@app/type';
 import { UserModule, UserService } from '@app/user';
 import { UtilModule } from '@app/util';
@@ -88,7 +88,7 @@ describe('ReviewService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         MenuModule, OrderModule, RestaurantModule,
-        ReviewModule, TestUtilModule, TokenModule,
+        ReviewModule, TestUtilModule, AuthModule,
         TypeOrmModule.forRoot(config.mysqlConfig),
         TypeOrmModule.forRoot(config.mongodbConfig),
         TypeOrmModule.forFeature(mysqlEntities, 'mysql'),

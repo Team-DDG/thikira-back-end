@@ -1,5 +1,6 @@
+import { AuthService, TokenTypeEnum } from '@app/auth';
 import { Coupon, Group, Menu, MenuCategory, Option, Restaurant } from '@app/entity';
-import { TokenService, TokenTypeEnum } from '@app/token';
+import { ParsedTokenClass } from '@app/type/etc';
 import {
   DtoCheckPassword,
   DtoCreateRestaurant,
@@ -31,7 +32,7 @@ export class RestaurantService {
   @InjectRepository(Restaurant, 'mysql')
   private readonly restaurantRepo: Repository<Restaurant>;
   @Inject()
-  private readonly tokenService: TokenService;
+  private readonly tokenService: AuthService;
   @Inject()
   private readonly utilService: UtilService;
 
@@ -66,12 +67,12 @@ export class RestaurantService {
   }
 
   public refresh(token: string): ResRefresh {
-    const restaurantId: number = this.tokenService.getIdByToken(token);
-    return { accessToken: this.tokenService.createToken(restaurantId, TokenTypeEnum.access) };
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
+    return { accessToken: this.tokenService.createToken(id, TokenTypeEnum.access) };
   }
 
   public async checkPassword(token: string, payload: DtoCheckPassword): Promise<void> {
-    const id: number = this.tokenService.getIdByToken(token);
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
     if (this.utilService.encode(payload.password) !== foundRestaurant.password) {
       throw new ForbiddenException();
@@ -79,19 +80,19 @@ export class RestaurantService {
   }
 
   public async edit(token: string, payload: DtoEditRestaurantInfo | DtoEditAddress): Promise<void> {
-    const id: number = this.tokenService.getIdByToken(token);
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     await this.restaurantRepo.update(id, payload);
   }
 
   public async editPassword(token: string, payload: DtoEditPassword): Promise<void> {
-    const id: number = this.tokenService.getIdByToken(token);
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     await this.restaurantRepo.update(id, {
       password: this.utilService.encode(payload.password),
     });
   }
 
   public async load(token: string): Promise<ResLoadRestaurant> {
-    const id: number = this.tokenService.getIdByToken(token);
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
     for (const element of ['coupon', 'password', 'restaurantId']) {
       Reflect.deleteProperty(foundRestaurant, element);
@@ -110,7 +111,7 @@ export class RestaurantService {
   }
 
   public async leave(token: string): Promise<void> {
-    const id: number = this.tokenService.getIdByToken(token);
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
     if (!foundRestaurant) {
       throw new ForbiddenException();
@@ -171,7 +172,7 @@ export class RestaurantService {
   // use only in test
 
   public async get(token: string): Promise<Restaurant> {
-    const id: number = this.tokenService.getIdByToken(token);
+    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     return this.restaurantRepo.findOne(id);
   }
 }

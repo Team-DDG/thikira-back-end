@@ -43,8 +43,8 @@ export class RestaurantReviewController {
   ): Promise<void> {
     try {
       return this.review_service.editReplyReview(this.utilService.getTokenBody(header), payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -57,8 +57,8 @@ export class RestaurantReviewController {
   public async getReviewList(@Headers() header: Header): Promise<ResGetReviewList[]> {
     try {
       return this.review_service.getReviewListByRestaurant(this.utilService.getTokenBody(header));
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -71,8 +71,8 @@ export class RestaurantReviewController {
   public async getReviewStatistic(@Headers() header: Header): Promise<ResGetReviewStatistic> {
     try {
       return this.review_service.getReviewStatistic(this.utilService.getTokenBody(header));
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -84,8 +84,8 @@ export class RestaurantReviewController {
   public async removeReplyReview(@Headers() header: Header): Promise<void> {
     try {
       return this.review_service.removeReplyReview(this.utilService.getTokenBody(header));
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -99,8 +99,8 @@ export class RestaurantReviewController {
   ): Promise<void> {
     try {
       return this.review_service.uploadReplyReview(this.utilService.getTokenBody(header), payload);
-    } catch (element) {
-      throw new InternalServerErrorException(element.message);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
     }
   }
 }

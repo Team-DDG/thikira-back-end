@@ -11,6 +11,9 @@
     "module": "commonjs",
     "outDir": "./dist",
     "paths": {
+      "@app/auth": [
+        "libs/auth/src"
+      ],
       "@app/config": [
         "libs/config/src"
       ],
@@ -19,6 +22,9 @@
       ],
       "@app/entity": [
         "libs/entity/src"
+      ],
+      "@app/event": [
+        "libs/event/src"
       ],
       "@app/menu": [
         "libs/menu/src"
@@ -34,9 +40,6 @@
       ],
       "@app/test-util": [
         "libs/test-util/src"
-      ],
-      "@app/token": [
-        "libs/token/src"
       ],
       "@app/type": [
         "libs/type/src"
