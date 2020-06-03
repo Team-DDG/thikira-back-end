@@ -11,9 +11,9 @@ export class Restaurant {
   @Column()
   public area: string;
   @Column()
-  public addStreet: string;
+  public roadAddress: string;
   @Column()
-  public addParcel: string;
+  public address: string;
   @Column()
   public category: string;
   @Column()

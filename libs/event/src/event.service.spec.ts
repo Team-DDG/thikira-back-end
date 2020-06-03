@@ -18,8 +18,7 @@ describe('EventService', () => {
     bannerImage: 'image.url', mainImage: 'url.image',
   };
   const testRestaurant: DtoCreateRestaurant = {
-    addParcel: 'a',
-    addStreet: 'b',
+    address: 'a',
     area: 'c',
     category: 'event_test',
     closeTime: 'element',
@@ -34,6 +33,7 @@ describe('EventService', () => {
     openTime: 'i',
     password: 'evnet_test',
     phone: '01012345678',
+    roadAddress: 'b',
   };
 
   beforeAll(async () => {

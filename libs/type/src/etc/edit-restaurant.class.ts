@@ -1,7 +1,7 @@
 export class EditRestaurantClass {
   public readonly area?: string;
-  public readonly addStreet?: string;
-  public readonly addParcel?: string;
+  public readonly roadAddress?: string;
+  public readonly address?: string;
   public readonly category?: string;
   public readonly closeTime?: string;
   public readonly email?: string;

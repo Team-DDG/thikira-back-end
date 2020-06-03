@@ -35,8 +35,7 @@ describe('OrderService', () => {
     restaurantId: 0,
   };
   const testRestaurant: DtoCreateRestaurant = {
-    addParcel: 'a',
-    addStreet: 'b',
+    address: 'a',
     area: 'c',
     category: 'order_test',
     closeTime: 'element',
@@ -51,6 +50,7 @@ describe('OrderService', () => {
     openTime: 'i',
     password: 'order_test',
     phone: '01012345678',
+    roadAddress: 'b',
   };
   const testUser: DtoCreateUser = {
     email: 'order_test',
@@ -106,7 +106,7 @@ describe('OrderService', () => {
     const [foundOrder]: ResGetOrderList[] = await service.getListByRestaurant(restaurantToken);
 
     let [requestOrder, responseOrder] = TestUtilService.makeElementComparable(foundOrder, testOrder, [
-      'addStreet', 'addParcel', 'createTime', 'menu', 'nickname',
+      'roadAddress', 'address', 'createTime', 'menu', 'nickname',
       'orderId', 'orderDetail', 'phone', 'restaurantId', 'status', 'totalPrice',
     ]);
     expect(requestOrder).toEqual(responseOrder);

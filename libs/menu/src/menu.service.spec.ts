@@ -53,8 +53,7 @@ describe('MenuService', () => {
     groupId: null, name: 'garlic sauce', price: 500,
   };
   const testRestaurant: DtoCreateRestaurant = {
-    addParcel: 'a',
-    addStreet: 'b',
+    address: 'a',
     area: 'c',
     category: 'menu_test',
     closeTime: 'element',
@@ -69,6 +68,7 @@ describe('MenuService', () => {
     openTime: 'i',
     password: 'menu_test',
     phone: '01012345678',
+    roadAddress: 'b',
   };
 
   beforeAll(async () => {

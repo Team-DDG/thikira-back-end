@@ -6,9 +6,9 @@ export class User {
   @PrimaryGeneratedColumn()
   public userId: number;
   @Column({ nullable: true })
-  public addStreet: string = null;
+  public roadAddress: string = null;
   @Column({ nullable: true })
-  public addParcel: string = null;
+  public address: string = null;
   @Column()
   public email: string;
   @Column()

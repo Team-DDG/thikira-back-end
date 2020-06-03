@@ -3,8 +3,8 @@ import { IsString } from 'class-validator';
 
 export class DtoEditAddress {
   @ApiProperty() @IsString()
-  public readonly addStreet: string;
+  public readonly roadAddress: string;
   @ApiProperty() @IsString()
-  public readonly addParcel: string;
+  public readonly address: string;
 
 }

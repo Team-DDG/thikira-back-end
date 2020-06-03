@@ -5,9 +5,9 @@ export class ResGetOrderList {
   @ApiProperty()
   public readonly orderId: string;
   @ApiProperty()
-  public readonly addStreet: string;
+  public readonly roadAddress: string;
   @ApiProperty()
-  public readonly addParcel: string;
+  public readonly address: string;
   @ApiProperty()
   public readonly createTime: Date;
   @ApiProperty()

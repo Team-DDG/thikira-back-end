@@ -14,8 +14,7 @@ import { RestaurantService } from './restaurant.service';
 describe('RestaurantService', () => {
   let service: RestaurantService;
   const testRestaurant: DtoCreateRestaurant = {
-    addParcel: '경기도 이천시 증포동 404-9',
-    addStreet: '경기 이천시 아리역로 25 남구빌딩',
+    address: '경기도 이천시 증포동 404-9',
     area: '증포동, 창전동',
     category: '치킨',
     closeTime: '00:00',
@@ -30,6 +29,7 @@ describe('RestaurantService', () => {
     openTime: '15:00',
     password: 'restaurant_test',
     phone: '01012345678',
+    roadAddress: '경기 이천시 아리역로 25 남구빌딩',
   };
 
   beforeAll(async () => {
@@ -94,7 +94,7 @@ describe('RestaurantService', () => {
     const foundRestaurant: ResLoadRestaurant = await service.load(accessToken);
     const [requestRestaurant, responseRestaurant] = TestUtilService
       .makeElementComparable(foundRestaurant, editData,
-        ['addParcel', 'addStreet', 'category', 'createTime', 'email']);
+        ['address', 'roadAddress', 'category', 'createTime', 'email']);
     expect(requestRestaurant).toStrictEqual(responseRestaurant);
 
     await service.leave(accessToken);
@@ -111,13 +111,13 @@ describe('RestaurantService', () => {
     });
 
     const editData: DtoEditAddress = {
-      addParcel: '경기도 어딘가',
-      addStreet: '경기도 어딘가',
+      address: '경기도 어딘가',
+      roadAddress: '경기도 어딘가',
     };
     await service.edit(accessToken, editData);
 
     const foundRestaurant: ResLoadRestaurant = await service.load(accessToken);
-    for (const element of ['addStreet', 'addParcel']) {
+    for (const element of ['roadAddress', 'address']) {
       expect(foundRestaurant[element]).toEqual(editData[element]);
     }
 

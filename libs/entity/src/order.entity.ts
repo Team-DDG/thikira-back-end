@@ -25,9 +25,9 @@ export class Order {
   public _id: ObjectID;
   public orderId: ObjectID;
   @Column()
-  public addStreet: string;
+  public roadAddress: string;
   @Column()
-  public addParcel: string;
+  public address: string;
   @Column()
   public discountAmount: number;
   @Column()

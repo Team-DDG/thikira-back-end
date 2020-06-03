@@ -49,8 +49,7 @@ describe('ReviewService', () => {
     restaurantId: 0,
   };
   const testRestaurant: DtoCreateRestaurant = {
-    addParcel: 'a',
-    addStreet: 'b',
+    address: 'a',
     area: 'c',
     category: 'review_test',
     closeTime: 'element',
@@ -65,6 +64,7 @@ describe('ReviewService', () => {
     openTime: 'i',
     password: 'review_test',
     phone: '01012345678',
+    roadAddress: 'b',
   };
   const testReplyReview: DtoUploadReplyReview = {
     content: '감사합니다',

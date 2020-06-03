@@ -15,8 +15,7 @@ describe('CouponService', () => {
   let restaurantService: RestaurantService;
   let service: CouponService;
   const testRestaurant: DtoCreateRestaurant = {
-    addParcel: 'a',
-    addStreet: 'b',
+    address: 'a',
     area: 'coupon',
     category: 'coupon_test',
     closeTime: 'element',
@@ -31,6 +30,7 @@ describe('CouponService', () => {
     openTime: 'i',
     password: 'coupon_test',
     phone: '01012345678',
+    roadAddress: 'b',
   };
   const testCoupon: DtoUploadCoupon = {
     discountAmount: 500,

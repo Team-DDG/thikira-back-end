@@ -73,7 +73,7 @@ describe('UserService', () => {
     const foundRestaurant: ResLoadUser = await service.load(accessToken);
     const [requestRestaurant, responseRestaurant] = TestUtilService
       .makeElementComparable(foundRestaurant, editData,
-        ['addParcel', 'addStreet', 'category', 'createTime']);
+        ['address', 'roadAddress', 'category', 'createTime']);
     expect(requestRestaurant).toStrictEqual(responseRestaurant);
 
     await service.leave(accessToken);
@@ -90,14 +90,14 @@ describe('UserService', () => {
     });
 
     const editData: DtoEditAddress = {
-      addParcel: '경기도 어딘가',
-      addStreet: '경기도 어딘가',
+      address: '경기도 어딘가',
+      roadAddress: '경기도 어딘가',
     };
     await service.edit(accessToken, editData);
 
     const foundRestaurant: ResLoadUser = await service.load(accessToken);
-    expect(foundRestaurant.addStreet).toEqual(editData.addStreet);
-    expect(foundRestaurant.addParcel).toEqual(editData.addParcel);
+    expect(foundRestaurant.roadAddress).toEqual(editData.roadAddress);
+    expect(foundRestaurant.address).toEqual(editData.address);
 
     await service.leave(accessToken);
   });

@@ -5,9 +5,9 @@ export class DtoCreateRestaurant {
   @ApiProperty() @IsString()
   public readonly area: string;
   @ApiProperty() @IsString()
-  public readonly addStreet: string;
+  public readonly roadAddress: string;
   @ApiProperty() @IsString()
-  public readonly addParcel: string;
+  public readonly address: string;
   @ApiProperty() @IsString()
   public readonly category: string;
   @ApiProperty() @IsString()

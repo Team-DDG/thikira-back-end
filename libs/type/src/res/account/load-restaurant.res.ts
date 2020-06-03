@@ -2,9 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class ResLoadRestaurant {
   @ApiProperty()
-  public readonly addParcel: string;
+  public readonly address: string;
   @ApiProperty()
-  public readonly addStreet: string;
+  public readonly roadAddress: string;
   @ApiProperty()
   public readonly area: string;
   @ApiProperty()
