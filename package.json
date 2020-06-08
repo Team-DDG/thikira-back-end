@@ -96,8 +96,7 @@
     },
     "rootDir": ".",
     "roots": [
-      "<rootDir>/src/",
-      "<rootDir>/libs/"
+      "<rootDir>/test/"
     ],
     "testEnvironment": "node",
     "testRegex": ".spec.ts$",

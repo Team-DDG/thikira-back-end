@@ -1,9 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseOrderClass } from '../../etc';
 
-export class ResGetOrderList extends BaseOrderClass {
-  @ApiProperty()
-  public readonly userId: number;
+export class ResGetOrderListByUser extends BaseOrderClass {
   @ApiProperty()
   public readonly restaurantId: number;
 }

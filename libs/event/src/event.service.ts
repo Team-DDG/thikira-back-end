@@ -1,7 +1,7 @@
 import { AuthService } from '@app/auth';
 import { Event } from '@app/entity';
 import { DtoUploadEvent, ResGetEventList } from '@app/type';
-import { Injectable, Inject } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -23,5 +23,15 @@ export class EventService {
 
   public async getList(): Promise<ResGetEventList[]> {
     return this.eventRepo.find({ select: ['bannerImage', 'mainImage'] });
+  }
+
+  // only use in test
+
+  public async get(): Promise<Event> {
+    return this.eventRepo.findOne();
+  }
+
+  public async remove(eventId: number): Promise<void> {
+    await this.eventRepo.delete(eventId);
   }
 }

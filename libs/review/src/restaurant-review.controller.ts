@@ -1,5 +1,10 @@
-import { DtoEditReplyReview, DtoUploadReplyReview, ResGetReviewList, ResGetReviewStatistic } from '@app/type';
-import { Header } from '@app/type/etc';
+import {
+  DtoEditReplyReview,
+  DtoUploadReplyReview,
+  Header,
+  ResGetReviewList,
+  ResGetReviewStatistic,
+} from '@app/type';
 import { UtilService } from '@app/util';
 import {
   Body,

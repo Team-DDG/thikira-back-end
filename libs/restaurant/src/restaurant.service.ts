@@ -1,6 +1,5 @@
-import { AuthService, TokenTypeEnum } from '@app/auth';
+import { AuthService, EnumTokenType } from '@app/auth';
 import { Coupon, Group, Menu, MenuCategory, Option, Restaurant } from '@app/entity';
-import { ParsedTokenClass } from '@app/type/etc';
 import {
   DtoCheckPassword,
   DtoCreateRestaurant,
@@ -8,10 +7,14 @@ import {
   DtoEditPassword,
   DtoEditRestaurantInfo,
   DtoSignIn,
+  ParsedTokenClass,
   QueryCheckEmail,
   QueryGetRestaurantList,
-} from '@app/type/req';
-import { ResGetRestaurantList, ResLoadRestaurant, ResRefresh, ResSignIn } from '@app/type/res';
+  ResGetRestaurantList,
+  ResLoadRestaurant,
+  ResRefresh,
+  ResSignIn,
+} from '@app/type';
 import { UtilService } from '@app/util';
 import { ConflictException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -61,14 +64,14 @@ export class RestaurantService {
     }
 
     return {
-      accessToken: this.tokenService.createToken(foundRestaurant.restaurantId, TokenTypeEnum.access),
-      refreshToken: this.tokenService.createToken(foundRestaurant.restaurantId, TokenTypeEnum.refresh),
+      accessToken: this.tokenService.createToken(foundRestaurant.restaurantId, EnumTokenType.access),
+      refreshToken: this.tokenService.createToken(foundRestaurant.restaurantId, EnumTokenType.refresh),
     };
   }
 
   public refresh(token: string): ResRefresh {
     const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
-    return { accessToken: this.tokenService.createToken(id, TokenTypeEnum.access) };
+    return { accessToken: this.tokenService.createToken(id, EnumTokenType.access) };
   }
 
   public async checkPassword(token: string, payload: DtoCheckPassword): Promise<void> {
@@ -94,7 +97,7 @@ export class RestaurantService {
   public async load(token: string): Promise<ResLoadRestaurant> {
     const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
-    for (const element of ['coupon', 'password', 'restaurantId']) {
+    for (const element of ['password', 'restaurantId']) {
       Reflect.deleteProperty(foundRestaurant, element);
     }
     return foundRestaurant;

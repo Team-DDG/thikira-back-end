@@ -1,6 +1,4 @@
-import { Header } from '@app/type/etc';
-import { DtoUploadEvent } from '@app/type/req';
-import { ResGetEventList } from '@app/type/res';
+import { DtoUploadEvent, Header, ResGetEventList } from '@app/type';
 import { UtilService } from '@app/util';
 import {
   Body,
@@ -14,11 +12,11 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-  ApiCreatedResponse,
 } from '@nestjs/swagger';
 import { EventService } from './event.service';
 

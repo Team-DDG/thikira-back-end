@@ -1,5 +1,5 @@
 import { config } from '@app/config';
-import { Header } from '@app/type/etc';
+import { Header } from '@app/type';
 import { Injectable } from '@nestjs/common';
 import { createHash, randomBytes } from 'crypto';
 

@@ -1,12 +1,13 @@
 import {
   DtoEditReview,
   DtoUploadReview,
+  Header,
+  ParamRemoveReview,
   QueryCheckReview,
   QueryGetReviewStatistic,
   ResGetReviewList,
   ResGetReviewStatistic,
 } from '@app/type';
-import { Header } from '@app/type/etc';
 import { UtilService } from '@app/util';
 import {
   Body,
@@ -16,6 +17,7 @@ import {
   Headers,
   Inject,
   InternalServerErrorException,
+  Param,
   Patch,
   Post,
   Query,
@@ -41,7 +43,6 @@ export class UserReviewController {
   private readonly utilService: UtilService;
 
   @Get('check')
-
   @ApiOperation({ summary: '리뷰 등록 가능 여부 확인' })
   @ApiBearerAuth()
   @ApiOkResponse({ type: [ResGetReviewList] })
@@ -59,7 +60,6 @@ export class UserReviewController {
   }
 
   @Post()
-
   @ApiOperation({ summary: '리뷰 등록' })
   @ApiOkResponse()
   @ApiConflictResponse()
@@ -75,7 +75,6 @@ export class UserReviewController {
   }
 
   @Get()
-
   @ApiOperation({ summary: '주문 조회' })
   @ApiBearerAuth()
   @ApiOkResponse({ type: [ResGetReviewList] })
@@ -90,7 +89,6 @@ export class UserReviewController {
   }
 
   @Get('statistic')
-
   @ApiOperation({ summary: '업체 리뷰 통계 조회' })
   @ApiBearerAuth()
   @ApiOkResponse({ type: ResGetReviewStatistic })
@@ -123,16 +121,17 @@ export class UserReviewController {
     }
   }
 
-  @Delete()
+  @Delete(':restaurantId')
   @ApiOperation({ summary: '리뷰 삭제' })
   @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async removeReview(
     @Headers() header: Header,
+    @Param(new ValidationPipe()) param: ParamRemoveReview,
   ): Promise<void> {
     try {
-      return this.review_service.removeReview(this.utilService.getTokenBody(header));
+      return this.review_service.removeReview(this.utilService.getTokenBody(header), param);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }

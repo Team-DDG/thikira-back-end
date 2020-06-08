@@ -33,4 +33,6 @@ export class ResLoadRestaurant {
   public readonly openTime: string;
   @ApiProperty()
   public readonly phone: string;
+  @ApiProperty()
+  public readonly star: number;
 }

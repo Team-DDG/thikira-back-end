@@ -1,16 +1,16 @@
-import { ParsedTokenClass } from '@app/type/etc';
-import { Injectable, Inject } from '@nestjs/common';
+import { ParsedTokenClass } from '@app/type';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { TokenTypeEnum } from './enum';
+import { EnumTokenType } from './enum';
 
 @Injectable()
 export class AuthService {
   @Inject()
   private readonly jwtService: JwtService;
 
-  public createToken(id: number, type: TokenTypeEnum): string {
+  public createToken(id: number, type: EnumTokenType): string {
     return this.jwtService.sign({ id }, {
-      expiresIn: type === TokenTypeEnum.access ? '30 min' : '14 days',
+      expiresIn: type === EnumTokenType.access ? '30 min' : '14 days',
     });
   }
 
@@ -18,7 +18,7 @@ export class AuthService {
     try {
       return this.jwtService.verify(token);
     } catch (e) {
-      return null;
+      throw new UnauthorizedException();
     }
   }
 }

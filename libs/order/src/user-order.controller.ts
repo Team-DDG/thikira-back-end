@@ -1,6 +1,4 @@
-import { Header } from '@app/type/etc';
-import { DtoUploadOrder } from '@app/type/req';
-import { ResGetOrderList } from '@app/type/res';
+import { DtoUploadOrder, Header, ResGetOrderList, ResGetOrderListByUser } from '@app/type';
 import { UtilService } from '@app/util';
 import {
   Body,
@@ -14,11 +12,11 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-  ApiCreatedResponse,
 } from '@nestjs/swagger';
 import { OrderService } from './order.service';
 
@@ -35,7 +33,7 @@ export class UserOrderController {
   @ApiBearerAuth()
   @ApiOkResponse({ type: [ResGetOrderList] })
   @ApiForbiddenResponse()
-  public async getOrderList(@Headers() header: Header): Promise<ResGetOrderList[]> {
+  public async getOrderList(@Headers() header: Header): Promise<ResGetOrderListByUser[]> {
     try {
       return this.od_service.getListByUser(this.utilService.getTokenBody(header));
     } catch (e) {

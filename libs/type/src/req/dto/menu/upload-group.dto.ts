@@ -1,6 +1,6 @@
-import { UploadOptionClass } from '@app/type/etc';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
+import { UploadOptionClass } from '../../../etc';
 
 export class DtoUploadGroup {
   @ApiProperty() @IsNumber()
@@ -9,6 +9,6 @@ export class DtoUploadGroup {
   public readonly maxCount: number;
   @ApiProperty() @IsString()
   public readonly name: string;
-  @ApiProperty() @IsArray() @IsOptional()
+  @ApiProperty({ type: [UploadOptionClass] }) @IsArray() @IsOptional()
   public readonly option?: UploadOptionClass[];
 }

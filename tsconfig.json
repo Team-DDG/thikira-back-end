@@ -44,15 +44,6 @@
       "@app/type": [
         "libs/type/src"
       ],
-      "@app/type/etc": [
-        "libs/type/src/etc"
-      ],
-      "@app/type/req": [
-        "libs/type/src/req"
-      ],
-      "@app/type/res": [
-        "libs/type/src/res"
-      ],
       "@app/user": [
         "libs/user/src"
       ],

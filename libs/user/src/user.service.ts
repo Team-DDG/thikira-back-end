@@ -1,6 +1,5 @@
-import { AuthService, TokenTypeEnum } from '@app/auth';
+import { AuthService, EnumTokenType } from '@app/auth';
 import { Order, User } from '@app/entity';
-import { ParsedTokenClass } from '@app/type/etc';
 import {
   DtoCheckPassword,
   DtoCreateUser,
@@ -8,9 +7,12 @@ import {
   DtoEditPassword,
   DtoEditUserInfo,
   DtoSignIn,
+  ParsedTokenClass,
   QueryCheckEmail,
-} from '@app/type/req';
-import { ResLoadUser, ResRefresh, ResSignIn } from '@app/type/res';
+  ResLoadUser,
+  ResRefresh,
+  ResSignIn,
+} from '@app/type';
 import { UtilService } from '@app/util';
 import { ConflictException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -53,14 +55,14 @@ export class UserService {
     }
 
     return {
-      accessToken: this.tokenService.createToken(foundUser.userId, TokenTypeEnum.access),
-      refreshToken: this.tokenService.createToken(foundUser.userId, TokenTypeEnum.refresh),
+      accessToken: this.tokenService.createToken(foundUser.userId, EnumTokenType.access),
+      refreshToken: this.tokenService.createToken(foundUser.userId, EnumTokenType.refresh),
     };
   }
 
   public refresh(token: string): ResRefresh {
     const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
-    return { accessToken: this.tokenService.createToken(id, TokenTypeEnum.access) };
+    return { accessToken: this.tokenService.createToken(id, EnumTokenType.access) };
   }
 
   public async checkPassword(token: string, payload: DtoCheckPassword): Promise<void> {

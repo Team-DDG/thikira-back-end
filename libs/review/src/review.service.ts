@@ -1,19 +1,21 @@
 import { AuthService } from '@app/auth';
 import { Order, ReplyReview, Restaurant, Review, User } from '@app/entity';
-import { EnumUserType } from '@app/type';
-import { ParsedTokenClass } from '@app/type/etc';
 import {
   DtoEditReplyReview,
   DtoEditReview,
   DtoUploadReplyReview,
   DtoUploadReview,
+  EnumAccountType,
+  ParamRemoveReview,
+  ParsedTokenClass,
   QueryCheckReview,
   QueryGetReviewStatistic,
-} from '@app/type/req';
-import { ResGetReviewList, ResGetReviewStatistic } from '@app/type/res';
+  ResGetReviewList,
+  ResGetReviewStatistic,
+} from '@app/type';
 import { ConflictException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, FindConditions } from 'typeorm';
+import { FindConditions, Repository } from 'typeorm';
 
 @Injectable()
 export class ReviewService {
@@ -42,11 +44,11 @@ export class ReviewService {
     if (!foundRestaurant) {
       throw new NotFoundException();
     }
-    const foundOrder: Order[] = await this.orderRepo.find({
+    const numOfOrders: number = await this.orderRepo.count({
       restaurantId: foundRestaurant.restaurantId, userId: foundUser.userId,
     });
 
-    if (1 > foundOrder.length) {
+    if (1 > numOfOrders) {
       throw new ForbiddenException('user haven\'t order by the restaurant');
     }
     const foundReview: Review = await this.reviewRepo.findOne({
@@ -74,24 +76,37 @@ export class ReviewService {
       Reflect.deleteProperty(payload, element);
     }
     Object.assign(review, { ...payload, restaurant: foundRestaurant, user: foundUser });
+
     await this.reviewRepo.insert(review);
+
+    await this.updateRestaurantStar(foundRestaurant.restaurantId);
   }
 
   public async editReview(token: string, payload: DtoEditReview): Promise<void> {
-    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
-    const foundUser: User = await this.userRepo.findOne(id);
-    const foundReview: Review = await this.reviewRepo.findOne({ user: foundUser });
+    const foundReview: Review = await this.reviewRepo.findOne({
+      join: {
+        alias: 'Review',
+        leftJoinAndSelect: { Restaurant: 'Review.restaurant' },
+      },
+      where: { restaurant: { restaurantId: payload.restaurantId } },
+    });
     if (!foundReview) {
       throw new NotFoundException();
     }
+
+    ['restaurantId'].map((element: string): void => {
+      Reflect.deleteProperty(payload, element);
+    });
+
     await this.reviewRepo.update(foundReview.reviewId, {
       ...payload, editTime: new Date(), isEdited: true,
     });
+
+    await this.updateRestaurantStar(foundReview.restaurant.restaurantId);
   }
 
-  public async removeReview(token: string): Promise<void> {
+  public async removeReview(token: string, param: ParamRemoveReview): Promise<void> {
     const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
-    const foundUser: User = await this.userRepo.findOne(id);
     const foundReview: Review = await this.reviewRepo.findOne({
       join: {
         alias: 'Review',
@@ -99,55 +114,27 @@ export class ReviewService {
           ReplyReview: 'Review.replyReview',
         },
       },
-      where: { user: foundUser },
+      where: { restaurant: { restaurantId: param.restaurantId }, user: { userId: id } },
     });
     if (!foundReview) {
       throw new NotFoundException();
     }
     if (foundReview.replyReview) {
-      await this.replyReviewRepo.delete(foundReview.replyReview.restaurantId);
+      await this.replyReviewRepo.delete(param.restaurantId);
     }
     await this.reviewRepo.delete(foundReview.reviewId);
-  }
 
-  public async getReviewList(id: number, userType: EnumUserType): Promise<ResGetReviewList[]> {
-    const findOption: FindConditions<Review> = {};
-
-    if (userType === EnumUserType.NORMAL) {
-      findOption.user = { userId: id };
-    } else {
-      findOption.restaurant = { restaurantId: id };
-    }
-
-    const foundReviews: Review[] = await this.reviewRepo.find({
-      join: {
-        alias: 'Review',
-        leftJoinAndSelect: { ReplyReview: 'Review.replyReview' },
-      },
-      where: findOption,
-    });
-    if (!foundReviews) {
-      throw new NotFoundException();
-    }
-    for (const elementReview of foundReviews) {
-      if (!elementReview.isEdited) {
-        Reflect.deleteProperty(elementReview, 'editTime');
-      }
-      if (elementReview.replyReview && !elementReview.replyReview.isEdited) {
-        Reflect.deleteProperty(elementReview.replyReview, 'editTime');
-      }
-    }
-    return foundReviews;
+    await this.updateRestaurantStar(parseInt(param.restaurantId));
   }
 
   public async getReviewListByUser(token: string): Promise<ResGetReviewList[]> {
     const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
-    return this.getReviewList(id, EnumUserType.NORMAL);
+    return this.getReviewList(id, EnumAccountType.NORMAL);
   }
 
   public async getReviewListByRestaurant(token: string): Promise<ResGetReviewList[]> {
     const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
-    return this.getReviewList(id, EnumUserType.RESTAURANT);
+    return this.getReviewList(id, EnumAccountType.RESTAURANT);
   }
 
   public async getReviewStatistic(param: string | QueryGetReviewStatistic): Promise<ResGetReviewStatistic> {
@@ -190,7 +177,7 @@ export class ReviewService {
     };
   }
 
-  // replyReview
+  // replyReview {
 
   public async uploadReplyReview(token: string, payload: DtoUploadReplyReview): Promise<void> {
     const foundReview: Review = await this.reviewRepo.findOne(payload.reviewId, {
@@ -227,5 +214,53 @@ export class ReviewService {
     const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
     const foundReplyReview: ReplyReview = await this.replyReviewRepo.findOne({ restaurant: foundRestaurant });
     await this.replyReviewRepo.delete(foundReplyReview.restaurantId);
+  }
+
+  // }
+
+  private async getReviewList(id: number, userType: EnumAccountType): Promise<ResGetReviewList[]> {
+    const findOption: FindConditions<Review> = {};
+
+    if (userType === EnumAccountType.NORMAL) {
+      findOption.user = { userId: id };
+    } else {
+      findOption.restaurant = { restaurantId: id };
+    }
+
+    const foundReviews: Review[] = await this.reviewRepo.find({
+      join: {
+        alias: 'Review',
+        leftJoinAndSelect: { ReplyReview: 'Review.replyReview' },
+      },
+      where: findOption,
+    });
+    if (!foundReviews) {
+      throw new NotFoundException();
+    }
+    for (const elementReview of foundReviews) {
+      if (!elementReview.isEdited) {
+        Reflect.deleteProperty(elementReview, 'editTime');
+      }
+      if (elementReview.replyReview && !elementReview.replyReview.isEdited) {
+        Reflect.deleteProperty(elementReview.replyReview, 'editTime');
+      }
+    }
+    return foundReviews;
+  }
+
+  private async updateRestaurantStar(restaurantId: number): Promise<void> {
+    const foundReviews: Review[] = await this.reviewRepo.find({
+      select: ['star'],
+      where: { restaurant: { restaurantId } },
+    });
+
+    let totalOfStar: number = 0;
+    for (const elementReview of foundReviews) {
+      totalOfStar += elementReview.star;
+    }
+
+    if (totalOfStar != 0) {
+      await this.restaurantRepo.update(restaurantId, { star: totalOfStar / foundReviews.length });
+    }
   }
 }

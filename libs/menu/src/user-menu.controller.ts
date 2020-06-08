@@ -1,6 +1,10 @@
-import { Header } from '@app/type/etc';
-import { QueryGetMenuCategoryList, QueryGetMenuList } from '@app/type/req';
-import { ResGetMenuCategoryList, ResGetMenuList } from '@app/type/res';
+import {
+  Header,
+  QueryGetMenuCategoryList,
+  QueryGetMenuList,
+  ResGetMenuCategoryList,
+  ResGetMenuList,
+} from '@app/type';
 import {
   Controller,
   Get,

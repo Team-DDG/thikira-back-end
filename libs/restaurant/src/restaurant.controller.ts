@@ -1,4 +1,3 @@
-import { Header } from '@app/type/etc';
 import {
   DtoCheckPassword,
   DtoCreateRestaurant,
@@ -6,9 +5,12 @@ import {
   DtoEditPassword,
   DtoEditRestaurantInfo,
   DtoSignIn,
+  Header,
   QueryCheckEmail,
-} from '@app/type/req';
-import { ResLoadRestaurant, ResRefresh, ResSignIn } from '@app/type/res';
+  ResLoadRestaurant,
+  ResRefresh,
+  ResSignIn,
+} from '@app/type';
 import { UtilService } from '@app/util';
 import {
   Body,
@@ -26,13 +28,13 @@ import {
 import {
   ApiBearerAuth,
   ApiConflictResponse,
+  ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
   ApiTags,
-  ApiCreatedResponse,
 } from '@nestjs/swagger';
 import { RestaurantService } from './restaurant.service';
 

@@ -1,3 +1,3 @@
-export enum EnumUserType {
+export enum EnumAccountType {
   NORMAL, RESTAURANT
 }

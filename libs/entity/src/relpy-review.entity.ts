@@ -1,17 +1,9 @@
 import { Restaurant, Review } from '@app/entity';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export class ReplyReview {
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn()
   public restaurantId: number;
   @Column()
   public content: string;

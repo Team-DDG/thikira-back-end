@@ -1,6 +1,6 @@
-import { UploadGroupClass } from '@app/type/etc';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsNumber, IsOptional, IsString, IsUrl } from 'class-validator';
+import { UploadGroupClass } from '../../../etc';
 
 export class DtoUploadMenu {
   @ApiProperty() @IsNumber()
@@ -13,6 +13,6 @@ export class DtoUploadMenu {
   public readonly name: string;
   @ApiProperty() @IsNumber()
   public readonly price: number;
-  @ApiProperty() @IsArray() @IsOptional()
+  @ApiProperty({ type: [UploadGroupClass] }) @IsArray() @IsOptional()
   public readonly group?: UploadGroupClass[];
 }

@@ -1,4 +1,3 @@
-import { Header } from '@app/type/etc';
 import {
   DtoEditGroup,
   DtoEditMenu,
@@ -8,6 +7,7 @@ import {
   DtoUploadMenu,
   DtoUploadMenuCategory,
   DtoUploadOption,
+  Header,
   ParamRemoveGroup,
   ParamRemoveMenu,
   ParamRemoveMenuCategory,
@@ -15,8 +15,6 @@ import {
   QueryGetGroupList,
   QueryGetMenuList,
   QueryGetOptionList,
-} from '@app/type/req';
-import {
   ResGetGroupList,
   ResGetMenuCategoryList,
   ResGetMenuList,
@@ -25,7 +23,7 @@ import {
   ResUploadMenu,
   ResUploadMenuCategory,
   ResUploadOption,
-} from '@app/type/res';
+} from '@app/type';
 import { UtilService } from '@app/util';
 import {
   Body,
@@ -44,12 +42,12 @@ import {
 import {
   ApiBearerAuth,
   ApiConflictResponse,
+  ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
   ApiTags,
-  ApiCreatedResponse,
 } from '@nestjs/swagger';
 import { MenuService } from './menu.service';
 

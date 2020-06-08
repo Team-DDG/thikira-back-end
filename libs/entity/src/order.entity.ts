@@ -22,7 +22,7 @@ export class OrderDetail {
 @Entity()
 export class Order {
   @ObjectIdColumn()
-  public _id: ObjectID;
+  public _id?: ObjectID;
   public orderId: ObjectID;
   @Column()
   public roadAddress: string;

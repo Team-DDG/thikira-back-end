@@ -1,6 +1,5 @@
 import { AuthService } from '@app/auth';
 import { Coupon, Group, Menu, MenuCategory, Option, Restaurant } from '@app/entity';
-import { ParsedTokenClass } from '@app/type/etc';
 import {
   DtoEditGroup,
   DtoEditMenu,
@@ -10,12 +9,11 @@ import {
   DtoUploadMenu,
   DtoUploadMenuCategory,
   DtoUploadOption,
+  ParsedTokenClass,
   QueryGetGroupList,
   QueryGetMenuCategoryList,
   QueryGetMenuList,
   QueryGetOptionList,
-} from '@app/type/req';
-import {
   ResGetGroupList,
   ResGetMenuCategoryList,
   ResGetMenuList,
@@ -24,7 +22,7 @@ import {
   ResUploadMenu,
   ResUploadMenuCategory,
   ResUploadOption,
-} from '@app/type/res';
+} from '@app/type';
 import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -193,19 +191,19 @@ export class MenuService {
   // group
 
   public async uploadGroup(payload: DtoUploadGroup): Promise<ResUploadGroup> {
-    const foundMenu: Menu = await this.menuRepo.findOne(payload.menuId);
-    const foundGroup: Group = await this.groupRepo.findOne({
-      menu: foundMenu, name: payload.name,
+    const numOfGroup: number = await this.groupRepo.count({
+      menu: { menuId: payload.menuId }, name: payload.name,
     });
-    if (foundGroup) {
+    if (numOfGroup > 0) {
       throw new ConflictException();
     }
 
     const group: Group = new Group();
+    const menuId: number = payload.menuId;
     for (const element of ['menuId']) {
       Reflect.deleteProperty(payload, element);
     }
-    Object.assign(group, { ...payload, menu: foundMenu });
+    Object.assign(group, { ...payload, menu: { menuId } });
 
     await this.groupRepo.insert(group);
 

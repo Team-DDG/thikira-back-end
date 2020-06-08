@@ -1,8 +1,15 @@
 import { AuthService } from '@app/auth';
 import { Order, Restaurant, User } from '@app/entity';
-import { EnumUserType, DtoUploadOrder, DtoEditOrderStatus } from '@app/type';
-import { OrderUserClass, ParsedTokenClass } from '@app/type/etc';
-import { ResGetOrderList } from '@app/type/res';
+import {
+  DtoEditOrderStatus,
+  DtoUploadOrder,
+  EnumAccountType,
+  OrderUserClass,
+  ParsedTokenClass,
+  ResGetOrderList,
+  ResGetOrderListByRestaurant,
+  ResGetOrderListByUser,
+} from '@app/type';
 import { ForbiddenException, Inject, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectID, Repository } from 'typeorm';
@@ -52,23 +59,32 @@ export class OrderService {
     await this.orderRepo.insert(option);
   }
 
-  public async getListByUser(token: string): Promise<ResGetOrderList[]> {
+  public async getListByUser(token: string): Promise<ResGetOrderListByUser[]> {
     const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     const foundUser: User = await this.userRepo.findOne(id);
     if (!foundUser) {
       throw new ForbiddenException();
     }
-    return this.getList(id, EnumUserType.NORMAL);
+
+    return (await this.getList(id, EnumAccountType.NORMAL)).map(
+      (elementOrder: ResGetOrderList): ResGetOrderListByUser => {
+        Reflect.deleteProperty(elementOrder, 'userId');
+        return elementOrder;
+      });
   }
 
-  public async getListByRestaurant(token: string): Promise<ResGetOrderList[]> {
+  public async getListByRestaurant(token: string): Promise<ResGetOrderListByRestaurant[]> {
     const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
     const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
     if (!foundRestaurant) {
       throw new ForbiddenException();
     }
 
-    return this.getList(id, EnumUserType.RESTAURANT);
+    return (await this.getList(id, EnumAccountType.RESTAURANT)).map(
+      (elementOrder: ResGetOrderList): ResGetOrderListByRestaurant => {
+        Reflect.deleteProperty(elementOrder, 'restaurantId');
+        return elementOrder;
+      });
   }
 
   public async editOrderStatus(payload: DtoEditOrderStatus): Promise<void> {
@@ -79,7 +95,7 @@ export class OrderService {
     await this.orderRepo.delete(orderId);
   }
 
-  // only use in test
+  // only use in test {
 
   public async getOrderListByRestaurantUser(restaurantToken: string, userToken: string): Promise<Order[]> {
     let { id }: ParsedTokenClass = this.tokenService.parseToken(restaurantToken);
@@ -96,11 +112,11 @@ export class OrderService {
     return foundOrders;
   }
 
-  private async getList(id: number, userType: EnumUserType): Promise<ResGetOrderList[]> {
-    const res: ResGetOrderList[] = [];
+  // }
 
+  private async getList(id: number, userType: EnumAccountType): Promise<ResGetOrderList[]> {
     const findOption: FindConditions<Order> = {};
-    if (userType === EnumUserType.NORMAL) {
+    if (userType === EnumAccountType.NORMAL) {
       findOption.userId = id;
     } else {
       findOption.restaurantId = id;
@@ -108,23 +124,18 @@ export class OrderService {
 
     const foundOrders: Order[] = await this.orderRepo.find(findOption);
 
-    if (!foundOrders) {
+    if (foundOrders.length < 1) {
       throw new NotFoundException();
     }
 
-    for (const elementOrder of foundOrders) {
+    return foundOrders.map((elementOrder: Order): ResGetOrderList => {
       elementOrder.orderId = elementOrder._id;
-    }
-
-    for (const elementOrder of foundOrders) {
-      for (const element of ['_id', 'userId', 'restaurantId']) {
-        Reflect.deleteProperty(elementOrder, element);
-      }
-      res.push({
-        ...elementOrder, createTime: elementOrder.orderId.getTimestamp(),
+      Reflect.deleteProperty(elementOrder, '_id');
+      return {
+        ...elementOrder,
+        createTime: elementOrder.orderId.getTimestamp(),
         orderId: elementOrder.orderId.toString(),
-      });
-    }
-    return res;
+      };
+    });
   }
 }

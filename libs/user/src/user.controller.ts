@@ -1,6 +1,4 @@
 import { RestaurantService } from '@app/restaurant';
-import { EnumSortOption } from '@app/type';
-import { Header } from '@app/type/etc';
 import {
   DtoCheckPassword,
   DtoCreateUser,
@@ -8,10 +6,15 @@ import {
   DtoEditPassword,
   DtoEditUserInfo,
   DtoSignIn,
+  EnumSortOption,
+  Header,
   QueryCheckEmail,
   QueryGetRestaurantList,
-} from '@app/type/req';
-import { ResGetRestaurantList, ResLoadUser, ResRefresh, ResSignIn } from '@app/type/res';
+  ResGetRestaurantList,
+  ResLoadUser,
+  ResRefresh,
+  ResSignIn,
+} from '@app/type';
 import { UtilService } from '@app/util';
 import {
   Body,
@@ -29,6 +32,7 @@ import {
 import {
   ApiBearerAuth,
   ApiConflictResponse,
+  ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -36,7 +40,6 @@ import {
   ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
-  ApiCreatedResponse,
 } from '@nestjs/swagger';
 import { UserService } from './user.service';
 

@@ -1,6 +1,4 @@
-import { Header } from '@app/type/etc';
-import { DtoEditOrderStatus } from '@app/type/req';
-import { ResGetOrderList } from '@app/type/res';
+import { DtoEditOrderStatus, Header, ResGetOrderList, ResGetOrderListByRestaurant } from '@app/type';
 import { UtilService } from '@app/util';
 import {
   Body,
@@ -28,7 +26,7 @@ export class RestaurantOrderController {
   @ApiBearerAuth()
   @ApiOkResponse({ type: [ResGetOrderList] })
   @ApiForbiddenResponse()
-  public async getOrderList(@Headers() header: Header): Promise<ResGetOrderList[]> {
+  public async getOrderList(@Headers() header: Header): Promise<ResGetOrderListByRestaurant[]> {
     try {
       return this.od_service.getListByRestaurant(this.utilService.getTokenBody(header));
     } catch (e) {

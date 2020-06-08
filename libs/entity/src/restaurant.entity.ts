@@ -21,17 +21,17 @@ export class Restaurant {
   @CreateDateColumn()
   public createTime: Date;
   @Column()
+  public dayOff: string;
+  @Column()
   public description: string;
   @Column()
   public email: string;
   @Column()
-  public name: string;
-  @Column()
-  public phone: string;
+  public image: string;
   @Column()
   public minPrice: number;
   @Column()
-  public dayOff: string;
+  public name: string;
   @Column()
   public onlinePayment: boolean;
   @Column()
@@ -41,7 +41,9 @@ export class Restaurant {
   @Column()
   public password: string;
   @Column()
-  public image: string;
+  public phone: string;
+  @Column({ nullable: true, type: 'double' })
+  public star: number;
   @OneToMany(() => Coupon, (coupon: Coupon) => coupon.restaurant)
   public coupon: Coupon[];
   @OneToMany(() => MenuCategory, (menuCategory: MenuCategory) => menuCategory.restaurant)

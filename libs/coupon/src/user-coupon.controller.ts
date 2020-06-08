@@ -1,6 +1,4 @@
-import { Header } from '@app/type/etc';
-import { QueryGetCoupon } from '@app/type/req';
-import { ResGetCoupon } from '@app/type/res';
+import { Header, QueryGetCoupon, ResGetCoupon } from '@app/type';
 import { UtilService } from '@app/util';
 import {
   Controller,
@@ -26,7 +24,7 @@ export class UserCouponController {
   @ApiOperation({ summary: '쿠폰 조회' })
   @ApiBearerAuth()
   @ApiOkResponse({ type: ResGetCoupon })
-  @ApiNotFoundResponse()
+  @ApiNotFoundResponse({ description: '\"not exist restaurant\" | null' })
   public async getCoupon(
     @Headers() header: Header,
     @Query(new ValidationPipe()) query: QueryGetCoupon,

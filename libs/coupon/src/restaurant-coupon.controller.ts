@@ -1,6 +1,4 @@
-import { Header } from '@app/type/etc';
-import { DtoUploadCoupon } from '@app/type/req';
-import { ResGetCouponList } from '@app/type/res';
+import { DtoUploadCoupon, Header, ResGetCouponList } from '@app/type';
 import { UtilService } from '@app/util';
 import {
   Body,
@@ -14,11 +12,11 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-  ApiCreatedResponse,
 } from '@nestjs/swagger';
 import { CouponService } from './coupon.service';
 

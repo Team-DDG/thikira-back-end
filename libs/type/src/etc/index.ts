@@ -1,3 +1,4 @@
+export * from './base-order.class';
 export * from './edit-group.class';
 export * from './edit-menu-category.class';
 export * from './edit-menu.class';

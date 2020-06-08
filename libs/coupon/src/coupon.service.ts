@@ -1,8 +1,6 @@
 import { AuthService } from '@app/auth';
 import { Coupon, Restaurant } from '@app/entity';
-import { ParsedTokenClass } from '@app/type/etc';
-import { DtoUploadCoupon, QueryGetCoupon } from '@app/type/req';
-import { ResGetCoupon, ResGetCouponList } from '@app/type/res';
+import { DtoUploadCoupon, ParsedTokenClass, QueryGetCoupon, ResGetCoupon, ResGetCouponList } from '@app/type';
 import { ConflictException, ForbiddenException, Inject, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToClass } from 'class-transformer';
@@ -23,7 +21,7 @@ export class CouponService {
       throw new ForbiddenException();
     }
     const foundCoupon: Coupon = await this.couponRepo.findOne({
-      expiredDay: MoreThan(Date.now()),
+      expiredDay: MoreThan(new Date()),
       restaurant: foundRestaurant,
     });
     if (foundCoupon) {
@@ -61,9 +59,11 @@ export class CouponService {
     }
 
     if (!foundRestaurant) {
-      throw new ForbiddenException();
+      throw new NotFoundException('not exist restaurant');
     }
-    const foundCoupon: Coupon = await this.couponRepo.findOne({ restaurant: foundRestaurant });
+    const foundCoupon: Coupon = await this.couponRepo.findOne({
+      expiredDay: MoreThan(new Date()), restaurant: foundRestaurant,
+    });
     if (!foundCoupon) {
       throw new NotFoundException();
     }

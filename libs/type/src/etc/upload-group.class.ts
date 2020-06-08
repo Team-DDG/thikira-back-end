@@ -7,6 +7,6 @@ export class UploadGroupClass {
   public readonly maxCount: number;
   @ApiProperty() @IsString()
   public readonly name: string;
-  @ApiProperty() @IsArray() @IsOptional()
+  @ApiProperty({ type: [UploadOptionClass] }) @IsArray() @IsOptional()
   public readonly option?: UploadOptionClass[];
 }
