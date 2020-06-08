@@ -1,22 +1,26 @@
 import { AuthModule } from '@app/auth';
 import { config } from '@app/config';
-import { EnumPaymentType, mongodbEntities, mysqlEntities, EnumOrderStatus } from '@app/entity';
+import { EnumOrderStatus, EnumPaymentType, mongodbEntities, mysqlEntities, Restaurant } from '@app/entity';
+import { OrderModule, OrderService } from '@app/order';
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
 import { TestUtilModule, TestUtilService } from '@app/test-util';
-import { EnumSortOption, ResGetOrderList, ResGetRestaurantList, DtoUploadOrder } from '@app/type';
-import { DtoCreateRestaurant, DtoCreateUser } from '@app/type/req';
+import {
+  DtoCreateRestaurant,
+  DtoCreateUser,
+  DtoUploadOrder,
+  ResGetOrderListByRestaurant,
+  ResSignIn,
+} from '@app/type';
 import { UserModule, UserService } from '@app/user';
 import { UtilModule } from '@app/util';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { getConnection } from 'typeorm';
-import { OrderModule } from './order.module';
-import { OrderService } from './order.service';
 
 describe('OrderService', () => {
+  let orderService: OrderService;
   let restaurantService: RestaurantService;
-  let restaurantToken: string;
-  let service: OrderService;
+  let restaurantTokens: string[];
   const testOrder: DtoUploadOrder = {
     discountAmount: 500,
     menu: [{
@@ -59,7 +63,7 @@ describe('OrderService', () => {
     phone: '01012345678',
   };
   let userService: UserService;
-  let userToken: string;
+  let userTokens: string[];
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -74,89 +78,99 @@ describe('OrderService', () => {
       providers: [OrderService],
     }).compile();
 
-    service = module.get<OrderService>(OrderService);
+    orderService = module.get<OrderService>(OrderService);
     restaurantService = module.get<RestaurantService>(RestaurantService);
     userService = module.get<UserService>(UserService);
+
+    const testUsers: DtoCreateUser[] = [];
+    const testRestaurants: DtoCreateRestaurant[] = [];
+
+    for (let i: number = 0; i < 2; i++) {
+      testUsers.push({
+        ...testUser,
+        email: i.toString() + testUser.email,
+        nickname: testUser.nickname + i.toString(),
+      });
+      testRestaurants.push({
+        ...testRestaurant,
+        email: i.toString() + testUser.email,
+        name: testRestaurant.name + i.toString(),
+      });
+    }
+
+    userTokens = (await Promise.all(testUsers
+      .map(async (elementUser: DtoCreateUser): Promise<ResSignIn> => {
+        await userService.create(elementUser);
+        return userService.signIn({
+          email: elementUser.email,
+          password: elementUser.password,
+        });
+      }))).map((elementRes: ResSignIn): string => {
+      return elementRes.accessToken;
+    });
+
+    restaurantTokens = (await Promise.all(testRestaurants
+      .map(async (elementRestaurant: DtoCreateRestaurant): Promise<ResSignIn> => {
+        await restaurantService.create(elementRestaurant);
+        return restaurantService.signIn({
+          email: elementRestaurant.email,
+          password: elementRestaurant.password,
+        });
+      }))).map((elementRes: ResSignIn): string => {
+      return elementRes.accessToken;
+    });
   });
 
   afterAll(async () => {
+    await Promise.all(userTokens
+      .map(async (elementToken: string): Promise<void> => userService.leave(elementToken)));
+    await Promise.all(restaurantTokens
+      .map(async (elementToken: string): Promise<void> => restaurantService.leave(elementToken)));
+
     await getConnection('mysql').close();
     await getConnection('mongodb').close();
   });
 
   it('200 uploadOrder', async () => {
-    await restaurantService.create(testRestaurant);
-    restaurantToken = (await restaurantService.signIn({
-      email: testRestaurant.email,
-      password: testRestaurant.password,
-    })).accessToken;
+    const { restaurantId }: Restaurant = await restaurantService.get(restaurantTokens[0]);
 
-    const [{ restaurantId }]: ResGetRestaurantList[] = await restaurantService.getList({
-      category: testRestaurant.category, sortOption: EnumSortOption.NEARNESS,
-    });
+    await orderService.upload(userTokens[0], { ...testOrder, restaurantId });
 
-    await userService.create(testUser);
-    userToken = (await userService.signIn({
-      email: testUser.email,
-      password: testUser.password,
-    })).accessToken;
-
-    await service.upload(userToken, { ...testOrder, restaurantId });
-
-    const [foundOrder]: ResGetOrderList[] = await service.getListByRestaurant(restaurantToken);
+    const [foundOrder]: ResGetOrderListByRestaurant[] = await orderService
+      .getListByRestaurant(restaurantTokens[0]);
 
     let [requestOrder, responseOrder] = TestUtilService.makeElementComparable(foundOrder, testOrder, [
-      'roadAddress', 'address', 'createTime', 'menu', 'nickname',
-      'orderId', 'orderDetail', 'phone', 'restaurantId', 'status', 'totalPrice',
+      'roadAddress', 'address', 'createTime', 'menu', 'nickname', 'orderId',
+      'orderDetail', 'phone', 'restaurantId', 'status', 'totalPrice', 'userId',
     ]);
     expect(requestOrder).toEqual(responseOrder);
+
     [requestOrder, responseOrder] = TestUtilService
       .makeElementComparable(foundOrder.orderDetail[0], testOrder.menu[0], ['subPrice', 'group']);
     expect(requestOrder).toEqual(responseOrder);
+
     [requestOrder, responseOrder] = TestUtilService.makeElementComparable(
       foundOrder.orderDetail[0].group[0], testOrder.menu[0].group[0], ['option']);
     expect(requestOrder).toEqual(responseOrder);
-    expect(foundOrder.orderDetail[0].group[0].option[0]).toEqual(testOrder.menu[0].group[0].option[0]);
-    await service.removeOrder(foundOrder.orderId);
 
-    await restaurantService.leave(restaurantToken);
-    await userService.leave(userToken);
+    expect(foundOrder.orderDetail[0].group[0].option[0]).toEqual(testOrder.menu[0].group[0].option[0]);
+
+    await orderService.removeOrder(foundOrder.orderId);
   });
 
   it('200 editOrderStatus', async () => {
-    const restaurant: { email: string; name: string } = {
-      email: `2${testRestaurant.email}`, name: `${testRestaurant.name}_2`,
-    };
-    await restaurantService.create({ ...testRestaurant, ...restaurant });
-    restaurantToken = (await restaurantService.signIn({
-      email: restaurant.email, password: testRestaurant.password,
-    })).accessToken;
+    const { restaurantId }: Restaurant = await restaurantService.get(restaurantTokens[1]);
 
-    const [{ restaurantId }]: ResGetRestaurantList[] = await restaurantService.getList({
-      category: testRestaurant.category, sortOption: EnumSortOption.NEARNESS,
-    });
+    await orderService.upload(userTokens[1], { ...testOrder, restaurantId });
 
-    const user: { email: string; nickname: string } = {
-      email: `2${testUser.email}`, nickname: `${testUser.nickname}_2`,
-    };
-    await userService.create({ ...testUser, ...user });
-    userToken = (await userService.signIn({
-      email: user.email,
-      password: testUser.password,
-    })).accessToken;
+    let [foundOrder]: ResGetOrderListByRestaurant[] = await orderService
+      .getListByRestaurant(restaurantTokens[1]);
 
-    await service.upload(userToken, { ...testOrder, restaurantId });
+    await orderService.editOrderStatus({ orderId: foundOrder.orderId, status: EnumOrderStatus.DONE });
 
-    let [foundOrder]: ResGetOrderList[] = await service.getListByRestaurant(restaurantToken);
-
-    await service.editOrderStatus({ orderId: foundOrder.orderId, status: EnumOrderStatus.DONE });
-
-    [foundOrder] = await service.getListByRestaurant(restaurantToken);
+    [foundOrder] = await orderService.getListByRestaurant(restaurantTokens[1]);
     expect(foundOrder.status).toEqual(EnumOrderStatus.DONE);
 
-    await service.removeOrder(foundOrder.orderId);
-
-    await restaurantService.leave(restaurantToken);
-    await userService.leave(userToken);
+    await orderService.removeOrder(foundOrder.orderId);
   });
 });

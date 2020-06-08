@@ -1,40 +1,39 @@
 import { AuthModule } from '@app/auth';
 import { config } from '@app/config';
+import { CouponModule, CouponService } from '@app/coupon';
 import { Coupon, mongodbEntities, mysqlEntities } from '@app/entity';
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
-import { DtoCreateRestaurant, DtoUploadCoupon } from '@app/type/req';
-import { ResGetCoupon, ResSignIn } from '@app/type/res';
+import { DtoCreateRestaurant, DtoUploadCoupon, ResGetCoupon } from '@app/type';
 import { UtilModule } from '@app/util';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { getConnection } from 'typeorm';
-import { CouponModule } from './coupon.module';
-import { CouponService } from './coupon.service';
 
 describe('CouponService', () => {
+  let couponService: CouponService;
   let restaurantService: RestaurantService;
-  let service: CouponService;
-  const testRestaurant: DtoCreateRestaurant = {
-    address: 'a',
-    area: 'coupon',
-    category: 'coupon_test',
-    closeTime: 'element',
-    dayOff: 'f',
-    description: 'group',
-    email: 'coupon_test@gmail.com',
-    image: 'image.url',
-    minPrice: 10000,
-    name: 'coupon_test',
-    offlinePayment: false,
-    onlinePayment: false,
-    openTime: 'i',
-    password: 'coupon_test',
-    phone: '01012345678',
-    roadAddress: 'b',
-  };
+  let restaurantToken: string;
   const testCoupon: DtoUploadCoupon = {
     discountAmount: 500,
     expiredDay: new Date(Date.now() + 86400000),
+  };
+  const testRestaurant: DtoCreateRestaurant = {
+    address: 'a',
+    area: 'coupon',
+    category: 'couponTest',
+    closeTime: 'element',
+    dayOff: 'f',
+    description: 'group',
+    email: 'couponTest@gmail.com',
+    image: 'image.url',
+    minPrice: 10000,
+    name: 'couponTest',
+    offlinePayment: false,
+    onlinePayment: false,
+    openTime: 'i',
+    password: 'couponTest',
+    phone: '01012345678',
+    roadAddress: 'b',
   };
 
   beforeAll(async () => {
@@ -50,32 +49,32 @@ describe('CouponService', () => {
       providers: [CouponService],
     }).compile();
 
-    service = module.get<CouponService>(CouponService);
+    couponService = module.get<CouponService>(CouponService);
     restaurantService = module.get<RestaurantService>(RestaurantService);
+
+    await restaurantService.create(testRestaurant);
+    ({ accessToken: restaurantToken } = await restaurantService.signIn({
+      email: testRestaurant.email,
+      password: testRestaurant.password,
+    }));
   });
 
   afterAll(async () => {
+    await restaurantService.leave(restaurantToken);
+
     await getConnection('mysql').close();
     await getConnection('mongodb').close();
   });
 
   it('Should success get()', async () => {
-    await restaurantService.create(testRestaurant);
-    const { accessToken }: ResSignIn = await restaurantService.signIn({
-      email: testRestaurant.email,
-      password: testRestaurant.password,
-    });
+    await couponService.upload(restaurantToken, testCoupon);
 
-    await service.upload(accessToken, testCoupon);
-
-    const foundCoupon: ResGetCoupon = await service.get(accessToken);
+    const foundCoupon: ResGetCoupon = await couponService.get(restaurantToken);
     if (testCoupon.discountAmount !== foundCoupon.discountAmount) {
       throw Error();
     }
 
-    const { couponId }: Coupon = await service.getCoupon(testCoupon.discountAmount);
-    await service.remove(couponId);
-
-    await restaurantService.leave(accessToken);
+    const { couponId }: Coupon = await couponService.getCoupon(testCoupon.discountAmount);
+    await couponService.remove(couponId);
   });
 });
