@@ -30,51 +30,51 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { getConnection } from 'typeorm';
 
 describe('MenuService', () => {
-  let menuService: MenuService;
-  let restaurantService: RestaurantService;
-  let restaurantTokens: string[];
-  const testGroup: DtoUploadGroup = {
-    maxCount: 0, menuId: null, name: 'sauce',
+  let menu_service: MenuService;
+  let restaurant_service: RestaurantService;
+  let restaurant_tokens: string[];
+  const test_group: DtoUploadGroup = {
+    m_id: null, max_count: 0, name: 'sauce',
     option: [{ name: 'garlic sauce', price: 500 }],
   };
-  const testMenu: DtoUploadMenu = {
+  const test_menu: DtoUploadMenu = {
     description: 'strawberry, banana, melon!',
     group: [{
-      maxCount: 0, name: '소스',
+      max_count: 0, name: '소스',
       option: [{ name: '갈릭 소스', price: 500 }],
     }],
-    image: 'image.url', menuCategoryId: null,
+    image: 'image.url', mc_id: null,
     name: 'Traffic Light Chicken', price: 17000,
   };
-  const testMenuCategory: DtoUploadMenuCategory = { name: 'special chicken' };
-  const testOption: DtoUploadOption = {
-    groupId: null, name: 'garlic sauce', price: 500,
+  const test_menuCategory: DtoUploadMenuCategory = { name: 'special chicken' };
+  const test_option: DtoUploadOption = {
+    g_id: null, name: 'garlic sauce', price: 500,
   };
-  const testRestaurant: DtoCreateRestaurant = {
+  const test_restaurant: DtoCreateRestaurant = {
     address: 'a',
     area: 'c',
     category: 'menu_test',
-    closeTime: 'element',
-    dayOff: 'f',
+    close_time: 'e',
+    day_off: 'f',
     description: 'g',
     email: 'menu_test@gmail.com',
     image: 'image.url',
-    minPrice: 10000,
+    min_price: 10000,
     name: 'menu_test',
-    offlinePayment: false,
-    onlinePayment: false,
-    openTime: 'i',
+    offline_payment: false,
+    online_payment: false,
+    open_time: 'i',
     password: 'menu_test',
     phone: '01012345678',
-    roadAddress: 'b',
+    road_address: 'b',
   };
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         MenuModule, RestaurantModule, TestUtilModule, AuthModule,
-        TypeOrmModule.forRoot(config.mysqlConfig),
-        TypeOrmModule.forRoot(config.mongodbConfig),
+        TypeOrmModule.forRoot(config.mysql_config),
+        TypeOrmModule.forRoot(config.mongodb_config),
         TypeOrmModule.forFeature(mysqlEntities, 'mysql'),
         TypeOrmModule.forFeature(mongodbEntities, 'mongodb'),
         UtilModule,
@@ -82,213 +82,212 @@ describe('MenuService', () => {
       providers: [MenuService],
     }).compile();
 
-    menuService = module.get<MenuService>(MenuService);
-    restaurantService = module.get<RestaurantService>(RestaurantService);
+    menu_service = module.get<MenuService>(MenuService);
+    restaurant_service = module.get<RestaurantService>(RestaurantService);
 
-    const testRestaurants: DtoCreateRestaurant[] = [];
+    const test_restaurants: DtoCreateRestaurant[] = [];
 
     for (let i: number = 0; i < 8; i++) {
-      testRestaurants.push({
-        ...testRestaurant,
-        email: i.toString() + testRestaurant.email,
-        name: testRestaurant.name + i.toString(),
+      test_restaurants.push({
+        ...test_restaurant,
+        email: i.toString() + test_restaurant.email,
+        name: test_restaurant.name + i.toString(),
       });
     }
 
-    restaurantTokens = (await Promise.all(testRestaurants
-      .map(async (elementRestaurant: DtoCreateRestaurant): Promise<ResSignIn> => {
-        await restaurantService.create(elementRestaurant);
-        return restaurantService.signIn({
-          email: elementRestaurant.email,
-          password: elementRestaurant.password,
+    restaurant_tokens = (await Promise.all(test_restaurants
+      .map(async (e_restaurant: DtoCreateRestaurant): Promise<ResSignIn> => {
+        await restaurant_service.create(e_restaurant);
+        return restaurant_service.signIn({
+          email: e_restaurant.email,
+          password: e_restaurant.password,
         });
-      }))).map((elementToken: ResSignIn): string => elementToken.accessToken);
+      }))).map((e_token: ResSignIn): string => e_token.access_token);
   });
 
   afterAll(async () => {
-    await Promise.all(restaurantTokens
-      .map(async (elementToken: string): Promise<void> => restaurantService.leave(elementToken)));
+    await Promise.all(restaurant_tokens
+      .map(async (e_token: string): Promise<void> => restaurant_service.leave(e_token)));
 
     await getConnection('mysql').close();
     await getConnection('mongodb').close();
   });
 
   it('should success uploadMenuCategory()', async () => {
-    const { menuCategoryId }: ResUploadMenuCategory =
-      await menuService.uploadMenuCategory(restaurantTokens[0], testMenuCategory);
+    const { mc_id }: ResUploadMenuCategory =
+      await menu_service.uploadMenuCategory(restaurant_tokens[0], test_menuCategory);
 
-    const [foundMenuCategory]: ResGetMenuCategoryList[] = await menuService
-      .getMenuCategoryList(restaurantTokens[0]);
+    const [found_menu_category]: ResGetMenuCategoryList[] = await menu_service
+      .getMenuCategoryList(restaurant_tokens[0]);
 
-    const [requestMenuCategory, responseMenuCategory] = TestUtilService
-      .makeElementComparable(testMenuCategory, foundMenuCategory, ['menuCategoryId']);
-    expect(requestMenuCategory).toStrictEqual(responseMenuCategory);
+    const [req_menu_category, res_menu_category] = TestUtilService
+      .makeElementComparable(test_menuCategory, found_menu_category, ['mc_id']);
+    expect(req_menu_category).toStrictEqual(res_menu_category);
 
-    await menuService.removeMenuCategory([menuCategoryId]);
+    await menu_service.removeMenuCategory([mc_id]);
   });
 
   it('should success editMenuCategory()', async () => {
-    const { menuCategoryId }: ResUploadMenuCategory =
-      await menuService.uploadMenuCategory(restaurantTokens[1], testMenuCategory);
+    const { mc_id }: ResUploadMenuCategory =
+      await menu_service.uploadMenuCategory(restaurant_tokens[1], test_menuCategory);
 
-    const editData: DtoEditMenuCategory = { menuCategoryId, name: 'etc' };
+    const edit_data: DtoEditMenuCategory = { mc_id, name: 'etc' };
 
-    await menuService.editMenuCategory(editData);
+    await menu_service.editMenuCategory(edit_data);
 
-    const [foundMenuCategory]: ResGetMenuCategoryList[] = await menuService
-      .getMenuCategoryList(restaurantTokens[1]);
+    const [found_menu_category]: ResGetMenuCategoryList[] = await menu_service
+      .getMenuCategoryList(restaurant_tokens[1]);
 
-    const [requestMenuCategory, responseMenuCategory] = TestUtilService
-      .makeElementComparable(editData, foundMenuCategory, ['menuCategoryId']);
-    expect(requestMenuCategory).toStrictEqual(responseMenuCategory);
+    const [req_menu_category, res_menu_category] = TestUtilService
+      .makeElementComparable(edit_data, found_menu_category, ['mc_id']);
+    expect(req_menu_category).toStrictEqual(res_menu_category);
 
-    await menuService.removeMenuCategory([menuCategoryId]);
+    await menu_service.removeMenuCategory([mc_id]);
   });
 
   it('should success uploadMenu()', async () => {
-    const { menuCategoryId }: ResUploadMenuCategory = await menuService
-      .uploadMenuCategory(restaurantTokens[2], testMenuCategory);
+    const { mc_id }: ResUploadMenuCategory = await menu_service
+      .uploadMenuCategory(restaurant_tokens[2], test_menuCategory);
 
-    const { menuId }: ResUploadMenu = await menuService.uploadMenu({ ...testMenu, menuCategoryId });
+    const { m_id }: ResUploadMenu = await menu_service.uploadMenu({ ...test_menu, mc_id });
 
-    const [foundMenu]: ResGetMenuList[] = await menuService.getMenuList({
-      menuCategoryId: menuCategoryId.toString(),
+    const [found_menu]: ResGetMenuList[] = await menu_service.getMenuList({
+      mc_id: mc_id.toString(),
     });
 
-    const [requestMenu, responseMenu] = TestUtilService
-      .makeElementComparable(testMenu, foundMenu, ['menuId', 'menuCategoryId', 'group']);
-    const [requestGroup, responseGroup] = TestUtilService
-      .makeElementComparable(testMenu.group[0], foundMenu.group[0], ['groupId', 'option']);
-    const [requestOption, responseOption] = TestUtilService
-      .makeElementComparable(testMenu.group[0].option[0], foundMenu.group[0].option[0], ['optionId']);
+    const [req_menu, res_menu] = TestUtilService
+      .makeElementComparable(test_menu, found_menu, ['m_id', 'mc_id', 'group']);
+    const [req_group, res_group] = TestUtilService
+      .makeElementComparable(test_menu.group[0], found_menu.group[0], ['g_id', 'option']);
+    const [req_option, res_option] = TestUtilService
+      .makeElementComparable(test_menu.group[0].option[0], found_menu.group[0].option[0], ['o_id']);
 
-    expect(requestMenu).toStrictEqual(responseMenu);
-    expect(requestGroup).toStrictEqual(responseGroup);
-    expect(requestOption).toStrictEqual(responseOption);
+    expect(req_menu).toStrictEqual(res_menu);
+    expect(req_group).toStrictEqual(res_group);
+    expect(req_option).toStrictEqual(res_option);
 
-    await menuService.removeMenu([menuId]);
+    await menu_service.removeMenu([m_id]);
   });
 
   it('should success editMenu()', async () => {
-    const { menuCategoryId }: ResUploadMenuCategory =
-      await menuService.uploadMenuCategory(restaurantTokens[3], testMenuCategory);
-    const { menuId }: ResUploadMenu =
-      await menuService.uploadMenu({ ...testMenu, menuCategoryId });
+    const { mc_id }: ResUploadMenuCategory =
+      await menu_service.uploadMenuCategory(restaurant_tokens[3], test_menuCategory);
+    const { m_id }: ResUploadMenu =
+      await menu_service.uploadMenu({ ...test_menu, mc_id });
 
-    const editData: DtoEditMenu = {
+    const edit_data: DtoEditMenu = {
       description: 'normal',
-      image: 'url.image', menuId,
+      image: 'url.image', m_id,
       name: 'fried chicken',
       price: 17000,
     };
 
-    await menuService.editMenu({ ...editData, menuId });
+    await menu_service.editMenu({ ...edit_data, m_id });
 
-    const [foundMenu]: ResGetMenuList[] = await menuService.getMenuList({
-      menuCategoryId: menuCategoryId.toString(),
+    const [found_menu]: ResGetMenuList[] = await menu_service.getMenuList({
+      mc_id: mc_id.toString(),
     });
 
-    const [requestMenu, responseMenu] = TestUtilService
-      .makeElementComparable(editData, foundMenu, ['menuId', 'menuCategoryId', 'group']);
-    expect(requestMenu).toStrictEqual(responseMenu);
+    const [req_menu, res_menu] = TestUtilService
+      .makeElementComparable(edit_data, found_menu, ['m_id', 'mc_id', 'group']);
+    expect(req_menu).toStrictEqual(res_menu);
 
-    await menuService.removeMenu([menuId]);
+    await menu_service.removeMenu([m_id]);
   });
 
   it('should success uploadGroup()', async () => {
-    const { menuCategoryId }: ResUploadMenuCategory =
-      await menuService.uploadMenuCategory(restaurantTokens[4], testMenuCategory);
-    const menu: DtoUploadMenu = { ...testMenu };
+    const { mc_id }: ResUploadMenuCategory =
+      await menu_service.uploadMenuCategory(restaurant_tokens[4], test_menuCategory);
+    const menu: DtoUploadMenu = { ...test_menu };
 
     Reflect.deleteProperty(menu, 'group');
 
-    const { menuId }: ResUploadMenu = await menuService.uploadMenu({ ...menu, menuCategoryId });
-    const { groupId }: ResUploadGroup = await menuService.uploadGroup({ ...testGroup, menuId });
+    const { m_id }: ResUploadMenu = await menu_service.uploadMenu({ ...menu, mc_id });
+    const { g_id }: ResUploadGroup = await menu_service.uploadGroup({ ...test_group, m_id });
 
-    const [foundGroup]: ResGetGroupList[] = await menuService.getGroupList({ menuId: menuId.toString() });
+    const [found_group]: ResGetGroupList[] = await menu_service.getGroupList({ m_id: m_id.toString() });
 
-    const [requestGroup, responseGroup] = TestUtilService
-      .makeElementComparable(testGroup, foundGroup, ['groupId', 'menuId', 'option']);
-    const [requestOption, responseOption] = TestUtilService
-      .makeElementComparable(testGroup.option[0], foundGroup.option[0], ['optionId']);
+    const [req_group, res_group] = TestUtilService
+      .makeElementComparable(test_group, found_group, ['g_id', 'm_id', 'option']);
+    const [req_option, res_option] = TestUtilService
+      .makeElementComparable(test_group.option[0], found_group.option[0], ['o_id']);
 
-    expect(requestGroup).toStrictEqual(responseGroup);
-    expect(requestOption).toStrictEqual(responseOption);
+    expect(req_group).toStrictEqual(res_group);
+    expect(req_option).toStrictEqual(res_option);
 
-    await menuService.removeGroup([groupId]);
+    await menu_service.removeGroup([g_id]);
   });
 
   it('should success editGroup()', async () => {
-    const { menuCategoryId }: ResUploadMenuCategory =
-      await menuService.uploadMenuCategory(restaurantTokens[5], testMenuCategory);
-    const menu: DtoUploadMenu = { ...testMenu };
+    const { mc_id }: ResUploadMenuCategory =
+      await menu_service.uploadMenuCategory(restaurant_tokens[5], test_menuCategory);
+    const menu: DtoUploadMenu = { ...test_menu };
     Reflect.deleteProperty(menu, 'group');
-    const { menuId }: ResUploadMenu = await menuService.uploadMenu({ ...menu, menuCategoryId });
-    const { groupId }: ResUploadGroup = await menuService.uploadGroup({ ...testGroup, menuId });
+    const { m_id }: ResUploadMenu = await menu_service.uploadMenu({ ...menu, mc_id });
+    const { g_id }: ResUploadGroup = await menu_service.uploadGroup({ ...test_group, m_id });
 
-    const editData: DtoEditGroup = {
-      groupId, maxCount: 0, name: 'etc',
+    const edit_data: DtoEditGroup = {
+      g_id, max_count: 0, name: 'etc',
     };
 
-    await menuService.editGroup({ ...editData, groupId });
+    await menu_service.editGroup({ ...edit_data, g_id });
 
-    const [foundGroup]: ResGetGroupList[] = await menuService.getGroupList({ menuId: menuId.toString() });
+    const [found_group]: ResGetGroupList[] = await menu_service.getGroupList({ m_id: m_id.toString() });
 
-    const [requestGroup, responseGroup] = TestUtilService
-      .makeElementComparable(editData, foundGroup, ['groupId', 'option']);
-    expect(requestGroup).toStrictEqual(responseGroup);
+    const [req_group, res_group] = TestUtilService
+      .makeElementComparable(edit_data, found_group, ['g_id', 'option']);
+    expect(req_group).toStrictEqual(res_group);
 
-    await menuService.removeGroup([groupId]);
+    await menu_service.removeGroup([g_id]);
   });
 
   it('should success uploadOption()', async () => {
-    const { menuCategoryId }: ResUploadMenuCategory =
-      await menuService.uploadMenuCategory(restaurantTokens[6], testMenuCategory);
+    const { mc_id }: ResUploadMenuCategory =
+      await menu_service.uploadMenuCategory(restaurant_tokens[6], test_menuCategory);
 
-    const menu: DtoUploadMenu = { ...testMenu };
+    const menu: DtoUploadMenu = { ...test_menu };
     Reflect.deleteProperty(menu.group[0], 'option');
 
-    await menuService.uploadMenu({ ...menu, menuCategoryId });
+    await menu_service.uploadMenu({ ...menu, mc_id });
 
-    const [{ group: [{ groupId }] }]: ResGetMenuList[] =
-      await menuService.getMenuList({ menuCategoryId: menuCategoryId.toString() });
-    const { optionId }: ResUploadOption = await menuService.uploadOption({ ...testOption, groupId });
+    const [{ group: [{ g_id }] }]: ResGetMenuList[] =
+      await menu_service.getMenuList({ mc_id: mc_id.toString() });
+    const { o_id }: ResUploadOption = await menu_service.uploadOption({ ...test_option, g_id });
 
-    const [foundOption]: ResGetOptionList[] = await menuService
-      .getOptionList({ groupId: groupId.toString() });
+    const [found_option]: ResGetOptionList[] = await menu_service.getOptionList({ g_id: g_id.toString() });
 
-    const [requestOption, responseOption] = TestUtilService
-      .makeElementComparable(testOption, foundOption, ['groupId', 'optionId']);
+    const [req_option, res_option] = TestUtilService
+      .makeElementComparable(test_option, found_option, ['g_id', 'o_id']);
 
-    expect(requestOption).toStrictEqual(responseOption);
+    expect(req_option).toStrictEqual(res_option);
 
-    await menuService.removeOption([optionId]);
+    await menu_service.removeOption([o_id]);
   });
 
   it('should success editOption()', async () => {
-    const { menuCategoryId }: ResUploadMenuCategory =
-      await menuService.uploadMenuCategory(restaurantTokens[7], testMenuCategory);
+    const { mc_id }: ResUploadMenuCategory =
+      await menu_service.uploadMenuCategory(restaurant_tokens[7], test_menuCategory);
 
-    const menu: DtoUploadMenu = { ...testMenu };
+    const menu: DtoUploadMenu = { ...test_menu };
     Reflect.deleteProperty(menu.group[0], 'option');
 
-    await menuService.uploadMenu({ ...menu, menuCategoryId });
+    await menu_service.uploadMenu({ ...menu, mc_id });
 
-    const [{ group: [{ groupId }] }]: ResGetMenuList[] =
-      await menuService.getMenuList({ menuCategoryId: menuCategoryId.toString() });
-    const { optionId }: ResUploadOption = await menuService.uploadOption({ ...testOption, groupId });
+    const [{ group: [{ g_id }] }]: ResGetMenuList[] =
+      await menu_service.getMenuList({ mc_id: mc_id.toString() });
+    const { o_id }: ResUploadOption = await menu_service.uploadOption({ ...test_option, g_id });
 
-    const editData: DtoEditOption = { name: 'onion', optionId, price: 600 };
+    const edit_data: DtoEditOption = { name: 'onion', o_id, price: 600 };
 
-    await menuService.editOption({ ...editData, optionId });
+    await menu_service.editOption({ ...edit_data, o_id });
 
-    const [foundOption]: ResGetOptionList[] = await menuService
-      .getOptionList({ groupId: groupId.toString() });
+    const [found_option]: ResGetOptionList[] = await menu_service
+      .getOptionList({ g_id: g_id.toString() });
 
-    const [requestOption, responseOption] = TestUtilService
-      .makeElementComparable(editData, foundOption, ['optionId']);
-    expect(requestOption).toStrictEqual(responseOption);
+    const [req_option, res_option] = TestUtilService
+      .makeElementComparable(edit_data, found_option, ['o_id']);
+    expect(req_option).toStrictEqual(res_option);
 
-    await menuService.removeOption([optionId]);
+    await menu_service.removeOption([o_id]);
   });
 });

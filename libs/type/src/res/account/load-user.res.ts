@@ -4,9 +4,9 @@ export class ResLoadUser {
   @ApiProperty()
   public readonly address: string;
   @ApiProperty()
-  public readonly roadAddress: string;
+  public readonly road_address: string;
   @ApiProperty()
-  public readonly createTime: Date;
+  public readonly create_time: Date;
   @ApiProperty()
   public readonly nickname: string;
   @ApiProperty()

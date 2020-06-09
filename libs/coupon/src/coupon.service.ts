@@ -8,75 +8,75 @@ import { MoreThan, Repository } from 'typeorm';
 
 export class CouponService {
   @InjectRepository(Coupon, 'mysql')
-  private readonly couponRepo: Repository<Coupon>;
+  private readonly coupon_repo: Repository<Coupon>;
   @InjectRepository(Restaurant, 'mysql')
-  private readonly restaurantRepo: Repository<Restaurant>;
+  private readonly restaurant_repo: Repository<Restaurant>;
   @Inject()
-  private readonly tokenService: AuthService;
+  private readonly auth_service: AuthService;
 
   public async upload(token: string, payload: DtoUploadCoupon): Promise<void> {
-    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
-    const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
-    if (!foundRestaurant) {
+    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+    const found_restaurant: Restaurant = await this.restaurant_repo.findOne(id);
+    if (!found_restaurant) {
       throw new ForbiddenException();
     }
-    const foundCoupon: Coupon = await this.couponRepo.findOne({
-      expiredDay: MoreThan(new Date()),
-      restaurant: foundRestaurant,
+    const found_coupon: Coupon = await this.coupon_repo.findOne({
+      expired_day: MoreThan(new Date()),
+      restaurant: found_restaurant,
     });
-    if (foundCoupon) {
+    if (found_coupon) {
       throw new ConflictException();
     }
 
     const coupon: Coupon = new Coupon();
-    Object.assign(coupon, { ...payload, restaurant: foundRestaurant });
-    await this.couponRepo.insert(coupon);
+    Object.assign(coupon, { ...payload, restaurant: found_restaurant });
+    await this.coupon_repo.insert(coupon);
   }
 
   public async getList(token: string): Promise<ResGetCouponList[]> {
     const res: ResGetCouponList[] = [];
-    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
-    const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
-    const foundCoupons: Coupon[] = await this.couponRepo.find({ restaurant: foundRestaurant });
+    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+    const found_restaurant: Restaurant = await this.restaurant_repo.findOne(id);
+    const found_coupons: Coupon[] = await this.coupon_repo.find({ restaurant: found_restaurant });
 
-    if (1 > foundCoupons.length) {
+    if (1 > found_coupons.length) {
       throw new NotFoundException();
     }
 
-    for (const elementCoupon of foundCoupons) {
-      res.push(plainToClass(ResGetCouponList, elementCoupon));
+    for (const e_coupon of found_coupons) {
+      res.push(plainToClass(ResGetCouponList, e_coupon));
     }
     return res;
   }
 
   public async get(param: string | QueryGetCoupon): Promise<ResGetCoupon> {
-    let foundRestaurant: Restaurant;
+    let found_restaurant: Restaurant;
     if ('string' === typeof param) {
-      const { id }: ParsedTokenClass = this.tokenService.parseToken(param);
-      foundRestaurant = await this.restaurantRepo.findOne(id);
+      const { id }: ParsedTokenClass = this.auth_service.parseToken(param);
+      found_restaurant = await this.restaurant_repo.findOne(id);
     } else {
-      foundRestaurant = await this.restaurantRepo.findOne(parseInt(param.restaurantId));
+      found_restaurant = await this.restaurant_repo.findOne(parseInt(param.r_id));
     }
 
-    if (!foundRestaurant) {
+    if (!found_restaurant) {
       throw new NotFoundException('not exist restaurant');
     }
-    const foundCoupon: Coupon = await this.couponRepo.findOne({
-      expiredDay: MoreThan(new Date()), restaurant: foundRestaurant,
+    const found_coupon: Coupon = await this.coupon_repo.findOne({
+      expired_day: MoreThan(new Date()), restaurant: found_restaurant,
     });
-    if (!foundCoupon) {
+    if (!found_coupon) {
       throw new NotFoundException();
     }
-    return plainToClass(ResGetCoupon, foundCoupon);
+    return plainToClass(ResGetCoupon, found_coupon);
   }
 
   // only use in test
 
-  public async getCoupon(discountAmount: number): Promise<Coupon> {
-    return this.couponRepo.findOne({ discountAmount });
+  public async getCoupon(discount_amount: number): Promise<Coupon> {
+    return this.coupon_repo.findOne({ discount_amount });
   }
 
-  public async remove(couponId: number): Promise<void> {
-    await this.couponRepo.delete(couponId);
+  public async remove(c_id: number): Promise<void> {
+    await this.coupon_repo.delete(c_id);
   }
 }

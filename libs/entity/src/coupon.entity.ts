@@ -4,16 +4,16 @@ import { Restaurant } from './restaurant.entity';
 @Entity()
 export class Coupon {
   @PrimaryGeneratedColumn()
-  public couponId: number;
+  public c_id: number;
   @Column()
-  public discountAmount: number;
+  public discount_amount: number;
   @Column()
-  public expiredDay: Date;
+  public expired_day: Date;
   @ManyToOne(
     () => Restaurant,
     (restaurant: Restaurant) => restaurant.coupon,
     { nullable: false },
   )
-  @JoinColumn({ name: 'restaurantId' })
+  @JoinColumn({ name: 'r_id' })
   public restaurant: Restaurant;
 }

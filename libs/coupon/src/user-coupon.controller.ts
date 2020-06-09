@@ -16,9 +16,9 @@ import { CouponService } from './coupon.service';
 @Controller('api/user/coupon')
 export class UserCouponController {
   @Inject()
-  private readonly couponService: CouponService;
+  private readonly coupon_service: CouponService;
   @Inject()
-  private readonly utilService: UtilService;
+  private readonly util_service: UtilService;
 
   @Get()
   @ApiOperation({ summary: '쿠폰 조회' })
@@ -30,7 +30,7 @@ export class UserCouponController {
     @Query(new ValidationPipe()) query: QueryGetCoupon,
   ): Promise<ResGetCoupon> {
     try {
-      return this.couponService.get(query);
+      return this.coupon_service.get(query);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }

@@ -10,37 +10,37 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { getConnection } from 'typeorm';
 
 describe('EventService', () => {
-  let eventService: EventService;
-  let restaurantService: RestaurantService;
-  let restaurantToken: string;
-  const testEvent: DtoUploadEvent = {
-    bannerImage: 'image.url', mainImage: 'url.image',
+  let event_service: EventService;
+  let restaurant_service: RestaurantService;
+  let restaurant_token: string;
+  const test_event: DtoUploadEvent = {
+    banner_image: 'image.url', main_image: 'url.image',
   };
-  const testRestaurant: DtoCreateRestaurant = {
+  const test_restaurant: DtoCreateRestaurant = {
     address: 'a',
     area: 'c',
     category: 'eventTest',
-    closeTime: 'element',
-    dayOff: 'f',
+    close_time: 'e',
+    day_off: 'f',
     description: 'g',
     email: 'eventTest@gmail.com',
     image: 'image.url',
-    minPrice: 10000,
+    min_price: 10000,
     name: 'eventTest',
-    offlinePayment: false,
-    onlinePayment: false,
-    openTime: 'i',
+    offline_payment: false,
+    online_payment: false,
+    open_time: 'i',
     password: 'eventTest',
     phone: '01012345678',
-    roadAddress: 'b',
+    road_address: 'b',
   };
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         AuthModule, EventModule, RestaurantModule,
-        TypeOrmModule.forRoot(config.mysqlConfig),
-        TypeOrmModule.forRoot(config.mongodbConfig),
+        TypeOrmModule.forRoot(config.mysql_config),
+        TypeOrmModule.forRoot(config.mongodb_config),
         TypeOrmModule.forFeature(mysqlEntities, 'mysql'),
         TypeOrmModule.forFeature(mongodbEntities, 'mongodb'),
         UtilModule,
@@ -48,31 +48,31 @@ describe('EventService', () => {
       providers: [EventService],
     }).compile();
 
-    eventService = module.get<EventService>(EventService);
-    restaurantService = module.get<RestaurantService>(RestaurantService);
+    event_service = module.get<EventService>(EventService);
+    restaurant_service = module.get<RestaurantService>(RestaurantService);
 
-    await restaurantService.create(testRestaurant);
-    ({ accessToken: restaurantToken } = await restaurantService.signIn({
-      email: testRestaurant.email,
-      password: testRestaurant.password,
+    await restaurant_service.create(test_restaurant);
+    ({ access_token: restaurant_token } = await restaurant_service.signIn({
+      email: test_restaurant.email,
+      password: test_restaurant.password,
     }));
 
   });
 
   afterAll(async () => {
-    await restaurantService.leave(restaurantToken);
+    await restaurant_service.leave(restaurant_token);
 
     await getConnection('mysql').close();
     await getConnection('mongodb').close();
   });
 
   it('200 uploadEvent', async () => {
-    await eventService.upload(restaurantToken, testEvent);
+    await event_service.upload(restaurant_token, test_event);
 
-    const [foundEvent]: ResGetEventList[] = await eventService.getList();
-    expect(testEvent).toEqual(foundEvent);
+    const [found_event]: ResGetEventList[] = await event_service.getList();
+    expect(test_event).toEqual(found_event);
 
-    const { eventId }: Event = await eventService.get();
-    await eventService.remove(eventId);
+    const { e_id }: Event = await event_service.get();
+    await event_service.remove(e_id);
   });
 });

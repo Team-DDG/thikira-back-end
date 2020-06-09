@@ -21,41 +21,41 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { getConnection } from 'typeorm';
 
 describe('AccountService (User, Restaurant)', () => {
-  let restaurantService: RestaurantService;
-  let restaurantTokens: string[];
-  const testRestaurant: DtoCreateRestaurant = {
+  let restaurant_service: RestaurantService;
+  let restaurant_tokens: string[];
+  const test_restaurant: DtoCreateRestaurant = {
     address: 'a',
     area: 'c',
     category: 'accountTest',
-    closeTime: 'element',
-    dayOff: 'f',
+    close_time: 'e',
+    day_off: 'f',
     description: 'g',
     email: 'accountTest@gmail.com',
     image: 'image.url',
-    minPrice: 10000,
+    min_price: 10000,
     name: 'accountTest',
-    offlinePayment: false,
-    onlinePayment: false,
-    openTime: 'i',
+    offline_payment: false,
+    online_payment: false,
+    open_time: 'i',
     password: 'accountTest',
     phone: '01012345678',
-    roadAddress: 'b',
+    road_address: 'b',
   };
-  const testUser: DtoCreateUser = {
+  const test_user: DtoCreateUser = {
     email: 'accountTest',
     nickname: 'accountTest',
     password: 'accountTest',
     phone: '01012345678',
   };
-  let userService: UserService;
-  let userTokens: string[];
+  let user_service: UserService;
+  let user_tokens: string[];
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         RestaurantModule, TestUtilModule, AuthModule,
-        TypeOrmModule.forRoot(config.mysqlConfig),
-        TypeOrmModule.forRoot(config.mongodbConfig),
+        TypeOrmModule.forRoot(config.mysql_config),
+        TypeOrmModule.forRoot(config.mongodb_config),
         TypeOrmModule.forFeature(mysqlEntities, 'mysql'),
         TypeOrmModule.forFeature(mongodbEntities, 'mongodb'),
         UserModule, UtilModule,
@@ -63,138 +63,138 @@ describe('AccountService (User, Restaurant)', () => {
       providers: [RestaurantService, UserService],
     }).compile();
 
-    restaurantService = module.get<RestaurantService>(RestaurantService);
-    userService = module.get<UserService>(UserService);
+    restaurant_service = module.get<RestaurantService>(RestaurantService);
+    user_service = module.get<UserService>(UserService);
 
-    const testUsers: DtoCreateUser[] = [];
-    const testRestaurants: DtoCreateRestaurant[] = [];
+    const test_users: DtoCreateUser[] = [];
+    const test_restaurants: DtoCreateRestaurant[] = [];
 
     for (let i: number = 0; i < 3; i++) {
-      testUsers.push({
-        ...testUser,
-        email: i.toString() + testUser.email,
-        nickname: testUser.nickname + i.toString(),
+      test_users.push({
+        ...test_user,
+        email: i.toString() + test_user.email,
+        nickname: test_user.nickname + i.toString(),
       });
-      testRestaurants.push({
-        ...testRestaurant,
-        email: i.toString() + testRestaurant.email,
-        name: testRestaurant.name + i.toString(),
+      test_restaurants.push({
+        ...test_restaurant,
+        email: i.toString() + test_restaurant.email,
+        name: test_restaurant.name + i.toString(),
       });
     }
 
-    userTokens = (await Promise.all(testUsers
-      .map(async (elementUser: DtoCreateUser): Promise<ResSignIn> => {
-        await userService.create(elementUser);
-        return userService.signIn({
-          email: elementUser.email,
-          password: elementUser.password,
+    user_tokens = (await Promise.all(test_users
+      .map(async (e_user: DtoCreateUser): Promise<ResSignIn> => {
+        await user_service.create(e_user);
+        return user_service.signIn({
+          email: e_user.email,
+          password: e_user.password,
         });
       })))
-      .map((elementRes: ResSignIn): string => elementRes.accessToken);
-    restaurantTokens = (await Promise.all(testRestaurants
-      .map(async (elementRestaurant: DtoCreateRestaurant): Promise<ResSignIn> => {
-        await restaurantService.create(elementRestaurant);
-        return restaurantService.signIn({
-          email: elementRestaurant.email,
-          password: elementRestaurant.password,
+      .map((e_res: ResSignIn): string => e_res.access_token);
+    restaurant_tokens = (await Promise.all(test_restaurants
+      .map(async (e_restaurant: DtoCreateRestaurant): Promise<ResSignIn> => {
+        await restaurant_service.create(e_restaurant);
+        return restaurant_service.signIn({
+          email: e_restaurant.email,
+          password: e_restaurant.password,
         });
       })))
-      .map((elementRes: ResSignIn): string => elementRes.accessToken);
+      .map((e_res: ResSignIn): string => e_res.access_token);
 
-    await userService.create(testUser);
-    ({ refreshToken: userTokens[3] } = await userService.signIn({
-      email: testUser.email,
-      password: testUser.password,
+    await user_service.create(test_user);
+    ({ refresh_token: user_tokens[3] } = await user_service.signIn({
+      email: test_user.email,
+      password: test_user.password,
     }));
 
-    await restaurantService.create(testRestaurant);
-    ({ refreshToken: restaurantTokens[3] } = await restaurantService.signIn({
-      email: testRestaurant.email,
-      password: testRestaurant.password,
+    await restaurant_service.create(test_restaurant);
+    ({ refresh_token: restaurant_tokens[3] } = await restaurant_service.signIn({
+      email: test_restaurant.email,
+      password: test_restaurant.password,
     }));
   });
 
   afterAll(async () => {
-    await Promise.all(userTokens.map(async (elementToken: string): Promise<void> =>
-      userService.leave(elementToken)));
-    await Promise.all(restaurantTokens.map(async (elementToken: string): Promise<void> =>
-      restaurantService.leave(elementToken)));
+    await Promise.all(user_tokens.map(async (e_token: string): Promise<void> =>
+      user_service.leave(e_token)));
+    await Promise.all(restaurant_tokens.map(async (e_token: string): Promise<void> =>
+      restaurant_service.leave(e_token)));
 
     await getConnection('mysql').close();
     await getConnection('mongodb').close();
   });
 
   it('Should success editInfo()', async () => {
-    const restaurantEditData: DtoEditRestaurantInfo = {
+    const restaurant_edit_data: DtoEditRestaurantInfo = {
       area: '창전동',
-      closeTime: '00:00',
-      dayOff: '절에 다닙니다.',
+      close_time: '00:00',
+      day_off: '절에 다닙니다.',
       description: '증포동 bbq 입니다.',
       image: 'url.image',
-      minPrice: 20000,
+      min_price: 20000,
       name: '업체',
-      offlinePayment: true,
-      onlinePayment: false,
-      openTime: '15:00',
+      offline_payment: true,
+      online_payment: false,
+      open_time: '15:00',
       phone: '01012345679',
     };
-    const userEditData: DtoEditUserInfo = {
+    const user_edit_data: DtoEditUserInfo = {
       nickname: '업체',
       phone: '01012345679',
     };
 
-    await restaurantService.edit(restaurantTokens[0], restaurantEditData);
-    await userService.edit(userTokens[0], userEditData);
+    await restaurant_service.edit(restaurant_tokens[0], restaurant_edit_data);
+    await user_service.edit(user_tokens[0], user_edit_data);
 
-    const foundRestaurant: ResLoadRestaurant = await restaurantService.load(restaurantTokens[0]);
-    const [requestRestaurant, responseRestaurant] = TestUtilService
-      .makeElementComparable(foundRestaurant, restaurantEditData,
-        ['address', 'category', 'createTime', 'email', 'roadAddress', 'star']);
-    expect(requestRestaurant).toStrictEqual(responseRestaurant);
+    const found_restaurant: ResLoadRestaurant = await restaurant_service.load(restaurant_tokens[0]);
+    const [reqRestaurant, resRestaurant] = TestUtilService
+      .makeElementComparable(found_restaurant, restaurant_edit_data,
+        ['address', 'category', 'create_time', 'email', 'road_address', 'star']);
+    expect(reqRestaurant).toStrictEqual(resRestaurant);
 
-    const foundUser: ResLoadUser = await userService.load(userTokens[0]);
-    const [requestUser, responseUser] = TestUtilService
-      .makeElementComparable(foundUser, userEditData,
-        ['address', 'roadAddress', 'category', 'createTime']);
-    expect(requestUser).toStrictEqual(responseUser);
+    const found_user: ResLoadUser = await user_service.load(user_tokens[0]);
+    const [req_user, res_user] = TestUtilService
+      .makeElementComparable(found_user, user_edit_data,
+        ['address', 'road_address', 'category', 'create_time']);
+    expect(req_user).toStrictEqual(res_user);
   });
 
   it('Should success editAddress()', async () => {
-    const editData: DtoEditAddress = {
+    const edit_data: DtoEditAddress = {
       address: '경기도 어딘가',
-      roadAddress: '경기도 어딘가',
+      road_address: '경기도 어딘가',
     };
-    await restaurantService.edit(restaurantTokens[1], editData);
-    await userService.edit(userTokens[1], editData);
+    await restaurant_service.edit(restaurant_tokens[1], edit_data);
+    await user_service.edit(user_tokens[1], edit_data);
 
-    const foundRestaurant: ResLoadRestaurant = await restaurantService.load(restaurantTokens[1]);
-    const foundUser: ResLoadUser = await userService.load(userTokens[1]);
+    const found_restaurant: ResLoadRestaurant = await restaurant_service.load(restaurant_tokens[1]);
+    const found_user: ResLoadUser = await user_service.load(user_tokens[1]);
 
-    ['roadAddress', 'address'].map((element: string) => {
-      expect(foundRestaurant[element]).toEqual(editData[element]);
-      expect(foundUser[element]).toEqual(editData[element]);
+    ['road_address', 'address'].map((e: string) => {
+      expect(found_restaurant[e]).toEqual(edit_data[e]);
+      expect(found_user[e]).toEqual(edit_data[e]);
     });
   });
 
   it('Should success editPassword()', async () => {
-    await restaurantService.checkPassword(restaurantTokens[2], {
-      password: testRestaurant.password,
+    await restaurant_service.checkPassword(restaurant_tokens[2], {
+      password: test_restaurant.password,
     });
-    await userService.checkPassword(userTokens[2], { password: testUser.password });
+    await user_service.checkPassword(user_tokens[2], { password: test_user.password });
 
-    const restaurantEditData: DtoEditPassword = { password: `${testRestaurant.password}_edit` };
-    const userEditData: DtoEditPassword = { password: `${testUser.password}_edit` };
+    const restaurant_edit_data: DtoEditPassword = { password: `${test_restaurant.password}_edit` };
+    const user_edit_data: DtoEditPassword = { password: `${test_user.password}_edit` };
 
-    await restaurantService.editPassword(restaurantTokens[2], restaurantEditData);
-    await userService.editPassword(userTokens[2], userEditData);
+    await restaurant_service.editPassword(restaurant_tokens[2], restaurant_edit_data);
+    await user_service.editPassword(user_tokens[2], user_edit_data);
 
-    await restaurantService.checkPassword(restaurantTokens[2], restaurantEditData);
-    await userService.checkPassword(userTokens[2], userEditData);
+    await restaurant_service.checkPassword(restaurant_tokens[2], restaurant_edit_data);
+    await user_service.checkPassword(user_tokens[2], user_edit_data);
 
   });
 
   it('Should success refresh()', async () => {
-    expect(restaurantService.refresh(restaurantTokens[3])).toBeDefined();
-    expect(userService.refresh(userTokens[3])).toBeDefined();
+    expect(restaurant_service.refresh(restaurant_tokens[3])).toBeDefined();
+    expect(user_service.refresh(user_tokens[3])).toBeDefined();
   });
 });

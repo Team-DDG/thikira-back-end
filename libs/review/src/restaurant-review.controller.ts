@@ -2,6 +2,7 @@ import {
   DtoEditReplyReview,
   DtoUploadReplyReview,
   Header,
+  ParamRemoveReplyReview,
   ResGetReviewList,
   ResGetReviewStatistic,
 } from '@app/type';
@@ -14,6 +15,7 @@ import {
   Headers,
   Inject,
   InternalServerErrorException,
+  Param,
   Patch,
   Post,
   ValidationPipe,
@@ -27,6 +29,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { ResGetReviewListByRestaurant } from '../../type/src/res/review/get-review-list-by-restaurant.res';
 import { ReviewService } from './review.service';
 
 @ApiTags('restaurant/review')
@@ -35,7 +38,7 @@ export class RestaurantReviewController {
   @Inject()
   private readonly review_service: ReviewService;
   @Inject()
-  private readonly utilService: UtilService;
+  private readonly util_service: UtilService;
 
   @Patch('reply')
   @ApiOperation({ summary: '업체 답변 리뷰 수정' })
@@ -47,7 +50,7 @@ export class RestaurantReviewController {
     @Body(new ValidationPipe()) payload: DtoEditReplyReview,
   ): Promise<void> {
     try {
-      return this.review_service.editReplyReview(this.utilService.getTokenBody(header), payload);
+      return this.review_service.editReplyReview(this.util_service.getTokenBody(header), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -59,9 +62,9 @@ export class RestaurantReviewController {
   @ApiOkResponse({ type: [ResGetReviewList] })
   @ApiForbiddenResponse()
   @ApiNotFoundResponse()
-  public async getReviewList(@Headers() header: Header): Promise<ResGetReviewList[]> {
+  public async getReviewList(@Headers() header: Header): Promise<ResGetReviewListByRestaurant[]> {
     try {
-      return this.review_service.getReviewListByRestaurant(this.utilService.getTokenBody(header));
+      return this.review_service.getReviewListByRestaurant(this.util_service.getTokenBody(header));
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -75,20 +78,23 @@ export class RestaurantReviewController {
   @ApiNotFoundResponse()
   public async getReviewStatistic(@Headers() header: Header): Promise<ResGetReviewStatistic> {
     try {
-      return this.review_service.getReviewStatistic(this.utilService.getTokenBody(header));
+      return this.review_service.getReviewStatistic(this.util_service.getTokenBody(header));
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
   }
 
-  @Delete('reply')
+  @Delete('reply/:u_id')
   @ApiOperation({ summary: '업체 답변 리뷰 삭제' })
   @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
-  public async removeReplyReview(@Headers() header: Header): Promise<void> {
+  public async removeReplyReview(
+    @Headers() header: Header,
+    @Param(new ValidationPipe()) param: ParamRemoveReplyReview,
+  ): Promise<void> {
     try {
-      return this.review_service.removeReplyReview(this.utilService.getTokenBody(header));
+      return this.review_service.removeReplyReview(this.util_service.getTokenBody(header), param);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -103,7 +109,7 @@ export class RestaurantReviewController {
     @Body(new ValidationPipe()) payload: DtoUploadReplyReview,
   ): Promise<void> {
     try {
-      return this.review_service.uploadReplyReview(this.utilService.getTokenBody(header), payload);
+      return this.review_service.uploadReplyReview(this.util_service.getTokenBody(header), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }

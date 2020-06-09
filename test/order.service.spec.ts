@@ -18,11 +18,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { getConnection } from 'typeorm';
 
 describe('OrderService', () => {
-  let orderService: OrderService;
-  let restaurantService: RestaurantService;
-  let restaurantTokens: string[];
-  const testOrder: DtoUploadOrder = {
-    discountAmount: 500,
+  let order_service: OrderService;
+  let restaurant_service: RestaurantService;
+  let restaurant_tokens: string[];
+  const test_order: DtoUploadOrder = {
+    discount_amount: 500,
     menu: [{
       group: [{
         name: '치킨 유형',
@@ -35,42 +35,42 @@ describe('OrderService', () => {
       price: 17000,
       quantity: 2,
     }],
-    paymentType: EnumPaymentType.ONLINE,
-    restaurantId: 0,
+    payment_type: EnumPaymentType.ONLINE,
+    r_id: 0,
   };
-  const testRestaurant: DtoCreateRestaurant = {
+  const test_restaurant: DtoCreateRestaurant = {
     address: 'a',
     area: 'c',
     category: 'order_test',
-    closeTime: 'element',
-    dayOff: 'f',
+    close_time: 'e',
+    day_off: 'f',
     description: 'g',
     email: 'order_test@gmail.com',
     image: 'image.url',
-    minPrice: 10000,
+    min_price: 10000,
     name: 'order_test',
-    offlinePayment: false,
-    onlinePayment: false,
-    openTime: 'i',
+    offline_payment: false,
+    online_payment: false,
+    open_time: 'i',
     password: 'order_test',
     phone: '01012345678',
-    roadAddress: 'b',
+    road_address: 'b',
   };
-  const testUser: DtoCreateUser = {
+  const test_user: DtoCreateUser = {
     email: 'order_test',
     nickname: 'order_test',
     password: 'order_test',
     phone: '01012345678',
   };
-  let userService: UserService;
-  let userTokens: string[];
+  let user_service: UserService;
+  let user_tokens: string[];
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         OrderModule, RestaurantModule, TestUtilModule, AuthModule,
-        TypeOrmModule.forRoot(config.mysqlConfig),
-        TypeOrmModule.forRoot(config.mongodbConfig),
+        TypeOrmModule.forRoot(config.mysql_config),
+        TypeOrmModule.forRoot(config.mongodb_config),
         TypeOrmModule.forFeature(mysqlEntities, 'mysql'),
         TypeOrmModule.forFeature(mongodbEntities, 'mongodb'),
         UserModule, UtilModule,
@@ -78,99 +78,99 @@ describe('OrderService', () => {
       providers: [OrderService],
     }).compile();
 
-    orderService = module.get<OrderService>(OrderService);
-    restaurantService = module.get<RestaurantService>(RestaurantService);
-    userService = module.get<UserService>(UserService);
+    order_service = module.get<OrderService>(OrderService);
+    restaurant_service = module.get<RestaurantService>(RestaurantService);
+    user_service = module.get<UserService>(UserService);
 
-    const testUsers: DtoCreateUser[] = [];
-    const testRestaurants: DtoCreateRestaurant[] = [];
+    const test_users: DtoCreateUser[] = [];
+    const test_restaurants: DtoCreateRestaurant[] = [];
 
     for (let i: number = 0; i < 2; i++) {
-      testUsers.push({
-        ...testUser,
-        email: i.toString() + testUser.email,
-        nickname: testUser.nickname + i.toString(),
+      test_users.push({
+        ...test_user,
+        email: i.toString() + test_user.email,
+        nickname: test_user.nickname + i.toString(),
       });
-      testRestaurants.push({
-        ...testRestaurant,
-        email: i.toString() + testUser.email,
-        name: testRestaurant.name + i.toString(),
+      test_restaurants.push({
+        ...test_restaurant,
+        email: i.toString() + test_user.email,
+        name: test_restaurant.name + i.toString(),
       });
     }
 
-    userTokens = (await Promise.all(testUsers
-      .map(async (elementUser: DtoCreateUser): Promise<ResSignIn> => {
-        await userService.create(elementUser);
-        return userService.signIn({
-          email: elementUser.email,
-          password: elementUser.password,
+    user_tokens = (await Promise.all(test_users
+      .map(async (e_user: DtoCreateUser): Promise<ResSignIn> => {
+        await user_service.create(e_user);
+        return user_service.signIn({
+          email: e_user.email,
+          password: e_user.password,
         });
-      }))).map((elementRes: ResSignIn): string => {
-      return elementRes.accessToken;
+      }))).map((e_res: ResSignIn): string => {
+      return e_res.access_token;
     });
 
-    restaurantTokens = (await Promise.all(testRestaurants
-      .map(async (elementRestaurant: DtoCreateRestaurant): Promise<ResSignIn> => {
-        await restaurantService.create(elementRestaurant);
-        return restaurantService.signIn({
-          email: elementRestaurant.email,
-          password: elementRestaurant.password,
+    restaurant_tokens = (await Promise.all(test_restaurants
+      .map(async (e_restaurant: DtoCreateRestaurant): Promise<ResSignIn> => {
+        await restaurant_service.create(e_restaurant);
+        return restaurant_service.signIn({
+          email: e_restaurant.email,
+          password: e_restaurant.password,
         });
-      }))).map((elementRes: ResSignIn): string => {
-      return elementRes.accessToken;
+      }))).map((e_res: ResSignIn): string => {
+      return e_res.access_token;
     });
   });
 
   afterAll(async () => {
-    await Promise.all(userTokens
-      .map(async (elementToken: string): Promise<void> => userService.leave(elementToken)));
-    await Promise.all(restaurantTokens
-      .map(async (elementToken: string): Promise<void> => restaurantService.leave(elementToken)));
+    await Promise.all(user_tokens
+      .map(async (e_token: string): Promise<void> => user_service.leave(e_token)));
+    await Promise.all(restaurant_tokens
+      .map(async (e_token: string): Promise<void> => restaurant_service.leave(e_token)));
 
     await getConnection('mysql').close();
     await getConnection('mongodb').close();
   });
 
   it('200 uploadOrder', async () => {
-    const { restaurantId }: Restaurant = await restaurantService.get(restaurantTokens[0]);
+    const { r_id }: Restaurant = await restaurant_service.get(restaurant_tokens[0]);
 
-    await orderService.upload(userTokens[0], { ...testOrder, restaurantId });
+    await order_service.upload(user_tokens[0], { ...test_order, r_id });
 
-    const [foundOrder]: ResGetOrderListByRestaurant[] = await orderService
-      .getListByRestaurant(restaurantTokens[0]);
+    const [found_order]: ResGetOrderListByRestaurant[] = await order_service
+      .getListByRestaurant(restaurant_tokens[0]);
 
-    let [requestOrder, responseOrder] = TestUtilService.makeElementComparable(foundOrder, testOrder, [
-      'roadAddress', 'address', 'createTime', 'menu', 'nickname', 'orderId',
-      'orderDetail', 'phone', 'restaurantId', 'status', 'totalPrice', 'userId',
+    let [req_order, res_order] = TestUtilService.makeElementComparable(found_order, test_order, [
+      'road_address', 'address', 'create_time', 'menu', 'nickname', 'od_id',
+      'order_detail', 'phone', 'r_id', 'status', 'total_price', 'u_id',
     ]);
-    expect(requestOrder).toEqual(responseOrder);
+    expect(req_order).toEqual(res_order);
 
-    [requestOrder, responseOrder] = TestUtilService
-      .makeElementComparable(foundOrder.orderDetail[0], testOrder.menu[0], ['subPrice', 'group']);
-    expect(requestOrder).toEqual(responseOrder);
+    [req_order, res_order] = TestUtilService
+      .makeElementComparable(found_order.order_detail[0], test_order.menu[0], ['sub_price', 'group']);
+    expect(req_order).toEqual(res_order);
 
-    [requestOrder, responseOrder] = TestUtilService.makeElementComparable(
-      foundOrder.orderDetail[0].group[0], testOrder.menu[0].group[0], ['option']);
-    expect(requestOrder).toEqual(responseOrder);
+    [req_order, res_order] = TestUtilService.makeElementComparable(
+      found_order.order_detail[0].group[0], test_order.menu[0].group[0], ['option']);
+    expect(req_order).toEqual(res_order);
 
-    expect(foundOrder.orderDetail[0].group[0].option[0]).toEqual(testOrder.menu[0].group[0].option[0]);
+    expect(found_order.order_detail[0].group[0].option[0]).toEqual(test_order.menu[0].group[0].option[0]);
 
-    await orderService.removeOrder(foundOrder.orderId);
+    await order_service.removeOrder(found_order.od_id);
   });
 
   it('200 editOrderStatus', async () => {
-    const { restaurantId }: Restaurant = await restaurantService.get(restaurantTokens[1]);
+    const { r_id }: Restaurant = await restaurant_service.get(restaurant_tokens[1]);
 
-    await orderService.upload(userTokens[1], { ...testOrder, restaurantId });
+    await order_service.upload(user_tokens[1], { ...test_order, r_id });
 
-    let [foundOrder]: ResGetOrderListByRestaurant[] = await orderService
-      .getListByRestaurant(restaurantTokens[1]);
+    let [found_order]: ResGetOrderListByRestaurant[] = await order_service
+      .getListByRestaurant(restaurant_tokens[1]);
 
-    await orderService.editOrderStatus({ orderId: foundOrder.orderId, status: EnumOrderStatus.DONE });
+    await order_service.editOrderStatus({ od_id: found_order.od_id, status: EnumOrderStatus.DONE });
 
-    [foundOrder] = await orderService.getListByRestaurant(restaurantTokens[1]);
-    expect(foundOrder.status).toEqual(EnumOrderStatus.DONE);
+    [found_order] = await order_service.getListByRestaurant(restaurant_tokens[1]);
+    expect(found_order.status).toEqual(EnumOrderStatus.DONE);
 
-    await orderService.removeOrder(foundOrder.orderId);
+    await order_service.removeOrder(found_order.od_id);
   });
 });

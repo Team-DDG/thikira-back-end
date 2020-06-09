@@ -23,111 +23,111 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class RestaurantService {
   @InjectRepository(Coupon, 'mysql')
-  private readonly couponRepo: Repository<Coupon>;
+  private readonly coupon_repo: Repository<Coupon>;
   @InjectRepository(Group, 'mysql')
-  private readonly groupRepo: Repository<Group>;
+  private readonly group_repo: Repository<Group>;
   @InjectRepository(Menu, 'mysql')
-  private readonly menuRepo: Repository<Menu>;
+  private readonly menu_repo: Repository<Menu>;
   @InjectRepository(MenuCategory, 'mysql')
-  private readonly menuCategoryRepo: Repository<MenuCategory>;
+  private readonly menu_category_repo: Repository<MenuCategory>;
   @InjectRepository(Option, 'mysql')
-  private readonly optionRepo: Repository<Option>;
+  private readonly option_repo: Repository<Option>;
   @InjectRepository(Restaurant, 'mysql')
-  private readonly restaurantRepo: Repository<Restaurant>;
+  private readonly restaurant_repo: Repository<Restaurant>;
   @Inject()
-  private readonly tokenService: AuthService;
+  private readonly auth_service: AuthService;
   @Inject()
-  private readonly utilService: UtilService;
+  private readonly util_service: UtilService;
 
   public async checkEmail(query: QueryCheckEmail): Promise<void> {
-    const foundRestaurant: Restaurant = await this.restaurantRepo.findOne({ email: query.email });
-    if (foundRestaurant) {
+    const found_restaurant: Restaurant = await this.restaurant_repo.findOne({ email: query.email });
+    if (found_restaurant) {
       throw new ConflictException();
     }
   }
 
   public async create(payload: DtoCreateRestaurant): Promise<void> {
-    const foundRestaurant: Restaurant = await this.restaurantRepo.findOne({ name: payload.name });
-    if (foundRestaurant) {
+    const found_restaurant: Restaurant = await this.restaurant_repo.findOne({ name: payload.name });
+    if (found_restaurant) {
       throw new ConflictException();
     }
 
     const restaurant: Restaurant = new Restaurant();
-    Object.assign(restaurant, { ...payload, password: this.utilService.encode(payload.password) });
-    await this.restaurantRepo.insert(restaurant);
+    Object.assign(restaurant, { ...payload, password: this.util_service.encode(payload.password) });
+    await this.restaurant_repo.insert(restaurant);
   }
 
   public async signIn(payload: DtoSignIn): Promise<ResSignIn> {
-    const foundRestaurant: Restaurant = await this.restaurantRepo.findOne({ email: payload.email });
-    if (!foundRestaurant || foundRestaurant.password !== this.utilService.encode(payload.password)) {
+    const found_restaurant: Restaurant = await this.restaurant_repo.findOne({ email: payload.email });
+    if (!found_restaurant || found_restaurant.password !== this.util_service.encode(payload.password)) {
       throw new NotFoundException();
     }
 
     return {
-      accessToken: this.tokenService.createToken(foundRestaurant.restaurantId, EnumTokenType.access),
-      refreshToken: this.tokenService.createToken(foundRestaurant.restaurantId, EnumTokenType.refresh),
+      access_token: this.auth_service.createToken(found_restaurant.r_id, EnumTokenType.access),
+      refresh_token: this.auth_service.createToken(found_restaurant.r_id, EnumTokenType.refresh),
     };
   }
 
   public refresh(token: string): ResRefresh {
-    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
-    return { accessToken: this.tokenService.createToken(id, EnumTokenType.access) };
+    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+    return { access_token: this.auth_service.createToken(id, EnumTokenType.access) };
   }
 
   public async checkPassword(token: string, payload: DtoCheckPassword): Promise<void> {
-    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
-    const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
-    if (this.utilService.encode(payload.password) !== foundRestaurant.password) {
+    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+    const found_restaurant: Restaurant = await this.restaurant_repo.findOne(id);
+    if (this.util_service.encode(payload.password) !== found_restaurant.password) {
       throw new ForbiddenException();
     }
   }
 
   public async edit(token: string, payload: DtoEditRestaurantInfo | DtoEditAddress): Promise<void> {
-    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
-    await this.restaurantRepo.update(id, payload);
+    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+    await this.restaurant_repo.update(id, payload);
   }
 
   public async editPassword(token: string, payload: DtoEditPassword): Promise<void> {
-    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
-    await this.restaurantRepo.update(id, {
-      password: this.utilService.encode(payload.password),
+    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+    await this.restaurant_repo.update(id, {
+      password: this.util_service.encode(payload.password),
     });
   }
 
   public async load(token: string): Promise<ResLoadRestaurant> {
-    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
-    const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
-    for (const element of ['password', 'restaurantId']) {
-      Reflect.deleteProperty(foundRestaurant, element);
+    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+    const found_restaurant: Restaurant = await this.restaurant_repo.findOne(id);
+    for (const e of ['password', 'r_id']) {
+      Reflect.deleteProperty(found_restaurant, e);
     }
-    return foundRestaurant;
+    return found_restaurant;
   }
 
   public async getList(param: QueryGetRestaurantList): Promise<ResGetRestaurantList[]> {
-    const foundRestaurant: Restaurant[] = await this.restaurantRepo.find({ category: param.category });
-    for (const elementRestaurant of foundRestaurant) {
-      for (const element of ['password']) {
-        Reflect.deleteProperty(elementRestaurant, element);
+    const found_restaurant: Restaurant[] = await this.restaurant_repo.find({ category: param.category });
+    for (const e_restaurant of found_restaurant) {
+      for (const e of ['password']) {
+        Reflect.deleteProperty(e_restaurant, e);
       }
     }
-    return foundRestaurant;
+    return found_restaurant;
   }
 
   public async leave(token: string): Promise<void> {
-    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
-    const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
-    if (!foundRestaurant) {
+    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+    const found_restaurant: Restaurant = await this.restaurant_repo.findOne(id);
+    if (!found_restaurant) {
       throw new ForbiddenException();
     }
 
-    const foundCoupons: Coupon[] = await this.couponRepo.find({ restaurant: foundRestaurant });
-    if (foundCoupons) {
-      for (const elementCoupon of foundCoupons) {
-        await this.couponRepo.delete(elementCoupon.couponId);
+    const found_coupons: Coupon[] = await this.coupon_repo.find({ restaurant: found_restaurant });
+    if (found_coupons) {
+      for (const e_coupon of found_coupons) {
+        await this.coupon_repo.delete(e_coupon.c_id);
       }
     }
 
-    const foundMenuCategoryList: MenuCategory[] = await this.menuCategoryRepo.find({
+    const foundMenuCategoryList: MenuCategory[] = await this.menu_category_repo.find({
       join: {
         alias: 'MenuCategory',
         leftJoinAndSelect: {
@@ -137,45 +137,45 @@ export class RestaurantService {
           Option: 'Group.option',
         },
       },
-      where: { restaurant: foundRestaurant },
+      where: { restaurant: found_restaurant },
     });
 
     if (0 < foundMenuCategoryList.length) {
       const menuCategoryIds: number[] = [];
-      for (const elementMenuCategory of foundMenuCategoryList) {
-        menuCategoryIds.push(elementMenuCategory.menuCategoryId);
-        if (0 < elementMenuCategory.menu.length) {
-          const menuIds: number[] = [];
-          for (const elementMenu of elementMenuCategory.menu) {
-            menuIds.push(elementMenu.menuId);
-            if (0 < elementMenu.group.length) {
-              const groupIds: number[] = [];
-              for (const elementGroup of elementMenu.group) {
-                groupIds.push(elementGroup.groupId);
-                if (0 < elementGroup.option.length) {
-                  const optionIds: number[] = [];
-                  for (const elementOption of elementGroup.option) {
-                    optionIds.push(elementOption.optionId);
+      for (const e_menuCategory of foundMenuCategoryList) {
+        menuCategoryIds.push(e_menuCategory.mc_id);
+        if (0 < e_menuCategory.menu.length) {
+          const m_ids: number[] = [];
+          for (const e_menu of e_menuCategory.menu) {
+            m_ids.push(e_menu.m_id);
+            if (0 < e_menu.group.length) {
+              const g_ids: number[] = [];
+              for (const e_group of e_menu.group) {
+                g_ids.push(e_group.g_id);
+                if (0 < e_group.option.length) {
+                  const o_ids: number[] = [];
+                  for (const e_option of e_group.option) {
+                    o_ids.push(e_option.o_id);
                   }
-                  await this.optionRepo.delete(optionIds);
+                  await this.option_repo.delete(o_ids);
                 }
               }
-              await this.groupRepo.delete(groupIds);
+              await this.group_repo.delete(g_ids);
             }
           }
-          await this.menuRepo.delete(menuIds);
+          await this.menu_repo.delete(m_ids);
         }
       }
-      await this.menuCategoryRepo.delete(menuCategoryIds);
+      await this.menu_category_repo.delete(menuCategoryIds);
     }
 
-    await this.restaurantRepo.delete(id);
+    await this.restaurant_repo.delete(id);
   }
 
   // use only in test
 
   public async get(token: string): Promise<Restaurant> {
-    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
-    return this.restaurantRepo.findOne(id);
+    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+    return this.restaurant_repo.findOne(id);
   }
 }

@@ -19,7 +19,7 @@ export class RestaurantOrderController {
   @Inject()
   private readonly od_service: OrderService;
   @Inject()
-  private readonly utilService: UtilService;
+  private readonly util_service: UtilService;
 
   @Get()
   @ApiOperation({ summary: '주문 조회' })
@@ -28,7 +28,7 @@ export class RestaurantOrderController {
   @ApiForbiddenResponse()
   public async getOrderList(@Headers() header: Header): Promise<ResGetOrderListByRestaurant[]> {
     try {
-      return this.od_service.getListByRestaurant(this.utilService.getTokenBody(header));
+      return this.od_service.getListByRestaurant(this.util_service.getTokenBody(header));
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }

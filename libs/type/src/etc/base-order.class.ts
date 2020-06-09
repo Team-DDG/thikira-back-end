@@ -3,25 +3,25 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class BaseOrderClass {
   @ApiProperty()
-  public readonly orderId: string;
+  public readonly od_id: string;
   @ApiProperty()
-  public readonly roadAddress: string;
+  public readonly road_address: string;
   @ApiProperty()
   public readonly address: string;
   @ApiProperty()
-  public readonly createTime: Date;
+  public readonly create_time: Date;
   @ApiProperty()
-  public readonly discountAmount: number;
+  public readonly discount_amount: number;
   @ApiProperty()
   public readonly nickname: string;
   @ApiProperty({ type: [OrderDetail] })
-  public readonly orderDetail: OrderDetail[];
+  public readonly order_detail: OrderDetail[];
   @ApiProperty()
-  public readonly paymentType: EnumPaymentType = EnumPaymentType.OFFLINE;
+  public readonly payment_type: EnumPaymentType = EnumPaymentType.OFFLINE;
   @ApiProperty()
   public readonly phone: string;
   @ApiProperty()
   public readonly status: EnumOrderStatus = EnumOrderStatus.NOT_PAYMENT;
   @ApiProperty()
-  public readonly totalPrice: number;
+  public readonly total_price: number;
 }

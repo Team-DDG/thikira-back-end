@@ -8,7 +8,7 @@ import { DotenvParseOutput, parse } from 'dotenv';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { fileExistsSync } from 'tsconfig-paths/lib/filesystem';
-import { NodeEnv } from './enum';
+import { NodeEnv } from './enum/node-env.enum';
 
 export type Config = Record<string, string>;
 
@@ -38,8 +38,8 @@ export class ConfigService {
   public readonly NODE_ENV: NodeEnv;
   @IsNumberString() @IsOptional()
   public readonly PORT?: string = '3000';
-  public readonly mysqlConfig: TypeOrmModuleOptions;
-  public readonly mongodbConfig: TypeOrmModuleOptions;
+  public readonly mysql_config: TypeOrmModuleOptions;
+  public readonly mongodb_config: TypeOrmModuleOptions;
 
   public constructor(filePath?: string, customConfig?: Config) {
     let env: DotenvParseOutput;
@@ -57,7 +57,7 @@ export class ConfigService {
       throw new Error(errors[0].toString());
     }
 
-    this.mysqlConfig = {
+    this.mysql_config = {
       database: this.MYSQL_SCHEMA,
       entities: mysqlEntities,
       host: this.MYSQL_HOST,
@@ -68,7 +68,7 @@ export class ConfigService {
       type: this.MYSQL_TYPE,
       username: this.MYSQL_USER,
     };
-    this.mongodbConfig = {
+    this.mongodb_config = {
       entities: mongodbEntities,
       name: 'mongodb',
       synchronize: true,

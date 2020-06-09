@@ -15,7 +15,7 @@ export class OrderDetail {
   public name: string;
   public price: number;
   public quantity: number;
-  public subPrice: number;
+  public sub_price: number;
   public group?: OrderDetailGroup[];
 }
 
@@ -23,27 +23,27 @@ export class OrderDetail {
 export class Order {
   @ObjectIdColumn()
   public _id?: ObjectID;
-  public orderId: ObjectID;
-  @Column()
-  public roadAddress: string;
+  public od_id: ObjectID;
   @Column()
   public address: string;
   @Column()
-  public discountAmount: number;
+  public discount_amount: number;
   @Column()
   public nickname: string;
   @Column()
-  public orderDetail: OrderDetail[];
-  @Column({ enum: EnumOrderStatus, type: 'enum' })
-  public status: EnumOrderStatus = EnumOrderStatus.NOT_PAYMENT;
+  public order_detail: OrderDetail[];
   @Column({ enum: EnumPaymentType, type: 'enum' })
-  public paymentType: EnumPaymentType = EnumPaymentType.OFFLINE;
+  public payment_type: EnumPaymentType = EnumPaymentType.OFFLINE;
   @Column()
   public phone: string;
   @Column()
-  public totalPrice: number;
+  public road_address: string;
+  @Column({ enum: EnumOrderStatus, type: 'enum' })
+  public status: EnumOrderStatus = EnumOrderStatus.NOT_PAYMENT;
   @Column()
-  public userId: number;
+  public total_price: number;
   @Column()
-  public restaurantId: number;
+  public r_id: number;
+  @Column()
+  public u_id: number;
 }

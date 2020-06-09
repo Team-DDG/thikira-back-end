@@ -26,7 +26,7 @@ export class UserOrderController {
   @Inject()
   private readonly od_service: OrderService;
   @Inject()
-  private readonly utilService: UtilService;
+  private readonly util_service: UtilService;
 
   @Get()
   @ApiOperation({ summary: '주문 조회' })
@@ -35,7 +35,7 @@ export class UserOrderController {
   @ApiForbiddenResponse()
   public async getOrderList(@Headers() header: Header): Promise<ResGetOrderListByUser[]> {
     try {
-      return this.od_service.getListByUser(this.utilService.getTokenBody(header));
+      return this.od_service.getListByUser(this.util_service.getTokenBody(header));
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -51,7 +51,7 @@ export class UserOrderController {
     @Body(new ValidationPipe()) payload: DtoUploadOrder,
   ): Promise<void> {
     try {
-      return this.od_service.upload(this.utilService.getTokenBody(header), payload);
+      return this.od_service.upload(this.util_service.getTokenBody(header), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }

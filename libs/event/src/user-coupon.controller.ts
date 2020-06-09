@@ -8,9 +8,9 @@ import { EventService } from './event.service';
 @Controller('api/user/event')
 export class UserEventController {
   @Inject()
-  private readonly eventService: EventService;
+  private readonly event_service: EventService;
   @Inject()
-  private readonly utilService: UtilService;
+  private readonly util_service: UtilService;
 
   @Get()
   @ApiOperation({ summary: '쿠폰 조회' })
@@ -18,7 +18,7 @@ export class UserEventController {
   @ApiNotFoundResponse()
   public async getEventList(): Promise<ResGetEventList[]> {
     try {
-      return this.eventService.getList();
+      return this.event_service.getList();
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }

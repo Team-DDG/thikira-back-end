@@ -2,5 +2,5 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class ResUploadMenu {
   @ApiProperty()
-  public readonly menuId: number;
+  public readonly m_id: number;
 }

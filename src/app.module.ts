@@ -14,8 +14,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   imports: [
     CouponModule, EventModule, MenuModule,
     OrderModule, RestaurantModule, ReviewModule,
-    TypeOrmModule.forRoot(config.mysqlConfig),
-    TypeOrmModule.forRoot(config.mongodbConfig),
+    TypeOrmModule.forRoot(config.mysql_config),
+    TypeOrmModule.forRoot(config.mongodb_config),
     UserModule, UtilModule,
   ],
 })

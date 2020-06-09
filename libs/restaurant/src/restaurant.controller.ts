@@ -42,9 +42,9 @@ import { RestaurantService } from './restaurant.service';
 @Controller('api/restaurant')
 export class RestaurantController {
   @Inject()
-  private readonly restaurantService: RestaurantService;
+  private readonly restaurant_service: RestaurantService;
   @Inject()
-  private readonly utilService: UtilService;
+  private readonly util_service: UtilService;
 
   @Get()
   @ApiOperation({ summary: '업체 정보 조회' })
@@ -53,7 +53,7 @@ export class RestaurantController {
   @ApiNotFoundResponse()
   public async get(@Headers() header: Header): Promise<ResLoadRestaurant> {
     try {
-      return this.restaurantService.load(this.utilService.getTokenBody(header));
+      return this.restaurant_service.load(this.util_service.getTokenBody(header));
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -69,7 +69,7 @@ export class RestaurantController {
     @Body(new ValidationPipe()) payload: DtoEditAddress,
   ): Promise<void> {
     try {
-      return this.restaurantService.edit(this.utilService.getTokenBody(header), payload);
+      return this.restaurant_service.edit(this.util_service.getTokenBody(header), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -91,7 +91,7 @@ export class RestaurantController {
   @ApiConflictResponse()
   public async checkEmail(@Query(new ValidationPipe()) query: QueryCheckEmail): Promise<void> {
     try {
-      return this.restaurantService.checkEmail(query);
+      return this.restaurant_service.checkEmail(query);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -107,7 +107,7 @@ export class RestaurantController {
     @Body(new ValidationPipe()) payload: DtoCheckPassword,
   ): Promise<void> {
     try {
-      return this.restaurantService.checkPassword(this.utilService.getTokenBody(header), payload);
+      return this.restaurant_service.checkPassword(this.util_service.getTokenBody(header), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -119,7 +119,7 @@ export class RestaurantController {
   @ApiOkResponse({ type: ResRefresh })
   @ApiForbiddenResponse()
   public refresh(@Headers() token: Header): ResRefresh {
-    return this.restaurantService.refresh(this.utilService.getTokenBody(token));
+    return this.restaurant_service.refresh(this.util_service.getTokenBody(token));
   }
 
   @Post('auth/sign_in')
@@ -128,7 +128,7 @@ export class RestaurantController {
   @ApiNotFoundResponse()
   public async signIn(@Body(new ValidationPipe()) payload: DtoSignIn): Promise<ResSignIn> {
     try {
-      return this.restaurantService.signIn(payload);
+      return this.restaurant_service.signIn(payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -140,7 +140,7 @@ export class RestaurantController {
   @ApiConflictResponse()
   public async create(@Body(new ValidationPipe()) payload: DtoCreateRestaurant): Promise<void> {
     try {
-      return this.restaurantService.create(payload);
+      return this.restaurant_service.create(payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -156,7 +156,7 @@ export class RestaurantController {
     @Body(new ValidationPipe()) payload: DtoEditRestaurantInfo,
   ): Promise<void> {
     try {
-      return this.restaurantService.edit(this.utilService.getTokenBody(header), payload);
+      return this.restaurant_service.edit(this.util_service.getTokenBody(header), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -169,8 +169,8 @@ export class RestaurantController {
   @ApiForbiddenResponse()
   public async leave(@Headers() token: Header): Promise<void> {
     try {
-      return this.restaurantService.leave(
-        this.utilService.getTokenBody(token));
+      return this.restaurant_service.leave(
+        this.util_service.getTokenBody(token));
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -186,7 +186,7 @@ export class RestaurantController {
     @Body(new ValidationPipe()) payload: DtoEditPassword,
   ): Promise<void> {
     try {
-      return this.restaurantService.editPassword(this.utilService.getTokenBody(header), payload);
+      return this.restaurant_service.editPassword(this.util_service.getTokenBody(header), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }

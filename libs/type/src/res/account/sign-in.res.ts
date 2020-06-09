@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class ResSignIn {
   @ApiProperty()
-  public readonly accessToken: string;
+  public readonly access_token: string;
   @ApiProperty()
-  public readonly refreshToken: string;
+  public readonly refresh_token: string;
 }

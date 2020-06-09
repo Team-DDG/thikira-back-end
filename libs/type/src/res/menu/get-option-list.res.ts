@@ -4,7 +4,7 @@ export class ResGetOptionList {
   @ApiProperty()
   public readonly name: string;
   @ApiProperty()
-  public readonly optionId: number;
+  public readonly o_id: number;
   @ApiProperty()
   public readonly price: number;
 }

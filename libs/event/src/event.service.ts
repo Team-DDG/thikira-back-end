@@ -8,30 +8,30 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class EventService {
   @InjectRepository(Event, 'mysql')
-  private readonly eventRepo: Repository<Event>;
+  private readonly event_repo: Repository<Event>;
   @Inject()
-  private readonly tokenService: AuthService;
+  private readonly auth_service: AuthService;
 
   public async upload(token: string, payload: DtoUploadEvent): Promise<void> {
-    this.tokenService.parseToken(token);
+    this.auth_service.parseToken(token);
 
     const event: Event = new Event();
     Object.assign(event, payload);
 
-    await this.eventRepo.insert(event);
+    await this.event_repo.insert(event);
   }
 
   public async getList(): Promise<ResGetEventList[]> {
-    return this.eventRepo.find({ select: ['bannerImage', 'mainImage'] });
+    return this.event_repo.find({ select: ['banner_image', 'main_image'] });
   }
 
   // only use in test
 
   public async get(): Promise<Event> {
-    return this.eventRepo.findOne();
+    return this.event_repo.findOne();
   }
 
-  public async remove(eventId: number): Promise<void> {
-    await this.eventRepo.delete(eventId);
+  public async remove(e_id: number): Promise<void> {
+    await this.event_repo.delete(e_id);
   }
 }

@@ -12,10 +12,10 @@ export class UtilService {
     this.secret = config.JWT_SECRET ? Buffer.from(config.JWT_SECRET) : randomBytes(16);
   }
 
-  public static parselementIds(ids: string): number[] {
+  public static parseIds(ids: string): number[] {
     const res: number[] = [];
-    for (const elementId of ids.split(',')) {
-      res.push(parseInt(elementId));
+    for (const e_id of ids.split(',')) {
+      res.push(parseInt(e_id));
     }
     return res;
   }
@@ -28,8 +28,6 @@ export class UtilService {
     let token: string;
     if (header.authorization) {
       token = header.authorization;
-    } else {
-      token = header['x-refresh-token'];
     }
 
     if (this.token_reg_exp.test(token)) {

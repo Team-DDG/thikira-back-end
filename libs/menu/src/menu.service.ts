@@ -30,129 +30,129 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class MenuService {
   @InjectRepository(Coupon, 'mysql')
-  private readonly couponRepo: Repository<Coupon>;
+  private readonly coupon_repo: Repository<Coupon>;
   @InjectRepository(Group, 'mysql')
-  private readonly groupRepo: Repository<Group>;
+  private readonly group_repo: Repository<Group>;
   @InjectRepository(Menu, 'mysql')
-  private readonly menuRepo: Repository<Menu>;
+  private readonly menu_repo: Repository<Menu>;
   @InjectRepository(MenuCategory, 'mysql')
-  private readonly menuCategoryRepo: Repository<MenuCategory>;
+  private readonly menu_category_repo: Repository<MenuCategory>;
   @InjectRepository(Option, 'mysql')
-  private readonly optionRepo: Repository<Option>;
+  private readonly option_repo: Repository<Option>;
   @InjectRepository(Restaurant, 'mysql')
-  private readonly restaurantRepo: Repository<Restaurant>;
+  private readonly restaurant_repo: Repository<Restaurant>;
   @Inject()
-  private readonly tokenService: AuthService;
+  private readonly auth_service: AuthService;
 
-  // menuCategory
+  // menu_category
 
   public async uploadMenuCategory(
     token: string,
     payload: DtoUploadMenuCategory,
   ): Promise<ResUploadMenuCategory> {
-    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
-    const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
-    const foundMenuCategory: MenuCategory = await this.menuCategoryRepo.findOne({
-      name: payload.name, restaurant: foundRestaurant,
+    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+    const found_restaurant: Restaurant = await this.restaurant_repo.findOne(id);
+    const found_menu_category: MenuCategory = await this.menu_category_repo.findOne({
+      name: payload.name, restaurant: found_restaurant,
     });
-    if (foundMenuCategory) {
+    if (found_menu_category) {
       throw new ConflictException();
     }
 
-    const menuCategory: MenuCategory = new MenuCategory();
-    Object.assign(menuCategory, { ...payload, restaurant: foundRestaurant });
-    await this.menuCategoryRepo.insert(menuCategory);
-    return { menuCategoryId: menuCategory.menuCategoryId };
+    const menu_category: MenuCategory = new MenuCategory();
+    Object.assign(menu_category, { ...payload, restaurant: found_restaurant });
+    await this.menu_category_repo.insert(menu_category);
+    return { mc_id: menu_category.mc_id };
   }
 
   public async getMenuCategoryList(
     param: string | QueryGetMenuCategoryList,
   ): Promise<ResGetMenuCategoryList[]> {
-    let foundRestaurant: Restaurant;
+    let found_restaurant: Restaurant;
     if ('string' === typeof param) {
-      const { id }: ParsedTokenClass = this.tokenService.parseToken(param);
-      foundRestaurant = await this.restaurantRepo.findOne(id);
+      const { id }: ParsedTokenClass = this.auth_service.parseToken(param);
+      found_restaurant = await this.restaurant_repo.findOne(id);
     } else {
-      foundRestaurant = await this.restaurantRepo.findOne(parseInt(param.restaurantId));
+      found_restaurant = await this.restaurant_repo.findOne(parseInt(param.r_id));
     }
 
-    const foundMenuCategories: MenuCategory[] = await this.menuCategoryRepo.find({
-      restaurant: foundRestaurant,
+    const found_menu_categories: MenuCategory[] = await this.menu_category_repo.find({
+      restaurant: found_restaurant,
     });
 
-    if (!foundMenuCategories) {
+    if (!found_menu_categories) {
       throw new NotFoundException();
     }
 
-    return foundMenuCategories;
+    return found_menu_categories;
   }
 
   public async editMenuCategory(payload: DtoEditMenuCategory): Promise<void> {
-    await this.menuCategoryRepo.update(payload.menuCategoryId, payload);
+    await this.menu_category_repo.update(payload.mc_id, payload);
   }
 
   public async removeMenuCategory(menuCategoryIds: number[]): Promise<void> {
-    for (const elementId of menuCategoryIds) {
-      const foundMenuCategory: MenuCategory = await this.menuCategoryRepo.findOne(elementId);
-      const foundMenus: Menu[] = await this.menuRepo.find({ menuCategory: foundMenuCategory });
-      const menuIds: number[] = [];
-      for (const elementGroup of foundMenus) {
-        menuIds.push(elementGroup.menuId);
+    for (const e_id of menuCategoryIds) {
+      const found_menu_category: MenuCategory = await this.menu_category_repo.findOne(e_id);
+      const found_menus: Menu[] = await this.menu_repo.find({ menu_category: found_menu_category });
+      const m_ids: number[] = [];
+      for (const e_group of found_menus) {
+        m_ids.push(e_group.m_id);
       }
-      if (0 < menuIds.length) {
-        await this.removeMenu(menuIds);
+      if (0 < m_ids.length) {
+        await this.removeMenu(m_ids);
       }
     }
-    await this.menuCategoryRepo.delete(menuCategoryIds);
+    await this.menu_category_repo.delete(menuCategoryIds);
   }
 
   // menu
 
   public async uploadMenu(payload: DtoUploadMenu): Promise<ResUploadMenu> {
-    const foundMenuCategory: MenuCategory = await this.menuCategoryRepo.findOne(payload.menuCategoryId);
-    if (!foundMenuCategory) {
+    const found_menu_category: MenuCategory = await this.menu_category_repo.findOne(payload.mc_id);
+    if (!found_menu_category) {
       throw new NotFoundException();
     }
-    const foundMenu: Menu = await this.menuRepo.findOne({
-      menuCategory: foundMenuCategory, name: payload.name,
+    const found_menu: Menu = await this.menu_repo.findOne({
+      menu_category: found_menu_category, name: payload.name,
     });
-    if (foundMenu) {
+    if (found_menu) {
       throw new ConflictException();
     }
 
     const menu: Menu = new Menu();
-    for (const element of ['menuCategoryId']) {
-      Reflect.deleteProperty(menu, element);
+    for (const e of ['mc_id']) {
+      Reflect.deleteProperty(menu, e);
     }
-    Object.assign(menu, { ...payload, menuCategory: foundMenuCategory });
-    await this.menuRepo.insert(menu);
+    Object.assign(menu, { ...payload, menu_category: found_menu_category });
+    await this.menu_repo.insert(menu);
 
     if (payload.group) {
-      for (const elementGroup of payload.group) {
+      for (const e_group of payload.group) {
         const group: Group = new Group();
-        Object.assign(group, { ...elementGroup, menu });
-        await this.groupRepo.insert(group);
+        Object.assign(group, { ...e_group, menu });
+        await this.group_repo.insert(group);
 
-        if (elementGroup.option) {
-          for (const elementOption of elementGroup.option) {
+        if (e_group.option) {
+          for (const e_option of e_group.option) {
             const option: Option = new Option();
-            Object.assign(option, { ...elementOption, group });
-            await this.optionRepo.insert(option);
+            Object.assign(option, { ...e_option, group });
+            await this.option_repo.insert(option);
           }
         }
       }
     }
 
-    return { menuId: menu.menuId };
+    return { m_id: menu.m_id };
   }
 
   public async getMenuList(query: QueryGetMenuList): Promise<ResGetMenuList[]> {
-    const foundMenuCategory: MenuCategory =
-      await this.menuCategoryRepo.findOne(parseInt(query.menuCategoryId));
-    if (!foundMenuCategory) {
+    const found_menu_category: MenuCategory =
+      await this.menu_category_repo.findOne(parseInt(query.mc_id));
+    if (!found_menu_category) {
       throw new NotFoundException();
     }
-    const foundMenus: Menu[] = await this.menuRepo.find({
+    const found_menus: Menu[] = await this.menu_repo.find({
       join: {
         alias: 'Menu',
         leftJoinAndSelect: {
@@ -160,131 +160,131 @@ export class MenuService {
           Option: 'Group.option',
         },
       },
-      where: { menuCategory: foundMenuCategory },
+      where: { menu_category: found_menu_category },
     });
 
-    if (!foundMenus) {
+    if (!found_menus) {
       throw new NotFoundException();
     }
-    return foundMenus;
+    return found_menus;
   }
 
   public async editMenu(payload: DtoEditMenu): Promise<void> {
-    await this.menuRepo.update(payload.menuId, payload);
+    await this.menu_repo.update(payload.m_id, payload);
   }
 
-  public async removeMenu(menuIds: number[]): Promise<void> {
-    for (const elementId of menuIds) {
-      const foundMenu: Menu = await this.menuRepo.findOne(elementId);
-      const foundGroups: Group[] = await this.groupRepo.find({ menu: foundMenu });
-      const groupIds: number[] = [];
-      for (const elementGroup of foundGroups) {
-        groupIds.push(elementGroup.groupId);
+  public async removeMenu(m_ids: number[]): Promise<void> {
+    for (const e_id of m_ids) {
+      const found_menu: Menu = await this.menu_repo.findOne(e_id);
+      const found_groups: Group[] = await this.group_repo.find({ menu: found_menu });
+      const g_ids: number[] = [];
+      for (const e_group of found_groups) {
+        g_ids.push(e_group.g_id);
       }
-      if (0 < groupIds.length) {
-        await this.removeGroup(groupIds);
+      if (0 < g_ids.length) {
+        await this.removeGroup(g_ids);
       }
     }
-    await this.menuRepo.delete(menuIds);
+    await this.menu_repo.delete(m_ids);
   }
 
   // group
 
   public async uploadGroup(payload: DtoUploadGroup): Promise<ResUploadGroup> {
-    const numOfGroup: number = await this.groupRepo.count({
-      menu: { menuId: payload.menuId }, name: payload.name,
+    const num_of_group: number = await this.group_repo.count({
+      menu: { m_id: payload.m_id }, name: payload.name,
     });
-    if (numOfGroup > 0) {
+    if (num_of_group > 0) {
       throw new ConflictException();
     }
 
     const group: Group = new Group();
-    const menuId: number = payload.menuId;
-    for (const element of ['menuId']) {
-      Reflect.deleteProperty(payload, element);
+    const m_id: number = payload.m_id;
+    for (const e of ['m_id']) {
+      Reflect.deleteProperty(payload, e);
     }
-    Object.assign(group, { ...payload, menu: { menuId } });
+    Object.assign(group, { ...payload, menu: { m_id } });
 
-    await this.groupRepo.insert(group);
+    await this.group_repo.insert(group);
 
     if (payload.option) {
-      for (const elementOption of payload.option) {
+      for (const e_option of payload.option) {
         const option: Option = new Option();
-        Object.assign(option, { ...elementOption, group });
-        await this.optionRepo.insert(option);
+        Object.assign(option, { ...e_option, group });
+        await this.option_repo.insert(option);
       }
 
     }
 
-    return { groupId: group.groupId };
+    return { g_id: group.g_id };
   }
 
   public async getGroupList(query: QueryGetGroupList): Promise<ResGetGroupList[]> {
-    const foundMenu: Menu = await this.menuRepo.findOne(parseInt(query.menuId));
-    const foundGroups: Group[] = await this.groupRepo.find({
+    const found_menu: Menu = await this.menu_repo.findOne(parseInt(query.m_id));
+    const found_groups: Group[] = await this.group_repo.find({
       join: { alias: 'Group', leftJoinAndSelect: { Option: 'Group.option' } },
-      where: { menu: foundMenu },
+      where: { menu: found_menu },
     });
-    if (!foundGroups) {
+    if (!found_groups) {
       throw new NotFoundException();
     }
-    return foundGroups;
+    return found_groups;
   }
 
   public async editGroup(payload: DtoEditGroup): Promise<void> {
-    await this.groupRepo.update(payload.groupId, payload);
+    await this.group_repo.update(payload.g_id, payload);
   }
 
-  public async removeGroup(groupIds: number[]): Promise<void> {
-    for (const elementId of groupIds) {
-      const foundGroup: Group = await this.groupRepo.findOne(elementId);
-      const foundOptions: Option[] = await this.optionRepo.find({ group: foundGroup });
-      const optionIds: number[] = [];
-      for (const elementOption of foundOptions) {
-        optionIds.push(elementOption.optionId);
+  public async removeGroup(g_ids: number[]): Promise<void> {
+    for (const e_id of g_ids) {
+      const found_group: Group = await this.group_repo.findOne(e_id);
+      const found_options: Option[] = await this.option_repo.find({ group: found_group });
+      const o_ids: number[] = [];
+      for (const e_option of found_options) {
+        o_ids.push(e_option.o_id);
       }
-      if (0 < optionIds.length) {
-        await this.removeOption(optionIds);
+      if (0 < o_ids.length) {
+        await this.removeOption(o_ids);
       }
     }
-    await this.groupRepo.delete(groupIds);
+    await this.group_repo.delete(g_ids);
   }
 
   // option
 
   public async uploadOption(payload: DtoUploadOption): Promise<ResUploadOption> {
-    const foundGroup: Group = await this.groupRepo.findOne(payload.groupId);
-    const foundOption: Option = await this.optionRepo.findOne({
-      group: foundGroup, name: payload.name,
+    const found_group: Group = await this.group_repo.findOne(payload.g_id);
+    const found_option: Option = await this.option_repo.findOne({
+      group: found_group, name: payload.name,
     });
-    if (foundOption) {
+    if (found_option) {
       throw new ConflictException();
     }
 
     const option: Option = new Option();
-    for (const element of ['groupId']) {
-      Reflect.deleteProperty(payload, element);
+    for (const e of ['g_id']) {
+      Reflect.deleteProperty(payload, e);
     }
-    Object.assign(option, { ...payload, group: foundGroup });
-    await this.optionRepo.insert(option);
+    Object.assign(option, { ...payload, group: found_group });
+    await this.option_repo.insert(option);
 
-    return { optionId: option.optionId };
+    return { o_id: option.o_id };
   }
 
   public async getOptionList(query: QueryGetOptionList): Promise<ResGetOptionList[]> {
-    const foundGroup: Group = await this.groupRepo.findOne(parseInt(query.groupId));
-    const foundOptions: Option[] = await this.optionRepo.find({ group: foundGroup });
-    if (!foundOptions) {
+    const found_group: Group = await this.group_repo.findOne(parseInt(query.g_id));
+    const found_options: Option[] = await this.option_repo.find({ group: found_group });
+    if (!found_options) {
       throw new NotFoundException();
     }
-    return foundOptions;
+    return found_options;
   }
 
   public async editOption(payload: DtoEditOption): Promise<void> {
-    await this.optionRepo.update(payload.optionId, payload);
+    await this.option_repo.update(payload.o_id, payload);
   }
 
-  public async removeOption(optionIds: number[]): Promise<void> {
-    await this.optionRepo.delete(optionIds);
+  public async removeOption(o_ids: number[]): Promise<void> {
+    await this.option_repo.delete(o_ids);
   }
 }

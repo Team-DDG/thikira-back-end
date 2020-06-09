@@ -10,38 +10,38 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { getConnection } from 'typeorm';
 
 describe('CouponService', () => {
-  let couponService: CouponService;
-  let restaurantService: RestaurantService;
-  let restaurantToken: string;
+  let coupon_service: CouponService;
+  let restaurant_service: RestaurantService;
+  let restaurant_token: string;
   const testCoupon: DtoUploadCoupon = {
-    discountAmount: 500,
-    expiredDay: new Date(Date.now() + 86400000),
+    discount_amount: 500,
+    expired_day: new Date(Date.now() + 86400000),
   };
-  const testRestaurant: DtoCreateRestaurant = {
+  const test_restaurant: DtoCreateRestaurant = {
     address: 'a',
     area: 'coupon',
     category: 'couponTest',
-    closeTime: 'element',
-    dayOff: 'f',
+    close_time: 'e',
+    day_off: 'f',
     description: 'group',
     email: 'couponTest@gmail.com',
     image: 'image.url',
-    minPrice: 10000,
+    min_price: 10000,
     name: 'couponTest',
-    offlinePayment: false,
-    onlinePayment: false,
-    openTime: 'i',
+    offline_payment: false,
+    online_payment: false,
+    open_time: 'i',
     password: 'couponTest',
     phone: '01012345678',
-    roadAddress: 'b',
+    road_address: 'b',
   };
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         CouponModule, RestaurantModule, AuthModule,
-        TypeOrmModule.forRoot(config.mysqlConfig),
-        TypeOrmModule.forRoot(config.mongodbConfig),
+        TypeOrmModule.forRoot(config.mysql_config),
+        TypeOrmModule.forRoot(config.mongodb_config),
         TypeOrmModule.forFeature(mysqlEntities, 'mysql'),
         TypeOrmModule.forFeature(mongodbEntities, 'mongodb'),
         UtilModule,
@@ -49,32 +49,32 @@ describe('CouponService', () => {
       providers: [CouponService],
     }).compile();
 
-    couponService = module.get<CouponService>(CouponService);
-    restaurantService = module.get<RestaurantService>(RestaurantService);
+    coupon_service = module.get<CouponService>(CouponService);
+    restaurant_service = module.get<RestaurantService>(RestaurantService);
 
-    await restaurantService.create(testRestaurant);
-    ({ accessToken: restaurantToken } = await restaurantService.signIn({
-      email: testRestaurant.email,
-      password: testRestaurant.password,
+    await restaurant_service.create(test_restaurant);
+    ({ access_token: restaurant_token } = await restaurant_service.signIn({
+      email: test_restaurant.email,
+      password: test_restaurant.password,
     }));
   });
 
   afterAll(async () => {
-    await restaurantService.leave(restaurantToken);
+    await restaurant_service.leave(restaurant_token);
 
     await getConnection('mysql').close();
     await getConnection('mongodb').close();
   });
 
   it('Should success get()', async () => {
-    await couponService.upload(restaurantToken, testCoupon);
+    await coupon_service.upload(restaurant_token, testCoupon);
 
-    const foundCoupon: ResGetCoupon = await couponService.get(restaurantToken);
-    if (testCoupon.discountAmount !== foundCoupon.discountAmount) {
+    const found_coupon: ResGetCoupon = await coupon_service.get(restaurant_token);
+    if (testCoupon.discount_amount !== found_coupon.discount_amount) {
       throw Error();
     }
 
-    const { couponId }: Coupon = await couponService.getCoupon(testCoupon.discountAmount);
-    await couponService.remove(couponId);
+    const { c_id }: Coupon = await coupon_service.getCoupon(testCoupon.discount_amount);
+    await coupon_service.remove(c_id);
   });
 });

@@ -21,106 +21,106 @@ import { ObjectID, Repository } from 'typeorm';
 @Injectable()
 export class UserService {
   @InjectRepository(Order, 'mongodb')
-  private readonly orderRepo: Repository<Order>;
+  private readonly order_repo: Repository<Order>;
   @InjectRepository(User, 'mysql')
-  private readonly userRepo: Repository<User>;
+  private readonly user_repo: Repository<User>;
   @Inject()
-  private readonly tokenService: AuthService;
+  private readonly auth_service: AuthService;
   @Inject()
-  private readonly utilService: UtilService;
+  private readonly util_service: UtilService;
 
   public async checkEmail(query: QueryCheckEmail): Promise<void> {
-    const foundUser: User = await this.userRepo.findOne({ email: query.email });
-    if (foundUser) {
+    const found_user: User = await this.user_repo.findOne({ email: query.email });
+    if (found_user) {
       throw new ConflictException();
     }
   }
 
   public async create(payload: DtoCreateUser): Promise<void> {
-    const foundUser: User = await this.userRepo.findOne({ nickname: payload.nickname });
-    if (foundUser) {
+    const found_user: User = await this.user_repo.findOne({ nickname: payload.nickname });
+    if (found_user) {
       throw new ConflictException();
     }
 
     const user: User = new User();
-    Object.assign(user, { ...payload, password: this.utilService.encode(payload.password) });
-    await this.userRepo.insert(user);
+    Object.assign(user, { ...payload, password: this.util_service.encode(payload.password) });
+    await this.user_repo.insert(user);
   }
 
   public async signIn(payload: DtoSignIn): Promise<ResSignIn> {
-    const foundUser: User = await this.userRepo.findOne({ email: payload.email });
-    if (!foundUser ||
-      foundUser.password !== this.utilService.encode(payload.password)) {
+    const found_user: User = await this.user_repo.findOne({ email: payload.email });
+    if (!found_user ||
+      found_user.password !== this.util_service.encode(payload.password)) {
       throw new NotFoundException();
     }
 
     return {
-      accessToken: this.tokenService.createToken(foundUser.userId, EnumTokenType.access),
-      refreshToken: this.tokenService.createToken(foundUser.userId, EnumTokenType.refresh),
+      access_token: this.auth_service.createToken(found_user.u_id, EnumTokenType.access),
+      refresh_token: this.auth_service.createToken(found_user.u_id, EnumTokenType.refresh),
     };
   }
 
   public refresh(token: string): ResRefresh {
-    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
-    return { accessToken: this.tokenService.createToken(id, EnumTokenType.access) };
+    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+    return { access_token: this.auth_service.createToken(id, EnumTokenType.access) };
   }
 
   public async checkPassword(token: string, payload: DtoCheckPassword): Promise<void> {
-    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
-    const foundUser: User = await this.userRepo.findOne(id);
+    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+    const found_user: User = await this.user_repo.findOne(id);
 
-    if (!foundUser || this.utilService.encode(payload.password) !== foundUser.password) {
+    if (!found_user || this.util_service.encode(payload.password) !== found_user.password) {
       throw new ForbiddenException();
     }
   }
 
   public async edit(token: string, payload: DtoEditUserInfo | DtoEditAddress): Promise<void> {
-    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
-    await this.userRepo.update(id, payload);
+    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+    await this.user_repo.update(id, payload);
   }
 
   public async editPassword(token: string, payload: DtoEditPassword): Promise<void> {
-    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
-    await this.userRepo.update(id, {
-      password: this.utilService.encode(payload.password),
+    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+    await this.user_repo.update(id, {
+      password: this.util_service.encode(payload.password),
     });
   }
 
   public async load(token: string): Promise<ResLoadUser> {
-    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
-    const foundUser: User = await this.userRepo.findOne(id);
-    if (!foundUser) {
+    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+    const found_user: User = await this.user_repo.findOne(id);
+    if (!found_user) {
       throw new ForbiddenException();
     }
-    for (const element of ['userId', 'email', 'password']) {
-      Reflect.deleteProperty(foundUser, element);
+    for (const e of ['u_id', 'email', 'password']) {
+      Reflect.deleteProperty(found_user, e);
     }
-    return foundUser;
+    return found_user;
   }
 
   public async leave(token: string): Promise<void> {
-    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
-    const foundUser: User = await this.userRepo.findOne(id);
-    if (!foundUser) {
+    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+    const found_user: User = await this.user_repo.findOne(id);
+    if (!found_user) {
       throw new ForbiddenException();
     }
 
-    const foundOrders: Order[] = await this.orderRepo.find({ userId: foundUser.userId });
+    const found_orders: Order[] = await this.order_repo.find({ u_id: found_user.u_id });
 
-    if (foundOrders) {
+    if (found_orders) {
       const orderIds: ObjectID[] = [];
-      for (const elementOrder of foundOrders) {
-        orderIds.push(elementOrder.orderId);
+      for (const e_order of found_orders) {
+        orderIds.push(e_order.od_id);
       }
-      await this.orderRepo.delete(orderIds);
+      await this.order_repo.delete(orderIds);
     }
-    await this.userRepo.delete(id);
+    await this.user_repo.delete(id);
   }
 
   // use only in test
 
   public async get(token: string): Promise<User> {
-    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
-    return this.userRepo.findOne(id);
+    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+    return this.user_repo.findOne(id);
   }
 }

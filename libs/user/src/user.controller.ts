@@ -47,11 +47,11 @@ import { UserService } from './user.service';
 @Controller('api/user')
 export class UserController {
   @Inject()
-  private readonly restaurantService: RestaurantService;
+  private readonly restaurant_service: RestaurantService;
   @Inject()
-  private readonly userService: UserService;
+  private readonly user_service: UserService;
   @Inject()
-  private readonly utilService: UtilService;
+  private readonly util_service: UtilService;
 
   @Get()
   @ApiOperation({ summary: '정보 조회' })
@@ -60,7 +60,7 @@ export class UserController {
   @ApiNotFoundResponse()
   public async get(@Headers() header: Header): Promise<ResLoadUser> {
     try {
-      return this.userService.load(this.utilService.getTokenBody(header));
+      return this.user_service.load(this.util_service.getTokenBody(header));
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -82,7 +82,7 @@ export class UserController {
   @ApiConflictResponse()
   public async checkEmail(@Query(new ValidationPipe()) query: QueryCheckEmail): Promise<void> {
     try {
-      return this.userService.checkEmail(query);
+      return this.user_service.checkEmail(query);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -99,7 +99,7 @@ export class UserController {
     @Body(new ValidationPipe()) payload: DtoCheckPassword,
   ): Promise<void> {
     try {
-      return this.userService.checkPassword(this.utilService.getTokenBody(header), payload);
+      return this.user_service.checkPassword(this.util_service.getTokenBody(header), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -111,7 +111,7 @@ export class UserController {
   @ApiOkResponse({ type: ResRefresh })
   @ApiForbiddenResponse()
   public refresh(@Headers() header: Header): ResRefresh {
-    return this.userService.refresh(this.utilService.getTokenBody(header));
+    return this.user_service.refresh(this.util_service.getTokenBody(header));
   }
 
   @Post('auth/sign_in')
@@ -120,7 +120,7 @@ export class UserController {
   @ApiNotFoundResponse()
   public async signIn(@Body(new ValidationPipe()) payload: DtoSignIn): Promise<ResSignIn> {
     try {
-      return this.userService.signIn(payload);
+      return this.user_service.signIn(payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -136,7 +136,7 @@ export class UserController {
     @Body(new ValidationPipe()) payload: DtoEditAddress,
   ): Promise<void> {
     try {
-      return this.userService.edit(this.utilService.getTokenBody(header), payload);
+      return this.user_service.edit(this.util_service.getTokenBody(header), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -148,7 +148,7 @@ export class UserController {
   @ApiConflictResponse()
   public async create(@Body(new ValidationPipe()) payload: DtoCreateUser): Promise<void> {
     try {
-      return this.userService.create(payload);
+      return this.user_service.create(payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -161,7 +161,7 @@ export class UserController {
   @ApiForbiddenResponse()
   public async leave(@Headers() header: Header): Promise<void> {
     try {
-      return this.userService.leave(this.utilService.getTokenBody(header));
+      return this.user_service.leave(this.util_service.getTokenBody(header));
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -177,7 +177,7 @@ export class UserController {
     @Body(new ValidationPipe()) payload: DtoEditUserInfo,
   ): Promise<void> {
     try {
-      return this.userService.edit(this.utilService.getTokenBody(header), payload);
+      return this.user_service.edit(this.util_service.getTokenBody(header), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -193,7 +193,7 @@ export class UserController {
     @Body(new ValidationPipe()) payload: DtoEditPassword,
   ): Promise<void> {
     try {
-      return this.userService.editPassword(this.utilService.getTokenBody(header), payload);
+      return this.user_service.editPassword(this.util_service.getTokenBody(header), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -211,7 +211,7 @@ export class UserController {
     @Query(new ValidationPipe()) query: QueryGetRestaurantList,
   ): Promise<ResGetRestaurantList[]> {
     try {
-      return this.restaurantService.getList(query);
+      return this.restaurant_service.getList(query);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }

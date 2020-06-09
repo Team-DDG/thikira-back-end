@@ -24,9 +24,9 @@ import { EventService } from './event.service';
 @Controller('api/restaurant/event')
 export class RestaurantEventController {
   @Inject()
-  private readonly eventService: EventService;
+  private readonly event_service: EventService;
   @Inject()
-  private readonly utilService: UtilService;
+  private readonly util_service: UtilService;
 
   @Get()
   @ApiOperation({ summary: '업체 이벤트 조회' })
@@ -35,7 +35,7 @@ export class RestaurantEventController {
   @ApiNotFoundResponse()
   public async getEventList(): Promise<ResGetEventList[]> {
     try {
-      return this.eventService.getList();
+      return this.event_service.getList();
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -49,7 +49,7 @@ export class RestaurantEventController {
     @Body(new ValidationPipe()) payload: DtoUploadEvent,
   ): Promise<void> {
     try {
-      return this.eventService.upload(this.utilService.getTokenBody(header), payload);
+      return this.event_service.upload(this.util_service.getTokenBody(header), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }

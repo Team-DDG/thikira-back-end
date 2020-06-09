@@ -17,124 +17,126 @@ import { FindConditions } from 'typeorm/find-options/FindConditions';
 
 export class OrderService {
   @InjectRepository(Order, 'mongodb')
-  private readonly orderRepo: Repository<Order>;
+  private readonly order_repo: Repository<Order>;
   @InjectRepository(Restaurant, 'mysql')
-  private readonly restaurantRepo: Repository<Restaurant>;
+  private readonly restaurant_repo: Repository<Restaurant>;
   @InjectRepository(User, 'mysql')
-  private readonly userRepo: Repository<User>;
+  private readonly user_repo: Repository<User>;
   @Inject()
-  private readonly tokenService: AuthService;
+  private readonly auth_service: AuthService;
 
   public async upload(token: string, payload: DtoUploadOrder): Promise<void> {
-    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
-    const foundUser: User = await this.userRepo.findOne(id);
-    if (!foundUser) {
+    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+    const found_user: User = await this.user_repo.findOne(id);
+    if (!found_user) {
       throw new ForbiddenException();
     }
-    const userData: OrderUserClass = foundUser;
-    for (const element of ['email', 'password', 'createTime']) {
-      Reflect.deleteProperty(userData, element);
+    const user_data: OrderUserClass = found_user;
+    for (const e of ['email', 'password', 'create_time']) {
+      Reflect.deleteProperty(user_data, e);
     }
 
     const option: Order = new Order();
-    Object.assign(option, { ...userData, orderDetail: [], totalPrice: 0 });
-    for (const elementMenu of payload.menu) {
-      let subPrice: number = elementMenu.price;
-      if (elementMenu.group) {
-        for (const elementGroup of elementMenu.group) {
-          for (const elementOption of elementGroup.option) {
-            subPrice += elementOption.price;
+    Object.assign(option, { ...user_data, order_detail: [], total_price: 0 });
+
+    for (const e_menu of payload.menu) {
+      let sub_price: number = e_menu.price;
+      if (e_menu.group) {
+        for (const e_group of e_menu.group) {
+          for (const e_option of e_group.option) {
+            sub_price += e_option.price;
           }
         }
       }
-      subPrice *= elementMenu.quantity;
-      option.totalPrice += subPrice;
-      option.orderDetail.push({ ...elementMenu, subPrice });
+      sub_price *= e_menu.quantity;
+      option.total_price += sub_price;
+      option.order_detail.push({ ...e_menu, sub_price });
     }
-    option.totalPrice -= payload.discountAmount;
-    for (const element of ['menu']) {
-      Reflect.deleteProperty(payload, element);
+    option.total_price -= payload.discount_amount;
+    for (const e of ['menu']) {
+      Reflect.deleteProperty(payload, e);
     }
     Object.assign(option, payload);
-    await this.orderRepo.insert(option);
+    await this.order_repo.insert(option);
   }
 
   public async getListByUser(token: string): Promise<ResGetOrderListByUser[]> {
-    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
-    const foundUser: User = await this.userRepo.findOne(id);
-    if (!foundUser) {
+    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+
+    const found_user: User = await this.user_repo.findOne(id);
+    if (!found_user) {
       throw new ForbiddenException();
     }
 
     return (await this.getList(id, EnumAccountType.NORMAL)).map(
-      (elementOrder: ResGetOrderList): ResGetOrderListByUser => {
-        Reflect.deleteProperty(elementOrder, 'userId');
-        return elementOrder;
+      (e_order: ResGetOrderList): ResGetOrderListByUser => {
+        Reflect.deleteProperty(e_order, 'u_id');
+        return e_order;
       });
   }
 
   public async getListByRestaurant(token: string): Promise<ResGetOrderListByRestaurant[]> {
-    const { id }: ParsedTokenClass = this.tokenService.parseToken(token);
-    const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
-    if (!foundRestaurant) {
+    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+    const found_restaurant: Restaurant = await this.restaurant_repo.findOne(id);
+    if (!found_restaurant) {
       throw new ForbiddenException();
     }
 
     return (await this.getList(id, EnumAccountType.RESTAURANT)).map(
-      (elementOrder: ResGetOrderList): ResGetOrderListByRestaurant => {
-        Reflect.deleteProperty(elementOrder, 'restaurantId');
-        return elementOrder;
+      (e_order: ResGetOrderList): ResGetOrderListByRestaurant => {
+        Reflect.deleteProperty(e_order, 'r_id');
+        return e_order;
       });
   }
 
   public async editOrderStatus(payload: DtoEditOrderStatus): Promise<void> {
-    await this.orderRepo.update(payload.orderId, payload);
+    await this.order_repo.update(payload.od_id, payload);
   }
 
-  public async removeOrder(orderId: ObjectID | string): Promise<void> {
-    await this.orderRepo.delete(orderId);
+  public async removeOrder(od_id: ObjectID | string): Promise<void> {
+    await this.order_repo.delete(od_id);
   }
 
   // only use in test {
 
-  public async getOrderListByRestaurantUser(restaurantToken: string, userToken: string): Promise<Order[]> {
-    let { id }: ParsedTokenClass = this.tokenService.parseToken(restaurantToken);
-    const foundRestaurant: Restaurant = await this.restaurantRepo.findOne(id);
-    ({ id } = this.tokenService.parseToken(userToken));
-    const foundUser: User = await this.userRepo.findOne(id);
+  public async getOrderListByRestaurantUser(restaurant_token: string, userToken: string): Promise<Order[]> {
+    const { id: r_id }: ParsedTokenClass = this.auth_service.parseToken(restaurant_token);
+    const found_restaurant: Restaurant = await this.restaurant_repo.findOne(r_id);
+    const { id: u_id }: ParsedTokenClass = this.auth_service.parseToken(userToken);
+    const found_user: User = await this.user_repo.findOne(u_id);
 
-    const foundOrders: Order[] = await this.orderRepo.find({
-      restaurantId: foundRestaurant.restaurantId, userId: foundUser.userId,
+    const found_orders: Order[] = await this.order_repo.find({
+      r_id: found_restaurant.r_id, u_id: found_user.u_id,
     });
-    for (const elementOrder of foundOrders) {
-      elementOrder.orderId = elementOrder._id;
+    for (const e_order of found_orders) {
+      e_order.od_id = e_order._id;
     }
-    return foundOrders;
+    return found_orders;
   }
 
   // }
 
-  private async getList(id: number, userType: EnumAccountType): Promise<ResGetOrderList[]> {
-    const findOption: FindConditions<Order> = {};
-    if (userType === EnumAccountType.NORMAL) {
-      findOption.userId = id;
+  private async getList(id: number, user_type: EnumAccountType): Promise<ResGetOrderList[]> {
+    const find_option: FindConditions<Order> = {};
+    if (user_type === EnumAccountType.NORMAL) {
+      find_option.u_id = id;
     } else {
-      findOption.restaurantId = id;
+      find_option.r_id = id;
     }
 
-    const foundOrders: Order[] = await this.orderRepo.find(findOption);
+    const found_orders: Order[] = await this.order_repo.find(find_option);
 
-    if (foundOrders.length < 1) {
+    if (found_orders.length < 1) {
       throw new NotFoundException();
     }
 
-    return foundOrders.map((elementOrder: Order): ResGetOrderList => {
-      elementOrder.orderId = elementOrder._id;
-      Reflect.deleteProperty(elementOrder, '_id');
+    return found_orders.map((e_order: Order): ResGetOrderList => {
+      e_order.od_id = e_order._id;
+      Reflect.deleteProperty(e_order, '_id');
       return {
-        ...elementOrder,
-        createTime: elementOrder.orderId.getTimestamp(),
-        orderId: elementOrder.orderId.toString(),
+        ...e_order,
+        create_time: e_order.od_id.getTimestamp(),
+        od_id: e_order.od_id.toString(),
       };
     });
   }

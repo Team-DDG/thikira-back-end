@@ -4,17 +4,17 @@ export class ResLoadRestaurant {
   @ApiProperty()
   public readonly address: string;
   @ApiProperty()
-  public readonly roadAddress: string;
+  public readonly road_address: string;
   @ApiProperty()
   public readonly area: string;
   @ApiProperty()
   public readonly category: string;
   @ApiProperty()
-  public readonly closeTime: string;
+  public readonly close_time: string;
   @ApiProperty()
-  public readonly createTime: Date;
+  public readonly create_time: Date;
   @ApiProperty()
-  public readonly dayOff: string;
+  public readonly day_off: string;
   @ApiProperty()
   public readonly description: string;
   @ApiProperty()
@@ -22,15 +22,15 @@ export class ResLoadRestaurant {
   @ApiProperty()
   public readonly image: string;
   @ApiProperty()
-  public readonly minPrice: number;
+  public readonly min_price: number;
   @ApiProperty()
   public readonly name: string;
   @ApiProperty()
-  public readonly offlinePayment: boolean;
+  public readonly offline_payment: boolean;
   @ApiProperty()
-  public readonly onlinePayment: boolean;
+  public readonly online_payment: boolean;
   @ApiProperty()
-  public readonly openTime: string;
+  public readonly open_time: string;
   @ApiProperty()
   public readonly phone: string;
   @ApiProperty()

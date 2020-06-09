@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ResGetGroupList } from './';
+import { ResGetGroupList } from './get-group-list.res';
 
 export class ResGetMenuList {
   @ApiProperty()
@@ -9,7 +9,7 @@ export class ResGetMenuList {
   @ApiProperty()
   public readonly image: string;
   @ApiProperty()
-  public readonly menuId: number;
+  public readonly m_id: number;
   @ApiProperty()
   public readonly name: string;
   @ApiProperty()

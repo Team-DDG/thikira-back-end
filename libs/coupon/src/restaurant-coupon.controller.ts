@@ -24,9 +24,9 @@ import { CouponService } from './coupon.service';
 @Controller('api/restaurant/coupon')
 export class RestaurantCouponController {
   @Inject()
-  private readonly couponService: CouponService;
+  private readonly coupon_service: CouponService;
   @Inject()
-  private readonly utilService: UtilService;
+  private readonly util_service: UtilService;
 
   @Get()
   @ApiOperation({ summary: '업체 쿠폰 조회' })
@@ -35,7 +35,7 @@ export class RestaurantCouponController {
   @ApiNotFoundResponse()
   public async getCouponList(@Headers() header: Header): Promise<ResGetCouponList[]> {
     try {
-      return this.couponService.getList(this.utilService.getTokenBody(header));
+      return this.coupon_service.getList(this.util_service.getTokenBody(header));
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -50,7 +50,7 @@ export class RestaurantCouponController {
     @Body(new ValidationPipe()) payload: DtoUploadCoupon,
   ): Promise<void> {
     try {
-      return this.couponService.upload(this.utilService.getTokenBody(header), payload);
+      return this.coupon_service.upload(this.util_service.getTokenBody(header), payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }

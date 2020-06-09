@@ -28,12 +28,12 @@ import { MenuService } from './menu.service';
 @Controller('api/user/menu')
 export class UserMenuController {
   @Inject()
-  private readonly menuService: MenuService;
+  private readonly menu_service: MenuService;
 
   @Get()
   @ApiOperation({ summary: '메뉴 리스트 불러오기' })
   @ApiBearerAuth()
-  @ApiQuery({ name: 'menuCategoryId' })
+  @ApiQuery({ name: 'mc_id' })
   @ApiOkResponse({ type: [ResGetMenuList] })
   @ApiForbiddenResponse()
   public async getMenuList(
@@ -41,7 +41,7 @@ export class UserMenuController {
     @Query(new ValidationPipe()) query: QueryGetMenuList,
   ): Promise<ResGetMenuList[]> {
     try {
-      return this.menuService.getMenuList(query);
+      return this.menu_service.getMenuList(query);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -50,7 +50,7 @@ export class UserMenuController {
   @Get('category')
   @ApiOperation({ summary: '메뉴 카테고리 리스트 불러오기' })
   @ApiBearerAuth()
-  @ApiQuery({ name: 'restaurantId' })
+  @ApiQuery({ name: 'r_id' })
   @ApiOkResponse({ type: [ResGetMenuCategoryList] })
   @ApiForbiddenResponse()
   public async getMenuCategoryList(
@@ -58,7 +58,7 @@ export class UserMenuController {
     @Query(new ValidationPipe()) query: QueryGetMenuCategoryList,
   ): Promise<ResGetMenuCategoryList[]> {
     try {
-      return this.menuService.getMenuCategoryList(query);
+      return this.menu_service.getMenuCategoryList(query);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }

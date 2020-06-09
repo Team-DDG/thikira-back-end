@@ -3,9 +3,9 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 @Entity()
 export class Event {
   @PrimaryGeneratedColumn()
-  public eventId: number;
+  public e_id: number;
   @Column()
-  public bannerImage: string;
+  public banner_image: string;
   @Column()
-  public mainImage: string;
+  public main_image: string;
 }
