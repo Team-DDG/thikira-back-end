@@ -1,26 +1,28 @@
+import { JwtAuthGuard } from '@app/auth';
 import {
   DtoEditReview,
   DtoUploadReview,
-  Header,
   ParamRemoveReview,
   QueryCheckReview,
   QueryGetReviewStatistic,
+  RequestClass,
   ResGetReviewList,
+  ResGetReviewListByUser,
   ResGetReviewStatistic,
 } from '@app/type';
-import { UtilService } from '@app/util';
 import {
   Body,
   Controller,
   Delete,
   Get,
-  Headers,
   Inject,
   InternalServerErrorException,
   Param,
   Patch,
   Post,
   Query,
+  Req,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import {
@@ -32,7 +34,6 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { ResGetReviewListByUser } from '../../type/src/res/review/get-review-list-by-user.res';
 import { ReviewService } from './review.service';
 
 @ApiTags('user/review')
@@ -40,63 +41,64 @@ import { ReviewService } from './review.service';
 export class UserReviewController {
   @Inject()
   private readonly review_service: ReviewService;
-  @Inject()
-  private readonly util_service: UtilService;
 
   @Get('check')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '리뷰 등록 가능 여부 확인' })
   @ApiBearerAuth()
   @ApiOkResponse({ type: [ResGetReviewList] })
   @ApiForbiddenResponse({ description: '\"user haven\'t order by the restaurant\" | null' })
   @ApiConflictResponse()
   public async checkReview(
-    @Headers() header: Header,
+    @Req() { user: { id } }: RequestClass,
     @Query(new ValidationPipe()) query: QueryCheckReview,
   ): Promise<void> {
     try {
-      return this.review_service.checkReview(this.util_service.getTokenBody(header), query);
+      return this.review_service.checkReview(id, query);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '리뷰 등록' })
   @ApiOkResponse()
   @ApiConflictResponse()
   public async uploadReview(
-    @Headers() header: Header,
+    @Req() { user: { id } }: RequestClass,
     @Body(new ValidationPipe()) payload: DtoUploadReview,
   ): Promise<void> {
     try {
-      return this.review_service.uploadReview(this.util_service.getTokenBody(header), payload);
+      return this.review_service.uploadReview(id, payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '주문 조회' })
   @ApiBearerAuth()
   @ApiOkResponse({ type: [ResGetReviewList] })
   @ApiForbiddenResponse()
   @ApiNotFoundResponse()
-  public async getReviewList(@Headers() header: Header): Promise<ResGetReviewListByUser[]> {
+  public async getReviewList(@Req() { user: { id } }: RequestClass): Promise<ResGetReviewListByUser[]> {
     try {
-      return this.review_service.getReviewListByUser(this.util_service.getTokenBody(header));
+      return this.review_service.getReviewListByUser(id);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
   }
 
   @Get('statistic')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '업체 리뷰 통계 조회' })
   @ApiBearerAuth()
   @ApiOkResponse({ type: ResGetReviewStatistic })
   @ApiForbiddenResponse()
   @ApiNotFoundResponse()
   public async getReviewStatistic(
-    @Headers() header: Header,
     @Query(new ValidationPipe()) query: QueryGetReviewStatistic,
   ): Promise<ResGetReviewStatistic> {
     try {
@@ -107,32 +109,34 @@ export class UserReviewController {
   }
 
   @Patch()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '리뷰 수정' })
   @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async editReview(
-    @Headers() header: Header,
+    @Req() { user: { id } }: RequestClass,
     @Body(new ValidationPipe()) payload: DtoEditReview,
   ): Promise<void> {
     try {
-      return this.review_service.editReview(this.util_service.getTokenBody(header), payload);
+      return this.review_service.editReview(id, payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
   }
 
   @Delete(':r_id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '리뷰 삭제' })
   @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async removeReview(
-    @Headers() header: Header,
+    @Req() { user: { id } }: RequestClass,
     @Param(new ValidationPipe()) param: ParamRemoveReview,
   ): Promise<void> {
     try {
-      return this.review_service.removeReview(this.util_service.getTokenBody(header), param);
+      return this.review_service.removeReview(id, param);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }

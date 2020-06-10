@@ -1,13 +1,14 @@
-import { DtoUploadOrder, Header, ResGetOrderList, ResGetOrderListByUser } from '@app/type';
-import { UtilService } from '@app/util';
+import { JwtAuthGuard } from '@app/auth';
+import { DtoUploadOrder, RequestClass, ResGetOrderList, ResGetOrderListByUser } from '@app/type';
 import {
   Body,
   Controller,
   Get,
-  Headers,
   Inject,
   InternalServerErrorException,
   Post,
+  Req,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import {
@@ -25,33 +26,33 @@ import { OrderService } from './order.service';
 export class UserOrderController {
   @Inject()
   private readonly od_service: OrderService;
-  @Inject()
-  private readonly util_service: UtilService;
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '주문 조회' })
   @ApiBearerAuth()
   @ApiOkResponse({ type: [ResGetOrderList] })
   @ApiForbiddenResponse()
-  public async getOrderList(@Headers() header: Header): Promise<ResGetOrderListByUser[]> {
+  public async getOrderList(@Req() { user: { id } }: RequestClass): Promise<ResGetOrderListByUser[]> {
     try {
-      return this.od_service.getListByUser(this.util_service.getTokenBody(header));
+      return this.od_service.getListByUser(id);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '주문 등록' })
   @ApiBearerAuth()
   @ApiCreatedResponse()
   @ApiForbiddenResponse()
   public async uploadOrder(
-    @Headers() header: Header,
+    @Req() { user: { id } }: RequestClass,
     @Body(new ValidationPipe()) payload: DtoUploadOrder,
   ): Promise<void> {
     try {
-      return this.od_service.upload(this.util_service.getTokenBody(header), payload);
+      return this.od_service.upload(id, payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }

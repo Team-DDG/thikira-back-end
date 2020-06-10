@@ -1,23 +1,25 @@
+import { JwtAuthGuard } from '@app/auth';
 import {
   DtoEditReplyReview,
   DtoUploadReplyReview,
-  Header,
   ParamRemoveReplyReview,
+  RequestClass,
   ResGetReviewList,
+  ResGetReviewListByRestaurant,
   ResGetReviewStatistic,
 } from '@app/type';
-import { UtilService } from '@app/util';
 import {
   Body,
   Controller,
   Delete,
   Get,
-  Headers,
   Inject,
   InternalServerErrorException,
   Param,
   Patch,
   Post,
+  Req,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import {
@@ -29,7 +31,6 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { ResGetReviewListByRestaurant } from '../../type/src/res/review/get-review-list-by-restaurant.res';
 import { ReviewService } from './review.service';
 
 @ApiTags('restaurant/review')
@@ -37,79 +38,82 @@ import { ReviewService } from './review.service';
 export class RestaurantReviewController {
   @Inject()
   private readonly review_service: ReviewService;
-  @Inject()
-  private readonly util_service: UtilService;
 
   @Patch('reply')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '업체 답변 리뷰 수정' })
   @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async editReplyReview(
-    @Headers() header: Header,
+    @Req() { user: { id } }: RequestClass,
     @Body(new ValidationPipe()) payload: DtoEditReplyReview,
   ): Promise<void> {
     try {
-      return this.review_service.editReplyReview(this.util_service.getTokenBody(header), payload);
+      return this.review_service.editReplyReview(id, payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '업체 리뷰 조회' })
   @ApiBearerAuth()
   @ApiOkResponse({ type: [ResGetReviewList] })
   @ApiForbiddenResponse()
   @ApiNotFoundResponse()
-  public async getReviewList(@Headers() header: Header): Promise<ResGetReviewListByRestaurant[]> {
+  public async getReviewList(@Req() { user: { id } }: RequestClass): Promise<ResGetReviewListByRestaurant[]> {
     try {
-      return this.review_service.getReviewListByRestaurant(this.util_service.getTokenBody(header));
+      return this.review_service.getReviewListByRestaurant(id);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
   }
 
   @Get('statistic')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '업체 리뷰 통계 조회' })
   @ApiBearerAuth()
   @ApiOkResponse({ type: ResGetReviewStatistic })
   @ApiForbiddenResponse()
   @ApiNotFoundResponse()
-  public async getReviewStatistic(@Headers() header: Header): Promise<ResGetReviewStatistic> {
+  public async getReviewStatistic(@Req() { user: { id } }: RequestClass): Promise<ResGetReviewStatistic> {
     try {
-      return this.review_service.getReviewStatistic(this.util_service.getTokenBody(header));
+      return this.review_service.getReviewStatistic(id);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
   }
 
   @Delete('reply/:u_id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '업체 답변 리뷰 삭제' })
   @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async removeReplyReview(
-    @Headers() header: Header,
+    @Req() { user: { id } }: RequestClass,
     @Param(new ValidationPipe()) param: ParamRemoveReplyReview,
   ): Promise<void> {
     try {
-      return this.review_service.removeReplyReview(this.util_service.getTokenBody(header), param);
+      return this.review_service.removeReplyReview(id, param);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
   }
 
   @Post('reply')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '업체 답변 리뷰 등록' })
   @ApiOkResponse()
   @ApiConflictResponse()
   public async uploadReplyReview(
-    @Headers() header: Header,
+    @Req() { user: { id } }: RequestClass,
     @Body(new ValidationPipe()) payload: DtoUploadReplyReview,
   ): Promise<void> {
     try {
-      return this.review_service.uploadReplyReview(this.util_service.getTokenBody(header), payload);
+      return this.review_service.uploadReplyReview(id, payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }

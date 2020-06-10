@@ -8,17 +8,16 @@ import {
   EnumAccountType,
   ParamRemoveReplyReview,
   ParamRemoveReview,
-  ParsedTokenClass,
   QueryCheckReview,
   QueryGetReviewStatistic,
   ResGetReviewList,
+  ResGetReviewListByRestaurant,
+  ResGetReviewListByUser,
   ResGetReviewStatistic,
 } from '@app/type';
 import { ConflictException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindConditions, Repository } from 'typeorm';
-import { ResGetReviewListByRestaurant } from '../../type/src/res/review/get-review-list-by-restaurant.res';
-import { ResGetReviewListByUser } from '../../type/src/res/review/get-review-list-by-user.res';
 
 @Injectable()
 export class ReviewService {
@@ -37,8 +36,7 @@ export class ReviewService {
 
   // review {
 
-  public async checkReview(token: string, payload: QueryCheckReview): Promise<void> {
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+  public async checkReview(id: number, payload: QueryCheckReview): Promise<void> {
     const found_user: User = await this.user_repo.findOne(id);
     if (!found_user) {
       throw new ForbiddenException();
@@ -62,8 +60,7 @@ export class ReviewService {
     }
   }
 
-  public async uploadReview(token: string, payload: DtoUploadReview): Promise<void> {
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+  public async uploadReview(id: number, payload: DtoUploadReview): Promise<void> {
     const found_user: User = await this.user_repo.findOne(id);
     if (!found_user) {
       throw new ForbiddenException();
@@ -85,8 +82,7 @@ export class ReviewService {
     await this.updateRestaurantStar(found_restaurant.r_id);
   }
 
-  public async editReview(token: string, payload: DtoEditReview): Promise<void> {
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+  public async editReview(id: number, payload: DtoEditReview): Promise<void> {
     const found_review: Review = await this.review_repo.findOne({ r_id: payload.r_id, u_id: id });
 
     if (!found_review) {
@@ -106,8 +102,7 @@ export class ReviewService {
     await this.updateRestaurantStar(found_review.r_id);
   }
 
-  public async removeReview(token: string, param: ParamRemoveReview): Promise<void> {
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+  public async removeReview(id: number, param: ParamRemoveReview): Promise<void> {
     const found_review: Review = await this.review_repo.findOne({
       join: {
         alias: 'Review',
@@ -131,8 +126,7 @@ export class ReviewService {
     await this.updateRestaurantStar(parseInt(param.r_id));
   }
 
-  public async getReviewListByUser(token: string): Promise<ResGetReviewListByUser[]> {
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+  public async getReviewListByUser(id: number): Promise<ResGetReviewListByUser[]> {
     return (await this.getReviewList(id, EnumAccountType.NORMAL))
       .map((e_review: ResGetReviewList): ResGetReviewListByUser => {
         Reflect.deleteProperty(e_review, 'u_id');
@@ -143,8 +137,7 @@ export class ReviewService {
       });
   }
 
-  public async getReviewListByRestaurant(token: string): Promise<ResGetReviewListByRestaurant[]> {
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+  public async getReviewListByRestaurant(id: number): Promise<ResGetReviewListByRestaurant[]> {
     return (await this.getReviewList(id, EnumAccountType.RESTAURANT))
       .map((e_review: ResGetReviewList): ResGetReviewListByRestaurant => {
         Reflect.deleteProperty(e_review, 'r_id');
@@ -155,11 +148,10 @@ export class ReviewService {
       });
   }
 
-  public async getReviewStatistic(param: string | QueryGetReviewStatistic): Promise<ResGetReviewStatistic> {
+  public async getReviewStatistic(param: number | QueryGetReviewStatistic): Promise<ResGetReviewStatistic> {
     let found_restaurant: Restaurant;
-    if ('string' === typeof param) {
-      const { id }: ParsedTokenClass = this.auth_service.parseToken(param);
-      found_restaurant = await this.restaurant_repo.findOne(id);
+    if ('number' === typeof param) {
+      found_restaurant = await this.restaurant_repo.findOne(param);
     } else {
       found_restaurant = await this.restaurant_repo.findOne(parseInt(param.r_id));
     }
@@ -199,8 +191,8 @@ export class ReviewService {
 
   // reply_review {
 
-  public async uploadReplyReview(token: string, payload: DtoUploadReplyReview): Promise<void> {
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+  public async uploadReplyReview(id: number, payload: DtoUploadReplyReview): Promise<void> {
+
     const found_review: Review = await this.review_repo.findOne({ r_id: id, u_id: payload.u_id }, {
       join: {
         alias: 'Review',
@@ -217,8 +209,7 @@ export class ReviewService {
     await this.reply_review_repo.insert(reply_review);
   }
 
-  public async editReplyReview(token: string, payload: DtoEditReplyReview): Promise<void> {
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+  public async editReplyReview(id: number, payload: DtoEditReplyReview): Promise<void> {
     const foundReplyReview: ReplyReview = await this.reply_review_repo.findOne({
       r_id: id, u_id: payload.u_id,
     });
@@ -232,8 +223,7 @@ export class ReviewService {
     });
   }
 
-  public async removeReplyReview(token: string, param: ParamRemoveReplyReview): Promise<void> {
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+  public async removeReplyReview(id: number, param: ParamRemoveReplyReview): Promise<void> {
     const foundReplyReview: ReplyReview = await this.reply_review_repo.findOne({
       r_id: id, u_id: parseInt(param.u_id),
     });

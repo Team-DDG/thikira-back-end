@@ -1,6 +1,6 @@
 import { AuthService } from '@app/auth';
 import { Coupon, Restaurant } from '@app/entity';
-import { DtoUploadCoupon, ParsedTokenClass, QueryGetCoupon, ResGetCoupon, ResGetCouponList } from '@app/type';
+import { DtoUploadCoupon, QueryGetCoupon, ResGetCoupon, ResGetCouponList } from '@app/type';
 import { ConflictException, ForbiddenException, Inject, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToClass } from 'class-transformer';
@@ -14,8 +14,7 @@ export class CouponService {
   @Inject()
   private readonly auth_service: AuthService;
 
-  public async upload(token: string, payload: DtoUploadCoupon): Promise<void> {
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+  public async upload(id: number, payload: DtoUploadCoupon): Promise<void> {
     const found_restaurant: Restaurant = await this.restaurant_repo.findOne(id);
     if (!found_restaurant) {
       throw new ForbiddenException();
@@ -33,9 +32,8 @@ export class CouponService {
     await this.coupon_repo.insert(coupon);
   }
 
-  public async getList(token: string): Promise<ResGetCouponList[]> {
+  public async getList(id: number): Promise<ResGetCouponList[]> {
     const res: ResGetCouponList[] = [];
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
     const found_restaurant: Restaurant = await this.restaurant_repo.findOne(id);
     const found_coupons: Coupon[] = await this.coupon_repo.find({ restaurant: found_restaurant });
 
@@ -49,11 +47,10 @@ export class CouponService {
     return res;
   }
 
-  public async get(param: string | QueryGetCoupon): Promise<ResGetCoupon> {
+  public async get(param: number | QueryGetCoupon): Promise<ResGetCoupon> {
     let found_restaurant: Restaurant;
-    if ('string' === typeof param) {
-      const { id }: ParsedTokenClass = this.auth_service.parseToken(param);
-      found_restaurant = await this.restaurant_repo.findOne(id);
+    if ('number' === typeof param) {
+      found_restaurant = await this.restaurant_repo.findOne(param);
     } else {
       found_restaurant = await this.restaurant_repo.findOne(parseInt(param.r_id));
     }

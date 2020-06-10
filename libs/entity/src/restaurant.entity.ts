@@ -1,24 +1,19 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseAccountClass } from '@app/type';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Coupon } from './coupon.entity';
 import { MenuCategory } from './menu-category.entity';
 import { Review } from './review.entity';
 
 @Entity()
-export class Restaurant {
+export class Restaurant extends BaseAccountClass {
   @PrimaryGeneratedColumn()
   public r_id: number;
   @Column()
   public area: string;
   @Column()
-  public road_address: string;
-  @Column()
-  public address: string;
-  @Column()
   public category: string;
   @Column()
   public close_time: string;
-  @CreateDateColumn()
-  public create_time: Date;
   @Column()
   public day_off: string;
   @Column()
@@ -37,8 +32,6 @@ export class Restaurant {
   public offline_payment: boolean;
   @Column()
   public open_time: string;
-  @Column()
-  public password: string;
   @Column()
   public phone: string;
   @Column({ nullable: true, type: 'double' })

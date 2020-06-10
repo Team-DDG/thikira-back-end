@@ -1,13 +1,13 @@
-import { DtoUploadEvent, Header, ResGetEventList } from '@app/type';
-import { UtilService } from '@app/util';
+import { JwtAuthGuard } from '@app/auth';
+import { DtoUploadEvent, ResGetEventList } from '@app/type';
 import {
   Body,
   Controller,
   Get,
-  Headers,
   Inject,
   InternalServerErrorException,
   Post,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import {
@@ -25,10 +25,9 @@ import { EventService } from './event.service';
 export class RestaurantEventController {
   @Inject()
   private readonly event_service: EventService;
-  @Inject()
-  private readonly util_service: UtilService;
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '업체 이벤트 조회' })
   @ApiBearerAuth()
   @ApiOkResponse()
@@ -42,14 +41,12 @@ export class RestaurantEventController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '업체 이벤트 등록' })
   @ApiCreatedResponse()
-  public async uploadEvent(
-    @Headers() header: Header,
-    @Body(new ValidationPipe()) payload: DtoUploadEvent,
-  ): Promise<void> {
+  public async uploadEvent(@Body(new ValidationPipe()) payload: DtoUploadEvent): Promise<void> {
     try {
-      return this.event_service.upload(this.util_service.getTokenBody(header), payload);
+      return this.event_service.upload(payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }

@@ -1,3 +1,4 @@
+import { JwtAuthGuard } from '@app/auth';
 import { RestaurantService } from '@app/restaurant';
 import {
   DtoCheckPassword,
@@ -7,26 +8,26 @@ import {
   DtoEditUserInfo,
   DtoSignIn,
   EnumSortOption,
-  Header,
   QueryCheckEmail,
   QueryGetRestaurantList,
+  RequestClass,
   ResGetRestaurantList,
   ResLoadUser,
   ResRefresh,
   ResSignIn,
 } from '@app/type';
-import { UtilService } from '@app/util';
 import {
   Body,
   Controller,
   Delete,
   Get,
-  Headers,
   Inject,
   InternalServerErrorException,
   Patch,
   Post,
   Query,
+  Req,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import {
@@ -50,32 +51,32 @@ export class UserController {
   private readonly restaurant_service: RestaurantService;
   @Inject()
   private readonly user_service: UserService;
-  @Inject()
-  private readonly util_service: UtilService;
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '정보 조회' })
   @ApiBearerAuth()
   @ApiOkResponse({ type: ResLoadUser })
   @ApiNotFoundResponse()
-  public async get(@Headers() header: Header): Promise<ResLoadUser> {
+  public async get(@Req() { user: { id } }: RequestClass): Promise<ResLoadUser> {
     try {
-      return this.user_service.load(this.util_service.getTokenBody(header));
+      return this.user_service.load(id);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
   }
 
   @Get('auth')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '접근 토큰 확인' })
   @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public auth(): void {
-    return null;
   }
 
   @Get('auth/email')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '이메일 중복 확인' })
   @ApiQuery({ name: 'email' })
   @ApiOkResponse()
@@ -89,29 +90,31 @@ export class UserController {
   }
 
   @Post('auth/password')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '비밀번호 확인' })
   @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   @ApiUnauthorizedResponse()
   public async checkPassword(
-    @Headers() header: Header,
+    @Req() { user: { id } }: RequestClass,
     @Body(new ValidationPipe()) payload: DtoCheckPassword,
   ): Promise<void> {
     try {
-      return this.user_service.checkPassword(this.util_service.getTokenBody(header), payload);
+      return this.user_service.checkPassword(id, payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
   }
 
   @Get('auth/refresh')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '토큰 재발급' })
   @ApiBearerAuth()
   @ApiOkResponse({ type: ResRefresh })
   @ApiForbiddenResponse()
-  public refresh(@Headers() header: Header): ResRefresh {
-    return this.user_service.refresh(this.util_service.getTokenBody(header));
+  public refresh(@Req() { user: { id } }: RequestClass): ResRefresh {
+    return this.user_service.refresh(id);
   }
 
   @Post('auth/sign_in')
@@ -127,16 +130,17 @@ export class UserController {
   }
 
   @Patch('address')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '주소 수정' })
   @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async editAddress(
-    @Headers() header: Header,
+    @Req() { user: { id } }: RequestClass,
     @Body(new ValidationPipe()) payload: DtoEditAddress,
   ): Promise<void> {
     try {
-      return this.user_service.edit(this.util_service.getTokenBody(header), payload);
+      return this.user_service.edit(id, payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
@@ -155,51 +159,55 @@ export class UserController {
   }
 
   @Delete('leave')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '회원 탈퇴' })
   @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
-  public async leave(@Headers() header: Header): Promise<void> {
+  public async leave(@Req() { user: { id } }: RequestClass): Promise<void> {
     try {
-      return this.user_service.leave(this.util_service.getTokenBody(header));
+      return this.user_service.leave(id);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
   }
 
   @Patch('info')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '정보 수정' })
   @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async editProfile(
-    @Headers() header: Header,
+    @Req() { user: { id } }: RequestClass,
     @Body(new ValidationPipe()) payload: DtoEditUserInfo,
   ): Promise<void> {
     try {
-      return this.user_service.edit(this.util_service.getTokenBody(header), payload);
+      return this.user_service.edit(id, payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
   }
 
   @Patch('password')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '비밀번호 수정' })
   @ApiBearerAuth()
   @ApiOkResponse()
   @ApiForbiddenResponse()
   public async editPassword(
-    @Headers() header: Header,
+    @Req() { user: { id } }: RequestClass,
     @Body(new ValidationPipe()) payload: DtoEditPassword,
   ): Promise<void> {
     try {
-      return this.user_service.editPassword(this.util_service.getTokenBody(header), payload);
+      return this.user_service.editPassword(id, payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
   }
 
   @Get('restaurant')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '업체 리스트 조회' })
   @ApiBearerAuth()
   @ApiOkResponse({ type: ResGetRestaurantList })
@@ -207,7 +215,6 @@ export class UserController {
   @ApiQuery({ enum: EnumSortOption, name: 'sortOption', type: 'enum' })
   @ApiNotFoundResponse()
   public async getRestaurantList(
-    @Headers() token: Header,
     @Query(new ValidationPipe()) query: QueryGetRestaurantList,
   ): Promise<ResGetRestaurantList[]> {
     try {

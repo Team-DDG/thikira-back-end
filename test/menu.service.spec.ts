@@ -1,4 +1,4 @@
-import { AuthModule } from '@app/auth';
+import { AuthModule, AuthService } from '@app/auth';
 import { config } from '@app/config';
 import { mongodbEntities, mysqlEntities } from '@app/entity';
 import { MenuModule, MenuService } from '@app/menu';
@@ -30,9 +30,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { getConnection } from 'typeorm';
 
 describe('MenuService', () => {
+  let auth_service: AuthService;
   let menu_service: MenuService;
   let restaurant_service: RestaurantService;
-  let restaurant_tokens: string[];
+  const restaurant_ids: number[] = [];
   const test_group: DtoUploadGroup = {
     m_id: null, max_count: 0, name: 'sauce',
     option: [{ name: 'garlic sauce', price: 500 }],
@@ -82,32 +83,28 @@ describe('MenuService', () => {
       providers: [MenuService],
     }).compile();
 
+    auth_service = module.get<AuthService>(AuthService);
     menu_service = module.get<MenuService>(MenuService);
     restaurant_service = module.get<RestaurantService>(RestaurantService);
 
-    const test_restaurants: DtoCreateRestaurant[] = [];
-
-    for (let i: number = 0; i < 8; i++) {
-      test_restaurants.push({
+    await Promise.all([...Array(8).keys()].map(async (e: number): Promise<void> => {
+      await restaurant_service.create({
         ...test_restaurant,
-        email: i.toString() + test_restaurant.email,
-        name: test_restaurant.name + i.toString(),
+        email: e.toString() + test_restaurant.email,
+        name: e.toString() + test_restaurant.name,
       });
-    }
 
-    restaurant_tokens = (await Promise.all(test_restaurants
-      .map(async (e_restaurant: DtoCreateRestaurant): Promise<ResSignIn> => {
-        await restaurant_service.create(e_restaurant);
-        return restaurant_service.signIn({
-          email: e_restaurant.email,
-          password: e_restaurant.password,
-        });
-      }))).map((e_token: ResSignIn): string => e_token.access_token);
+      const { access_token }: ResSignIn = await restaurant_service.signIn({
+        email: e.toString() + test_restaurant.email,
+        password: test_restaurant.password,
+      });
+      restaurant_ids.push(auth_service.parseToken(access_token).id);
+    }));
   });
 
   afterAll(async () => {
-    await Promise.all(restaurant_tokens
-      .map(async (e_token: string): Promise<void> => restaurant_service.leave(e_token)));
+    await Promise.all(restaurant_ids
+      .map(async (e_id: number): Promise<void> => restaurant_service.leave(e_id)));
 
     await getConnection('mysql').close();
     await getConnection('mongodb').close();
@@ -115,10 +112,10 @@ describe('MenuService', () => {
 
   it('should success uploadMenuCategory()', async () => {
     const { mc_id }: ResUploadMenuCategory =
-      await menu_service.uploadMenuCategory(restaurant_tokens[0], test_menuCategory);
+      await menu_service.uploadMenuCategory(restaurant_ids[0], test_menuCategory);
 
     const [found_menu_category]: ResGetMenuCategoryList[] = await menu_service
-      .getMenuCategoryList(restaurant_tokens[0]);
+      .getMenuCategoryList(restaurant_ids[0]);
 
     const [req_menu_category, res_menu_category] = TestUtilService
       .makeElementComparable(test_menuCategory, found_menu_category, ['mc_id']);
@@ -129,14 +126,14 @@ describe('MenuService', () => {
 
   it('should success editMenuCategory()', async () => {
     const { mc_id }: ResUploadMenuCategory =
-      await menu_service.uploadMenuCategory(restaurant_tokens[1], test_menuCategory);
+      await menu_service.uploadMenuCategory(restaurant_ids[1], test_menuCategory);
 
     const edit_data: DtoEditMenuCategory = { mc_id, name: 'etc' };
 
     await menu_service.editMenuCategory(edit_data);
 
     const [found_menu_category]: ResGetMenuCategoryList[] = await menu_service
-      .getMenuCategoryList(restaurant_tokens[1]);
+      .getMenuCategoryList(restaurant_ids[1]);
 
     const [req_menu_category, res_menu_category] = TestUtilService
       .makeElementComparable(edit_data, found_menu_category, ['mc_id']);
@@ -147,7 +144,7 @@ describe('MenuService', () => {
 
   it('should success uploadMenu()', async () => {
     const { mc_id }: ResUploadMenuCategory = await menu_service
-      .uploadMenuCategory(restaurant_tokens[2], test_menuCategory);
+      .uploadMenuCategory(restaurant_ids[2], test_menuCategory);
 
     const { m_id }: ResUploadMenu = await menu_service.uploadMenu({ ...test_menu, mc_id });
 
@@ -171,7 +168,7 @@ describe('MenuService', () => {
 
   it('should success editMenu()', async () => {
     const { mc_id }: ResUploadMenuCategory =
-      await menu_service.uploadMenuCategory(restaurant_tokens[3], test_menuCategory);
+      await menu_service.uploadMenuCategory(restaurant_ids[3], test_menuCategory);
     const { m_id }: ResUploadMenu =
       await menu_service.uploadMenu({ ...test_menu, mc_id });
 
@@ -197,7 +194,7 @@ describe('MenuService', () => {
 
   it('should success uploadGroup()', async () => {
     const { mc_id }: ResUploadMenuCategory =
-      await menu_service.uploadMenuCategory(restaurant_tokens[4], test_menuCategory);
+      await menu_service.uploadMenuCategory(restaurant_ids[4], test_menuCategory);
     const menu: DtoUploadMenu = { ...test_menu };
 
     Reflect.deleteProperty(menu, 'group');
@@ -220,7 +217,7 @@ describe('MenuService', () => {
 
   it('should success editGroup()', async () => {
     const { mc_id }: ResUploadMenuCategory =
-      await menu_service.uploadMenuCategory(restaurant_tokens[5], test_menuCategory);
+      await menu_service.uploadMenuCategory(restaurant_ids[5], test_menuCategory);
     const menu: DtoUploadMenu = { ...test_menu };
     Reflect.deleteProperty(menu, 'group');
     const { m_id }: ResUploadMenu = await menu_service.uploadMenu({ ...menu, mc_id });
@@ -243,7 +240,7 @@ describe('MenuService', () => {
 
   it('should success uploadOption()', async () => {
     const { mc_id }: ResUploadMenuCategory =
-      await menu_service.uploadMenuCategory(restaurant_tokens[6], test_menuCategory);
+      await menu_service.uploadMenuCategory(restaurant_ids[6], test_menuCategory);
 
     const menu: DtoUploadMenu = { ...test_menu };
     Reflect.deleteProperty(menu.group[0], 'option');
@@ -266,7 +263,7 @@ describe('MenuService', () => {
 
   it('should success editOption()', async () => {
     const { mc_id }: ResUploadMenuCategory =
-      await menu_service.uploadMenuCategory(restaurant_tokens[7], test_menuCategory);
+      await menu_service.uploadMenuCategory(restaurant_ids[7], test_menuCategory);
 
     const menu: DtoUploadMenu = { ...test_menu };
     Reflect.deleteProperty(menu.group[0], 'option');

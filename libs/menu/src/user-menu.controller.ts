@@ -1,5 +1,5 @@
+import { JwtAuthGuard } from '@app/auth';
 import {
-  Header,
   QueryGetMenuCategoryList,
   QueryGetMenuList,
   ResGetMenuCategoryList,
@@ -8,10 +8,10 @@ import {
 import {
   Controller,
   Get,
-  Headers,
   Inject,
   InternalServerErrorException,
   Query,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import {
@@ -31,15 +31,13 @@ export class UserMenuController {
   private readonly menu_service: MenuService;
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '메뉴 리스트 불러오기' })
   @ApiBearerAuth()
   @ApiQuery({ name: 'mc_id' })
   @ApiOkResponse({ type: [ResGetMenuList] })
   @ApiForbiddenResponse()
-  public async getMenuList(
-    @Headers() header: Header,
-    @Query(new ValidationPipe()) query: QueryGetMenuList,
-  ): Promise<ResGetMenuList[]> {
+  public async getMenuList(@Query(new ValidationPipe()) query: QueryGetMenuList): Promise<ResGetMenuList[]> {
     try {
       return this.menu_service.getMenuList(query);
     } catch (e) {
@@ -48,13 +46,13 @@ export class UserMenuController {
   }
 
   @Get('category')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '메뉴 카테고리 리스트 불러오기' })
   @ApiBearerAuth()
   @ApiQuery({ name: 'r_id' })
   @ApiOkResponse({ type: [ResGetMenuCategoryList] })
   @ApiForbiddenResponse()
   public async getMenuCategoryList(
-    @Headers() header: Header,
     @Query(new ValidationPipe()) query: QueryGetMenuCategoryList,
   ): Promise<ResGetMenuCategoryList[]> {
     try {

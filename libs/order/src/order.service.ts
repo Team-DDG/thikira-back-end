@@ -5,7 +5,6 @@ import {
   DtoUploadOrder,
   EnumAccountType,
   OrderUserClass,
-  ParsedTokenClass,
   ResGetOrderList,
   ResGetOrderListByRestaurant,
   ResGetOrderListByUser,
@@ -25,8 +24,7 @@ export class OrderService {
   @Inject()
   private readonly auth_service: AuthService;
 
-  public async upload(token: string, payload: DtoUploadOrder): Promise<void> {
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+  public async upload(id: number, payload: DtoUploadOrder): Promise<void> {
     const found_user: User = await this.user_repo.findOne(id);
     if (!found_user) {
       throw new ForbiddenException();
@@ -60,9 +58,7 @@ export class OrderService {
     await this.order_repo.insert(option);
   }
 
-  public async getListByUser(token: string): Promise<ResGetOrderListByUser[]> {
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
-
+  public async getListByUser(id: number): Promise<ResGetOrderListByUser[]> {
     const found_user: User = await this.user_repo.findOne(id);
     if (!found_user) {
       throw new ForbiddenException();
@@ -75,8 +71,7 @@ export class OrderService {
       });
   }
 
-  public async getListByRestaurant(token: string): Promise<ResGetOrderListByRestaurant[]> {
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+  public async getListByRestaurant(id: number): Promise<ResGetOrderListByRestaurant[]> {
     const found_restaurant: Restaurant = await this.restaurant_repo.findOne(id);
     if (!found_restaurant) {
       throw new ForbiddenException();
@@ -96,25 +91,6 @@ export class OrderService {
   public async removeOrder(od_id: ObjectID | string): Promise<void> {
     await this.order_repo.delete(od_id);
   }
-
-  // only use in test {
-
-  public async getOrderListByRestaurantUser(restaurant_token: string, userToken: string): Promise<Order[]> {
-    const { id: r_id }: ParsedTokenClass = this.auth_service.parseToken(restaurant_token);
-    const found_restaurant: Restaurant = await this.restaurant_repo.findOne(r_id);
-    const { id: u_id }: ParsedTokenClass = this.auth_service.parseToken(userToken);
-    const found_user: User = await this.user_repo.findOne(u_id);
-
-    const found_orders: Order[] = await this.order_repo.find({
-      r_id: found_restaurant.r_id, u_id: found_user.u_id,
-    });
-    for (const e_order of found_orders) {
-      e_order.od_id = e_order._id;
-    }
-    return found_orders;
-  }
-
-  // }
 
   private async getList(id: number, user_type: EnumAccountType): Promise<ResGetOrderList[]> {
     const find_option: FindConditions<Order> = {};

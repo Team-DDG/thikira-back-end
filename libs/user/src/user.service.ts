@@ -7,7 +7,6 @@ import {
   DtoEditPassword,
   DtoEditUserInfo,
   DtoSignIn,
-  ParsedTokenClass,
   QueryCheckEmail,
   ResLoadUser,
   ResRefresh,
@@ -43,14 +42,14 @@ export class UserService {
     }
 
     const user: User = new User();
-    Object.assign(user, { ...payload, password: this.util_service.encode(payload.password) });
+    Object.assign(user, { ...payload, password: this.auth_service.encode(payload.password) });
     await this.user_repo.insert(user);
   }
 
   public async signIn(payload: DtoSignIn): Promise<ResSignIn> {
     const found_user: User = await this.user_repo.findOne({ email: payload.email });
     if (!found_user ||
-      found_user.password !== this.util_service.encode(payload.password)) {
+      found_user.password !== this.auth_service.encode(payload.password)) {
       throw new NotFoundException();
     }
 
@@ -60,34 +59,29 @@ export class UserService {
     };
   }
 
-  public refresh(token: string): ResRefresh {
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+  public refresh(id: number): ResRefresh {
     return { access_token: this.auth_service.createToken(id, EnumTokenType.access) };
   }
 
-  public async checkPassword(token: string, payload: DtoCheckPassword): Promise<void> {
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+  public async checkPassword(id: number, payload: DtoCheckPassword): Promise<void> {
     const found_user: User = await this.user_repo.findOne(id);
 
-    if (!found_user || this.util_service.encode(payload.password) !== found_user.password) {
+    if (!found_user || this.auth_service.encode(payload.password) !== found_user.password) {
       throw new ForbiddenException();
     }
   }
 
-  public async edit(token: string, payload: DtoEditUserInfo | DtoEditAddress): Promise<void> {
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+  public async edit(id: number, payload: DtoEditUserInfo | DtoEditAddress): Promise<void> {
     await this.user_repo.update(id, payload);
   }
 
-  public async editPassword(token: string, payload: DtoEditPassword): Promise<void> {
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+  public async editPassword(id: number, payload: DtoEditPassword): Promise<void> {
     await this.user_repo.update(id, {
-      password: this.util_service.encode(payload.password),
+      password: this.auth_service.encode(payload.password),
     });
   }
 
-  public async load(token: string): Promise<ResLoadUser> {
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+  public async load(id: number): Promise<ResLoadUser> {
     const found_user: User = await this.user_repo.findOne(id);
     if (!found_user) {
       throw new ForbiddenException();
@@ -98,8 +92,7 @@ export class UserService {
     return found_user;
   }
 
-  public async leave(token: string): Promise<void> {
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+  public async leave(id: number): Promise<void> {
     const found_user: User = await this.user_repo.findOne(id);
     if (!found_user) {
       throw new ForbiddenException();
@@ -115,12 +108,5 @@ export class UserService {
       await this.order_repo.delete(orderIds);
     }
     await this.user_repo.delete(id);
-  }
-
-  // use only in test
-
-  public async get(token: string): Promise<User> {
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
-    return this.user_repo.findOne(id);
   }
 }

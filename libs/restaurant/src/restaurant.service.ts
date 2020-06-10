@@ -7,7 +7,6 @@ import {
   DtoEditPassword,
   DtoEditRestaurantInfo,
   DtoSignIn,
-  ParsedTokenClass,
   QueryCheckEmail,
   QueryGetRestaurantList,
   ResGetRestaurantList,
@@ -53,13 +52,13 @@ export class RestaurantService {
     }
 
     const restaurant: Restaurant = new Restaurant();
-    Object.assign(restaurant, { ...payload, password: this.util_service.encode(payload.password) });
+    Object.assign(restaurant, { ...payload, password: this.auth_service.encode(payload.password) });
     await this.restaurant_repo.insert(restaurant);
   }
 
   public async signIn(payload: DtoSignIn): Promise<ResSignIn> {
     const found_restaurant: Restaurant = await this.restaurant_repo.findOne({ email: payload.email });
-    if (!found_restaurant || found_restaurant.password !== this.util_service.encode(payload.password)) {
+    if (!found_restaurant || found_restaurant.password !== this.auth_service.encode(payload.password)) {
       throw new NotFoundException();
     }
 
@@ -69,33 +68,28 @@ export class RestaurantService {
     };
   }
 
-  public refresh(token: string): ResRefresh {
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+  public refresh(id: number): ResRefresh {
     return { access_token: this.auth_service.createToken(id, EnumTokenType.access) };
   }
 
-  public async checkPassword(token: string, payload: DtoCheckPassword): Promise<void> {
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+  public async checkPassword(id: number, payload: DtoCheckPassword): Promise<void> {
     const found_restaurant: Restaurant = await this.restaurant_repo.findOne(id);
-    if (this.util_service.encode(payload.password) !== found_restaurant.password) {
+    if (this.auth_service.encode(payload.password) !== found_restaurant.password) {
       throw new ForbiddenException();
     }
   }
 
-  public async edit(token: string, payload: DtoEditRestaurantInfo | DtoEditAddress): Promise<void> {
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+  public async edit(id: number, payload: DtoEditRestaurantInfo | DtoEditAddress): Promise<void> {
     await this.restaurant_repo.update(id, payload);
   }
 
-  public async editPassword(token: string, payload: DtoEditPassword): Promise<void> {
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+  public async editPassword(id: number, payload: DtoEditPassword): Promise<void> {
     await this.restaurant_repo.update(id, {
-      password: this.util_service.encode(payload.password),
+      password: this.auth_service.encode(payload.password),
     });
   }
 
-  public async load(token: string): Promise<ResLoadRestaurant> {
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+  public async load(id: number): Promise<ResLoadRestaurant> {
     const found_restaurant: Restaurant = await this.restaurant_repo.findOne(id);
     for (const e of ['password', 'r_id']) {
       Reflect.deleteProperty(found_restaurant, e);
@@ -113,8 +107,7 @@ export class RestaurantService {
     return found_restaurant;
   }
 
-  public async leave(token: string): Promise<void> {
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
+  public async leave(id: number): Promise<void> {
     const found_restaurant: Restaurant = await this.restaurant_repo.findOne(id);
     if (!found_restaurant) {
       throw new ForbiddenException();
@@ -127,7 +120,7 @@ export class RestaurantService {
       }
     }
 
-    const foundMenuCategoryList: MenuCategory[] = await this.menu_category_repo.find({
+    const found_menu_categories: MenuCategory[] = await this.menu_category_repo.find({
       join: {
         alias: 'MenuCategory',
         leftJoinAndSelect: {
@@ -140,13 +133,13 @@ export class RestaurantService {
       where: { restaurant: found_restaurant },
     });
 
-    if (0 < foundMenuCategoryList.length) {
-      const menuCategoryIds: number[] = [];
-      for (const e_menuCategory of foundMenuCategoryList) {
-        menuCategoryIds.push(e_menuCategory.mc_id);
-        if (0 < e_menuCategory.menu.length) {
+    if (0 < found_menu_categories.length) {
+      const mc_ids: number[] = [];
+      for (const e_menu_category of found_menu_categories) {
+        mc_ids.push(e_menu_category.mc_id);
+        if (0 < e_menu_category.menu.length) {
           const m_ids: number[] = [];
-          for (const e_menu of e_menuCategory.menu) {
+          for (const e_menu of e_menu_category.menu) {
             m_ids.push(e_menu.m_id);
             if (0 < e_menu.group.length) {
               const g_ids: number[] = [];
@@ -166,16 +159,9 @@ export class RestaurantService {
           await this.menu_repo.delete(m_ids);
         }
       }
-      await this.menu_category_repo.delete(menuCategoryIds);
+      await this.menu_category_repo.delete(mc_ids);
     }
 
     await this.restaurant_repo.delete(id);
-  }
-
-  // use only in test
-
-  public async get(token: string): Promise<Restaurant> {
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
-    return this.restaurant_repo.findOne(id);
   }
 }

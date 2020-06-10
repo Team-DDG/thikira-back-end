@@ -9,7 +9,6 @@ import {
   DtoUploadMenu,
   DtoUploadMenuCategory,
   DtoUploadOption,
-  ParsedTokenClass,
   QueryGetGroupList,
   QueryGetMenuCategoryList,
   QueryGetMenuList,
@@ -47,10 +46,9 @@ export class MenuService {
   // menu_category
 
   public async uploadMenuCategory(
-    token: string,
+    id: number,
     payload: DtoUploadMenuCategory,
   ): Promise<ResUploadMenuCategory> {
-    const { id }: ParsedTokenClass = this.auth_service.parseToken(token);
     const found_restaurant: Restaurant = await this.restaurant_repo.findOne(id);
     const found_menu_category: MenuCategory = await this.menu_category_repo.findOne({
       name: payload.name, restaurant: found_restaurant,
@@ -66,12 +64,11 @@ export class MenuService {
   }
 
   public async getMenuCategoryList(
-    param: string | QueryGetMenuCategoryList,
+    param: number | QueryGetMenuCategoryList,
   ): Promise<ResGetMenuCategoryList[]> {
     let found_restaurant: Restaurant;
-    if ('string' === typeof param) {
-      const { id }: ParsedTokenClass = this.auth_service.parseToken(param);
-      found_restaurant = await this.restaurant_repo.findOne(id);
+    if ('number' === typeof param) {
+      found_restaurant = await this.restaurant_repo.findOne(param);
     } else {
       found_restaurant = await this.restaurant_repo.findOne(parseInt(param.r_id));
     }
@@ -91,8 +88,8 @@ export class MenuService {
     await this.menu_category_repo.update(payload.mc_id, payload);
   }
 
-  public async removeMenuCategory(menuCategoryIds: number[]): Promise<void> {
-    for (const e_id of menuCategoryIds) {
+  public async removeMenuCategory(mc_ids: number[]): Promise<void> {
+    for (const e_id of mc_ids) {
       const found_menu_category: MenuCategory = await this.menu_category_repo.findOne(e_id);
       const found_menus: Menu[] = await this.menu_repo.find({ menu_category: found_menu_category });
       const m_ids: number[] = [];
@@ -103,7 +100,7 @@ export class MenuService {
         await this.removeMenu(m_ids);
       }
     }
-    await this.menu_category_repo.delete(menuCategoryIds);
+    await this.menu_category_repo.delete(mc_ids);
   }
 
   // menu

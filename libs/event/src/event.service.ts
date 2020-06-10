@@ -12,9 +12,7 @@ export class EventService {
   @Inject()
   private readonly auth_service: AuthService;
 
-  public async upload(token: string, payload: DtoUploadEvent): Promise<void> {
-    this.auth_service.parseToken(token);
-
+  public async upload(payload: DtoUploadEvent): Promise<void> {
     const event: Event = new Event();
     Object.assign(event, payload);
 

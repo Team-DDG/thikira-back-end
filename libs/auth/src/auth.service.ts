@@ -1,6 +1,8 @@
+import { config } from '@app/config';
 import { ParsedTokenClass } from '@app/type';
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { createHash } from 'crypto';
 import { EnumTokenType } from './enum/token-type.enum';
 
 @Injectable()
@@ -20,5 +22,9 @@ export class AuthService {
     } catch (e) {
       throw new UnauthorizedException();
     }
+  }
+
+  public encode(content: string): string {
+    return createHash(config.ENCRYPTION).update(content).digest('base64');
   }
 }

@@ -1,13 +1,14 @@
-import { DtoUploadCoupon, Header, ResGetCouponList } from '@app/type';
-import { UtilService } from '@app/util';
+import { JwtAuthGuard } from '@app/auth';
+import { DtoUploadCoupon, RequestClass, ResGetCouponList } from '@app/type';
 import {
   Body,
   Controller,
   Get,
-  Headers,
   Inject,
   InternalServerErrorException,
   Post,
+  Req,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import {
@@ -25,32 +26,32 @@ import { CouponService } from './coupon.service';
 export class RestaurantCouponController {
   @Inject()
   private readonly coupon_service: CouponService;
-  @Inject()
-  private readonly util_service: UtilService;
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '업체 쿠폰 조회' })
   @ApiBearerAuth()
   @ApiOkResponse()
   @ApiNotFoundResponse()
-  public async getCouponList(@Headers() header: Header): Promise<ResGetCouponList[]> {
+  public async getCouponList(@Req() { user: { id } }: RequestClass): Promise<ResGetCouponList[]> {
     try {
-      return this.coupon_service.getList(this.util_service.getTokenBody(header));
+      return this.coupon_service.getList(id);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '업체 쿠폰 등록' })
   @ApiBearerAuth()
   @ApiCreatedResponse()
   public async uploadCoupon(
-    @Headers() header: Header,
+    @Req() { user: { id } }: RequestClass,
     @Body(new ValidationPipe()) payload: DtoUploadCoupon,
   ): Promise<void> {
     try {
-      return this.coupon_service.upload(this.util_service.getTokenBody(header), payload);
+      return this.coupon_service.upload(id, payload);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }

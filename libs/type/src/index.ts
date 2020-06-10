@@ -2,10 +2,12 @@ export * from './enum/sort-option.enum';
 export * from './enum/user-type.enum';
 
 
+export * from './etc/base-account.class';
 export * from './etc/base-order.class';
 export * from './etc/header.class';
 export * from './etc/order-user.class';
 export * from './etc/parsed-token.class';
+export * from './etc/request.class';
 export * from './etc/upload-group.class';
 export * from './etc/upload-option.class';
 
@@ -83,4 +85,6 @@ export * from './res/order/get-order-list-by-restuarant.res';
 export * from './res/order/get-order-list-by-user.res';
 
 export * from './res/review/get-review-list.res';
+export * from './res/review/get-review-list-by-restaurant.res';
+export * from './res/review/get-review-list-by-user.res';
 export * from './res/review/get-statistic.res';
