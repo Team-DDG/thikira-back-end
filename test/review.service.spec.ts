@@ -1,6 +1,6 @@
 import { AuthModule } from '@app/auth';
 import { config } from '@app/config';
-import { EnumPaymentType, mongodbEntities, mysqlEntities, Order, Restaurant, User } from '@app/entity';
+import { EnumPaymentType, mongodbEntities, mysqlEntities, Restaurant, User } from '@app/entity';
 import { MenuModule } from '@app/menu';
 import { OrderModule, OrderService } from '@app/order';
 import { RestaurantModule, RestaurantService } from '@app/restaurant';
@@ -14,6 +14,9 @@ import {
   DtoUploadOrder,
   DtoUploadReplyReview,
   DtoUploadReview,
+  ResGetOrderListByUser,
+  ResGetReviewListByRestaurant,
+  ResGetReviewListByUser,
   ResSignIn,
 } from '@app/type';
 import { UserModule, UserService } from '@app/user';
@@ -21,8 +24,6 @@ import { UtilModule } from '@app/util';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { getConnection } from 'typeorm';
-import { ResGetReviewListByRestaurant } from '../libs/type/src/res/review/get-review-list-by-restaurant.res';
-import { ResGetReviewListByUser } from '../libs/type/src/res/review/get-review-list-by-user.res';
 
 describe('ReviewService', () => {
   let order_service: OrderService;
@@ -150,8 +151,13 @@ describe('ReviewService', () => {
   });
 
   afterAll(async () => {
-    await Promise.all(user_tokens
-      .map(async (e_token: string): Promise<void> => user_service.leave(e_token)));
+
+    await Promise.all(user_tokens.map(async (e_token: string): Promise<void> => {
+      const [found_order]: ResGetOrderListByUser[] = await order_service.getListByUser(e_token);
+
+      await order_service.removeOrder(found_order.od_id);
+      await user_service.leave(e_token);
+    }));
     await Promise.all(restaurant_tokens
       .map(async (e_token: string): Promise<void> => restaurant_service.leave(e_token)));
 
@@ -190,10 +196,6 @@ describe('ReviewService', () => {
 
     await Promise.all([0, 1].map(async (e: number): Promise<void> => {
       await review_service.removeReview(user_tokens[e], { r_id: r_id.toString() });
-
-      const [found_order]: Order[] = await order_service
-        .getOrderListByRestaurantUser(restaurant_tokens[0], user_tokens[e]);
-      await order_service.removeOrder(found_order.od_id);
     }));
   });
 
@@ -230,10 +232,6 @@ describe('ReviewService', () => {
 
     await Promise.all([2, 3].map(async (e: number): Promise<void> => {
       await review_service.removeReview(user_tokens[e], { r_id: r_id.toString() });
-
-      const [found_order]: Order[] = await order_service
-        .getOrderListByRestaurantUser(restaurant_tokens[1], user_tokens[e]);
-      await order_service.removeOrder(found_order.od_id);
     }));
 
   });
@@ -260,10 +258,6 @@ describe('ReviewService', () => {
 
     await review_service.removeReplyReview(restaurant_tokens[2], { u_id: u_id.toString() });
     await review_service.removeReview(user_tokens[4], { r_id: r_id.toString() });
-
-    const [found_order]: Order[] = await order_service
-      .getOrderListByRestaurantUser(restaurant_tokens[2], user_tokens[4]);
-    await order_service.removeOrder(found_order.od_id);
   });
 
   it('Should success editReplyReview', async () => {
@@ -292,9 +286,5 @@ describe('ReviewService', () => {
     expect(req_reply_review).toStrictEqual(res_reply_review);
 
     await review_service.removeReview(user_tokens[5], { r_id: r_id.toString() });
-
-    const [found_order]: Order[] = await order_service
-      .getOrderListByRestaurantUser(restaurant_tokens[3], user_tokens[5]);
-    await order_service.removeOrder(found_order.od_id);
   });
 });

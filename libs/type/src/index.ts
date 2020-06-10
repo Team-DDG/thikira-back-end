@@ -83,4 +83,6 @@ export * from './res/order/get-order-list-by-restuarant.res';
 export * from './res/order/get-order-list-by-user.res';
 
 export * from './res/review/get-review-list.res';
+export * from './res/review/get-review-list-by-restaurant.res';
+export * from './res/review/get-review-list-by-user.res';
 export * from './res/review/get-statistic.res';

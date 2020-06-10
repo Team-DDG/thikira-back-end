@@ -97,25 +97,6 @@ export class OrderService {
     await this.order_repo.delete(od_id);
   }
 
-  // only use in test {
-
-  public async getOrderListByRestaurantUser(restaurant_token: string, userToken: string): Promise<Order[]> {
-    const { id: r_id }: ParsedTokenClass = this.auth_service.parseToken(restaurant_token);
-    const found_restaurant: Restaurant = await this.restaurant_repo.findOne(r_id);
-    const { id: u_id }: ParsedTokenClass = this.auth_service.parseToken(userToken);
-    const found_user: User = await this.user_repo.findOne(u_id);
-
-    const found_orders: Order[] = await this.order_repo.find({
-      r_id: found_restaurant.r_id, u_id: found_user.u_id,
-    });
-    for (const e_order of found_orders) {
-      e_order.od_id = e_order._id;
-    }
-    return found_orders;
-  }
-
-  // }
-
   private async getList(id: number, user_type: EnumAccountType): Promise<ResGetOrderList[]> {
     const find_option: FindConditions<Order> = {};
     if (user_type === EnumAccountType.NORMAL) {
