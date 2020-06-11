@@ -106,6 +106,7 @@ export class RestaurantReviewController {
   @Post('reply')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '업체 답변 리뷰 등록' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiConflictResponse()
   public async uploadReplyReview(

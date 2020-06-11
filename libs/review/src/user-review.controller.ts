@@ -63,6 +63,7 @@ export class UserReviewController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '리뷰 등록' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiConflictResponse()
   public async uploadReview(
