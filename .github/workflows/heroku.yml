@@ -26,7 +26,7 @@ jobs:
         run: docker push ${{ env.HEROKU_IMAGE }}
       - name: Heroku Login
         run: heroku container:login
-      - name: Heroky Release
+      - name: Heroku Release
         run: heroku container:release web
       - name: Push Docker Image
         run: docker push ${{ env.IMAGE_NAME }}:${{ env.VERSION }}
