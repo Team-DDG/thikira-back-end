@@ -76,7 +76,6 @@ export class UserController {
   }
 
   @Get('auth/email')
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '이메일 중복 확인' })
   @ApiQuery({ name: 'email' })
   @ApiOkResponse()

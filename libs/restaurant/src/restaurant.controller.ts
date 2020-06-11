@@ -86,7 +86,6 @@ export class RestaurantController {
   }
 
   @Get('auth/email')
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '업체 이메일 중복 확인' })
   @ApiQuery({ name: 'email' })
   @ApiOkResponse()
