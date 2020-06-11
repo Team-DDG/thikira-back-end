@@ -1,4 +1,4 @@
-FROM node:12
+FROM node:14
 MAINTAINER ljsung0805 <ljsung0805@gmail.com>
 
 ENV NODE_ENV production
