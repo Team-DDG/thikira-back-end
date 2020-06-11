@@ -86,9 +86,9 @@ export class UserService {
     if (!found_user) {
       throw new ForbiddenException();
     }
-    for (const e of ['u_id', 'email', 'password']) {
-      Reflect.deleteProperty(found_user, e);
-    }
+
+    ['u_id', 'email', 'password'].forEach((e: string) => Reflect.deleteProperty(found_user, e));
+
     return found_user;
   }
 
@@ -101,11 +101,8 @@ export class UserService {
     const found_orders: Order[] = await this.order_repo.find({ u_id: found_user.u_id });
 
     if (found_orders) {
-      const orderIds: ObjectID[] = [];
-      for (const e_order of found_orders) {
-        orderIds.push(e_order.od_id);
-      }
-      await this.order_repo.delete(orderIds);
+      const od_ids: ObjectID[] = found_orders.map((e_order: Order): ObjectID => e_order.od_id);
+      await this.order_repo.delete(od_ids);
     }
     await this.user_repo.delete(id);
   }

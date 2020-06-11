@@ -21,6 +21,7 @@ import {
   ResUploadMenu,
   ResUploadMenuCategory,
   ResUploadOption,
+  UploadOptionClass,
 } from '@app/type';
 import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -89,17 +90,13 @@ export class MenuService {
   }
 
   public async removeMenuCategory(mc_ids: number[]): Promise<void> {
-    for (const e_id of mc_ids) {
-      const found_menu_category: MenuCategory = await this.menu_category_repo.findOne(e_id);
-      const found_menus: Menu[] = await this.menu_repo.find({ menu_category: found_menu_category });
-      const m_ids: number[] = [];
-      for (const e_group of found_menus) {
-        m_ids.push(e_group.m_id);
-      }
+    await Promise.all(mc_ids.map(async (e_id: number): Promise<void> => {
+      const found_menus: Menu[] = await this.menu_repo.find({ menu_category: { mc_id: e_id } });
+      const m_ids: number[] = found_menus.map((e_menu: Menu) => e_menu.m_id);
       if (0 < m_ids.length) {
         await this.removeMenu(m_ids);
       }
-    }
+    }));
     await this.menu_category_repo.delete(mc_ids);
   }
 
@@ -118,26 +115,25 @@ export class MenuService {
     }
 
     const menu: Menu = new Menu();
-    for (const e of ['mc_id']) {
-      Reflect.deleteProperty(menu, e);
-    }
+    ['mc_id'].forEach((e: string) => Reflect.deleteProperty(menu, e));
+
     Object.assign(menu, { ...payload, menu_category: found_menu_category });
     await this.menu_repo.insert(menu);
 
     if (payload.group) {
-      for (const e_group of payload.group) {
+      await Promise.all(payload.group.map(async (e_group: Group): Promise<void> => {
         const group: Group = new Group();
         Object.assign(group, { ...e_group, menu });
         await this.group_repo.insert(group);
 
         if (e_group.option) {
-          for (const e_option of e_group.option) {
+          await Promise.all(e_group.option.map(async (e_option: Option): Promise<void> => {
             const option: Option = new Option();
             Object.assign(option, { ...e_option, group });
             await this.option_repo.insert(option);
-          }
+          }));
         }
-      }
+      }));
     }
 
     return { m_id: menu.m_id };
@@ -171,17 +167,14 @@ export class MenuService {
   }
 
   public async removeMenu(m_ids: number[]): Promise<void> {
-    for (const e_id of m_ids) {
+    await Promise.all(m_ids.map(async (e_id: number): Promise<void> => {
       const found_menu: Menu = await this.menu_repo.findOne(e_id);
       const found_groups: Group[] = await this.group_repo.find({ menu: found_menu });
-      const g_ids: number[] = [];
-      for (const e_group of found_groups) {
-        g_ids.push(e_group.g_id);
-      }
+      const g_ids: number[] = found_groups.map((e_group: Group): number => e_group.g_id);
       if (0 < g_ids.length) {
         await this.removeGroup(g_ids);
       }
-    }
+    }));
     await this.menu_repo.delete(m_ids);
   }
 
@@ -197,20 +190,18 @@ export class MenuService {
 
     const group: Group = new Group();
     const m_id: number = payload.m_id;
-    for (const e of ['m_id']) {
-      Reflect.deleteProperty(payload, e);
-    }
+
+    ['m_id'].forEach((e: string) => Reflect.deleteProperty(payload, e));
     Object.assign(group, { ...payload, menu: { m_id } });
 
     await this.group_repo.insert(group);
 
     if (payload.option) {
-      for (const e_option of payload.option) {
+      await Promise.all(payload.option.map(async (e_option: UploadOptionClass) => {
         const option: Option = new Option();
         Object.assign(option, { ...e_option, group });
         await this.option_repo.insert(option);
-      }
-
+      }));
     }
 
     return { g_id: group.g_id };
@@ -233,17 +224,14 @@ export class MenuService {
   }
 
   public async removeGroup(g_ids: number[]): Promise<void> {
-    for (const e_id of g_ids) {
+    await Promise.all(g_ids.map(async (e_id: number): Promise<void> => {
       const found_group: Group = await this.group_repo.findOne(e_id);
       const found_options: Option[] = await this.option_repo.find({ group: found_group });
-      const o_ids: number[] = [];
-      for (const e_option of found_options) {
-        o_ids.push(e_option.o_id);
-      }
+      const o_ids: number[] = found_options.map((e_option: Option) => e_option.o_id);
       if (0 < o_ids.length) {
         await this.removeOption(o_ids);
       }
-    }
+    }));
     await this.group_repo.delete(g_ids);
   }
 
@@ -259,9 +247,8 @@ export class MenuService {
     }
 
     const option: Option = new Option();
-    for (const e of ['g_id']) {
-      Reflect.deleteProperty(payload, e);
-    }
+    ['g_id'].forEach((e: string) => Reflect.deleteProperty(payload, e));
+
     Object.assign(option, { ...payload, group: found_group });
     await this.option_repo.insert(option);
 

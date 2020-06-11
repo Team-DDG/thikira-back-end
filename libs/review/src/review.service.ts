@@ -72,9 +72,9 @@ export class ReviewService {
     }
 
     const review: Review = new Review();
-    for (const e of ['r_id']) {
-      Reflect.deleteProperty(payload, e);
-    }
+
+    ['r_id'].forEach((e: string) => Reflect.deleteProperty(payload, e));
+
     Object.assign(review, { ...payload, restaurant: found_restaurant, user: found_user });
 
     await this.review_repo.insert(review);
@@ -91,9 +91,7 @@ export class ReviewService {
 
     const r_id: number = payload.r_id;
 
-    ['r_id'].map((e: string): void => {
-      Reflect.deleteProperty(payload, e);
-    });
+    ['r_id'].forEach((e: string) => Reflect.deleteProperty(payload, e));
 
     await this.review_repo.update({ r_id, u_id: id }, {
       ...payload, edit_time: new Date(), is_edited: true,
@@ -129,9 +127,9 @@ export class ReviewService {
   public async getReviewListByUser(id: number): Promise<ResGetReviewListByUser[]> {
     return (await this.getReviewList(id, EnumAccountType.NORMAL))
       .map((e_review: ResGetReviewList): ResGetReviewListByUser => {
-        Reflect.deleteProperty(e_review, 'u_id');
+        ['u_id'].forEach((e: string) => Reflect.deleteProperty(e_review, e));
         if (e_review.reply_review) {
-          Reflect.deleteProperty(e_review.reply_review, 'u_id');
+          ['u_id'].forEach((e: string) => Reflect.deleteProperty(e_review.reply_review, e));
         }
         return e_review;
       });
@@ -140,9 +138,9 @@ export class ReviewService {
   public async getReviewListByRestaurant(id: number): Promise<ResGetReviewListByRestaurant[]> {
     return (await this.getReviewList(id, EnumAccountType.RESTAURANT))
       .map((e_review: ResGetReviewList): ResGetReviewListByRestaurant => {
-        Reflect.deleteProperty(e_review, 'r_id');
+        ['r_id'].forEach((e: string) => Reflect.deleteProperty(e_review, e));
         if (e_review.reply_review) {
-          Reflect.deleteProperty(e_review.reply_review, 'r_id');
+          ['r_id'].forEach((e: string) => Reflect.deleteProperty(e_review.reply_review, e));
         }
         return e_review;
       });
@@ -167,13 +165,13 @@ export class ReviewService {
     }
     const star: number[] = [];
     let mean: number = 0;
-    for (const loop of [0, 1, 2, 3, 4, 5]) {
-      star[loop] = 0;
-    }
-    for (const e_review of found_reviews) {
+    [...Array(5).keys()].forEach((e: number) => {
+      star[e] = 0;
+    });
+    found_reviews.forEach((e_review: Review) => {
       star[Math.floor(e_review.star)] += 1;
       mean += e_review.star;
-    }
+    });
 
     mean /= found_reviews.length;
     return {
@@ -256,14 +254,14 @@ export class ReviewService {
     if (!found_reviews) {
       throw new NotFoundException();
     }
-    for (const e_review of found_reviews) {
+    found_reviews.forEach((e_review: Review) => {
       if (!e_review.is_edited) {
-        Reflect.deleteProperty(e_review, 'edit_time');
+        ['edit_time'].forEach((e: string) => Reflect.deleteProperty(e_review, e));
       }
       if (e_review.reply_review && !e_review.reply_review.is_edited) {
-        Reflect.deleteProperty(e_review.reply_review, 'edit_time');
+        ['edit_time'].forEach((e: string) => Reflect.deleteProperty(e_review.reply_review, e));
       }
-    }
+    });
     return found_reviews;
   }
 
@@ -274,11 +272,11 @@ export class ReviewService {
     });
 
     let totalOfStar: number = 0;
-    for (const e_review of found_reviews) {
+    found_reviews.forEach((e_review: Review) => {
       totalOfStar += e_review.star;
-    }
+    });
 
-    if (totalOfStar != 0) {
+    if (0 < totalOfStar) {
       await this.restaurant_repo.update(r_id, { star: totalOfStar / found_reviews.length });
     }
   }

@@ -17,7 +17,7 @@ import {
 import { UtilService } from '@app/util';
 import { ConflictException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 
 @Injectable()
 export class RestaurantService {
@@ -91,19 +91,14 @@ export class RestaurantService {
 
   public async load(id: number): Promise<ResLoadRestaurant> {
     const found_restaurant: Restaurant = await this.restaurant_repo.findOne(id);
-    for (const e of ['password', 'r_id']) {
-      Reflect.deleteProperty(found_restaurant, e);
-    }
+    ['password', 'r_id'].forEach((e: string) => Reflect.deleteProperty(found_restaurant, e));
     return found_restaurant;
   }
 
   public async getList(param: QueryGetRestaurantList): Promise<ResGetRestaurantList[]> {
     const found_restaurant: Restaurant[] = await this.restaurant_repo.find({ category: param.category });
-    for (const e_restaurant of found_restaurant) {
-      for (const e of ['password']) {
-        Reflect.deleteProperty(e_restaurant, e);
-      }
-    }
+    found_restaurant.forEach((e_restaurant: Restaurant) =>
+      ['password'].forEach((e: string) => Reflect.deleteProperty(e_restaurant, e)));
     return found_restaurant;
   }
 
@@ -115,9 +110,8 @@ export class RestaurantService {
 
     const found_coupons: Coupon[] = await this.coupon_repo.find({ restaurant: found_restaurant });
     if (found_coupons) {
-      for (const e_coupon of found_coupons) {
-        await this.coupon_repo.delete(e_coupon.c_id);
-      }
+      await Promise.all(found_coupons.map(async (e_coupon: Coupon): Promise<DeleteResult> =>
+        this.coupon_repo.delete(e_coupon.c_id)));
     }
 
     const found_menu_categories: MenuCategory[] = await this.menu_category_repo.find({
@@ -133,34 +127,38 @@ export class RestaurantService {
       where: { restaurant: found_restaurant },
     });
 
+    const mc_ids: number[] = [];
+    const m_ids: number[] = [];
+    const g_ids: number[] = [];
+    const o_ids: number[] = [];
+
     if (0 < found_menu_categories.length) {
-      const mc_ids: number[] = [];
-      for (const e_menu_category of found_menu_categories) {
+      found_menu_categories.forEach((e_menu_category: MenuCategory) => {
         mc_ids.push(e_menu_category.mc_id);
         if (0 < e_menu_category.menu.length) {
-          const m_ids: number[] = [];
-          for (const e_menu of e_menu_category.menu) {
+          e_menu_category.menu.forEach((e_menu: Menu) => {
             m_ids.push(e_menu.m_id);
             if (0 < e_menu.group.length) {
-              const g_ids: number[] = [];
-              for (const e_group of e_menu.group) {
+              e_menu.group.forEach((e_group: Group) => {
                 g_ids.push(e_group.g_id);
                 if (0 < e_group.option.length) {
-                  const o_ids: number[] = [];
-                  for (const e_option of e_group.option) {
-                    o_ids.push(e_option.o_id);
-                  }
-                  await this.option_repo.delete(o_ids);
+                  e_group.option.forEach((e_option: Option) => o_ids.push(e_option.o_id));
                 }
-              }
-              await this.group_repo.delete(g_ids);
+              });
             }
-          }
-          await this.menu_repo.delete(m_ids);
+          });
         }
-      }
-      await this.menu_category_repo.delete(mc_ids);
+      });
     }
+
+    await Promise.all(o_ids.map(async (e_id: number): Promise<DeleteResult> =>
+      this.option_repo.delete(e_id)));
+    await Promise.all(g_ids.map(async (e_id: number): Promise<DeleteResult> =>
+      this.group_repo.delete(e_id)));
+    await Promise.all(m_ids.map(async (e_id: number): Promise<DeleteResult> =>
+      this.menu_repo.delete(e_id)));
+    await Promise.all(mc_ids.map(async (e_id: number): Promise<DeleteResult> =>
+      this.menu_category_repo.delete(e_id)));
 
     await this.restaurant_repo.delete(id);
   }

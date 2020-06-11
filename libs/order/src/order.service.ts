@@ -2,6 +2,9 @@ import { AuthService } from '@app/auth';
 import { Order, Restaurant, User } from '@app/entity';
 import {
   DtoEditOrderStatus,
+  DtoOrderGroup,
+  DtoOrderMenu,
+  DtoOrderOption,
   DtoUploadOrder,
   EnumAccountType,
   OrderUserClass,
@@ -30,30 +33,28 @@ export class OrderService {
       throw new ForbiddenException();
     }
     const user_data: OrderUserClass = found_user;
-    for (const e of ['email', 'password', 'create_time']) {
-      Reflect.deleteProperty(user_data, e);
-    }
+    ['email', 'password', 'create_time'].forEach((e: string) => Reflect.deleteProperty(user_data, e));
 
     const option: Order = new Order();
     Object.assign(option, { ...user_data, order_detail: [], total_price: 0 });
 
-    for (const e_menu of payload.menu) {
+    payload.menu.forEach((e_menu: DtoOrderMenu) => {
       let sub_price: number = e_menu.price;
       if (e_menu.group) {
-        for (const e_group of e_menu.group) {
-          for (const e_option of e_group.option) {
+        e_menu.group.forEach((e_group: DtoOrderGroup) => {
+          e_group.option.forEach((e_option: DtoOrderOption) => {
             sub_price += e_option.price;
-          }
-        }
+          });
+        });
       }
       sub_price *= e_menu.quantity;
       option.total_price += sub_price;
       option.order_detail.push({ ...e_menu, sub_price });
-    }
+    });
     option.total_price -= payload.discount_amount;
-    for (const e of ['menu']) {
-      Reflect.deleteProperty(payload, e);
-    }
+
+    ['menu'].map((e: string) => Reflect.deleteProperty(payload, e));
+
     Object.assign(option, payload);
     await this.order_repo.insert(option);
   }
@@ -64,8 +65,8 @@ export class OrderService {
       throw new ForbiddenException();
     }
 
-    return (await this.getList(id, EnumAccountType.NORMAL)).map(
-      (e_order: ResGetOrderList): ResGetOrderListByUser => {
+    return (await this.getList(id, EnumAccountType.NORMAL))
+      .map((e_order: ResGetOrderList): ResGetOrderListByUser => {
         Reflect.deleteProperty(e_order, 'u_id');
         return e_order;
       });
@@ -77,8 +78,8 @@ export class OrderService {
       throw new ForbiddenException();
     }
 
-    return (await this.getList(id, EnumAccountType.RESTAURANT)).map(
-      (e_order: ResGetOrderList): ResGetOrderListByRestaurant => {
+    return (await this.getList(id, EnumAccountType.RESTAURANT))
+      .map((e_order: ResGetOrderList): ResGetOrderListByRestaurant => {
         Reflect.deleteProperty(e_order, 'r_id');
         return e_order;
       });
@@ -102,7 +103,7 @@ export class OrderService {
 
     const found_orders: Order[] = await this.order_repo.find(find_option);
 
-    if (found_orders.length < 1) {
+    if (1 > found_orders.length) {
       throw new NotFoundException();
     }
 

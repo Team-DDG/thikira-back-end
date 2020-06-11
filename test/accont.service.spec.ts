@@ -152,7 +152,7 @@ describe('AccountService (User, Restaurant)', () => {
     const found_restaurant: ResLoadRestaurant = await restaurant_service.load(restaurant_ids[1]);
     const found_user: ResLoadUser = await user_service.load(user_ids[1]);
 
-    ['road_address', 'address'].map((e: string) => {
+    ['road_address', 'address'].forEach((e: string) => {
       expect(found_restaurant[e]).toEqual(edit_data[e]);
       expect(found_user[e]).toEqual(edit_data[e]);
     });
