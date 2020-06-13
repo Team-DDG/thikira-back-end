@@ -211,7 +211,7 @@ export class UserController {
   @ApiBearerAuth()
   @ApiOkResponse({ type: ResGetRestaurantList })
   @ApiQuery({ name: 'category' })
-  @ApiQuery({ enum: EnumSortOption, name: 'sortOption', type: 'enum' })
+  @ApiQuery({ enum: EnumSortOption, name: 'sort_option', type: 'enum' })
   @ApiNotFoundResponse()
   public async getRestaurantList(
     @Query(new ValidationPipe()) query: QueryGetRestaurantList,

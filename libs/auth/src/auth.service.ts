@@ -16,15 +16,17 @@ export class AuthService {
     });
   }
 
+  public encode(content: string): string {
+    return createHash(config.ENCRYPTION).update(content).digest('base64');
+  }
+
+  // only use in test
+
   public parseToken(token: string): ParsedTokenClass {
     try {
       return this.jwt_service.verify(token);
     } catch (e) {
       throw new UnauthorizedException();
     }
-  }
-
-  public encode(content: string): string {
-    return createHash(config.ENCRYPTION).update(content).digest('base64');
   }
 }

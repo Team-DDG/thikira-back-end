@@ -5,5 +5,5 @@ export class QueryGetRestaurantList {
   @IsString()
   public readonly category: string;
   @IsEnum(EnumSortOption)
-  public readonly sortOption: EnumSortOption;
+  public readonly sort_option: EnumSortOption;
 }
