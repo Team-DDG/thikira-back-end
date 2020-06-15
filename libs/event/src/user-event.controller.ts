@@ -1,7 +1,7 @@
 import { JwtAuthGuard } from '@app/auth';
 import { ResGetEventList } from '@app/type';
 import { Controller, Get, Inject, InternalServerErrorException, UseGuards } from '@nestjs/common';
-import { ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { EventService } from './event.service';
 
 @ApiTags('user/event')
@@ -13,6 +13,7 @@ export class UserEventController {
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '쿠폰 조회' })
+  @ApiBearerAuth()
   @ApiOkResponse()
   @ApiNotFoundResponse()
   public async getEventList(): Promise<ResGetEventList[]> {

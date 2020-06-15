@@ -43,6 +43,7 @@ export class RestaurantEventController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '업체 이벤트 등록' })
+  @ApiBearerAuth()
   @ApiCreatedResponse()
   public async uploadEvent(@Body(new ValidationPipe()) payload: DtoUploadEvent): Promise<void> {
     try {
