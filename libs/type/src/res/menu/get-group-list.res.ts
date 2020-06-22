@@ -8,6 +8,6 @@ export class ResGetGroupList {
   public readonly max_count: number;
   @ApiProperty()
   public readonly name: string;
-  @ApiProperty()
+  @ApiProperty({ type: [ResGetOptionList] })
   public readonly option?: ResGetOptionList[];
 }

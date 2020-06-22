@@ -4,7 +4,7 @@ import { ResGetGroupList } from './get-group-list.res';
 export class ResGetMenuList {
   @ApiProperty()
   public readonly description: string;
-  @ApiProperty()
+  @ApiProperty({ type: [ResGetGroupList] })
   public readonly group?: ResGetGroupList[];
   @ApiProperty()
   public readonly image: string;
