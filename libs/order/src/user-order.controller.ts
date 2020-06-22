@@ -14,10 +14,10 @@ import {
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
-  ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { OrderService } from './order.service';
 
@@ -32,7 +32,7 @@ export class UserOrderController {
   @ApiOperation({ summary: '주문 조회' })
   @ApiBearerAuth()
   @ApiOkResponse({ type: [ResGetOrderList] })
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async getOrderList(@Req() { user: { id } }: RequestClass): Promise<ResGetOrderListByUser[]> {
     try {
       return this.od_service.getListByUser(id);
@@ -46,7 +46,7 @@ export class UserOrderController {
   @ApiOperation({ summary: '주문 등록' })
   @ApiBearerAuth()
   @ApiCreatedResponse()
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async uploadOrder(
     @Req() { user: { id } }: RequestClass,
     @Body(new ValidationPipe()) payload: DtoUploadOrder,

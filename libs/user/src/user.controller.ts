@@ -34,7 +34,6 @@ import {
   ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
-  ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -71,7 +70,7 @@ export class UserController {
   @ApiOperation({ summary: '접근 토큰 확인' })
   @ApiBearerAuth()
   @ApiOkResponse()
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public auth(): void {
   }
 
@@ -93,7 +92,7 @@ export class UserController {
   @ApiOperation({ summary: '비밀번호 확인' })
   @ApiBearerAuth()
   @ApiOkResponse()
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   @ApiUnauthorizedResponse()
   public async checkPassword(
     @Req() { user: { id } }: RequestClass,
@@ -111,7 +110,7 @@ export class UserController {
   @ApiOperation({ summary: '토큰 재발급' })
   @ApiBearerAuth()
   @ApiOkResponse({ type: ResRefresh })
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public refresh(@Req() { user: { id } }: RequestClass): ResRefresh {
     return this.user_service.refresh(id);
   }
@@ -133,7 +132,7 @@ export class UserController {
   @ApiOperation({ summary: '주소 수정' })
   @ApiBearerAuth()
   @ApiOkResponse()
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async editAddress(
     @Req() { user: { id } }: RequestClass,
     @Body(new ValidationPipe()) payload: DtoEditAddress,
@@ -162,7 +161,7 @@ export class UserController {
   @ApiOperation({ summary: '회원 탈퇴' })
   @ApiBearerAuth()
   @ApiOkResponse()
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async leave(@Req() { user: { id } }: RequestClass): Promise<void> {
     try {
       return this.user_service.leave(id);
@@ -176,7 +175,7 @@ export class UserController {
   @ApiOperation({ summary: '정보 수정' })
   @ApiBearerAuth()
   @ApiOkResponse()
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async editProfile(
     @Req() { user: { id } }: RequestClass,
     @Body(new ValidationPipe()) payload: DtoEditUserInfo,
@@ -193,7 +192,7 @@ export class UserController {
   @ApiOperation({ summary: '비밀번호 수정' })
   @ApiBearerAuth()
   @ApiOkResponse()
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async editPassword(
     @Req() { user: { id } }: RequestClass,
     @Body(new ValidationPipe()) payload: DtoEditPassword,

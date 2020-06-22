@@ -45,11 +45,11 @@ import {
   ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
-  ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { MenuService } from './menu.service';
 
@@ -64,7 +64,7 @@ export class RestaurantMenuController {
   @ApiOperation({ summary: '그룹 수정' })
   @ApiBearerAuth()
   @ApiOkResponse()
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async editGroup(@Body(new ValidationPipe()) payload: DtoEditGroup): Promise<void> {
     try {
       return this.menu_service.editGroup(payload);
@@ -79,7 +79,7 @@ export class RestaurantMenuController {
   @ApiBearerAuth()
   @ApiQuery({ name: 'm_id' })
   @ApiOkResponse({ type: [ResGetGroupList] })
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async getGroupList(
     @Query(new ValidationPipe()) query: QueryGetGroupList,
   ): Promise<ResGetGroupList[]> {
@@ -95,7 +95,7 @@ export class RestaurantMenuController {
   @ApiOperation({ summary: '그룹 삭제' })
   @ApiBearerAuth()
   @ApiOkResponse()
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async removeGroup(@Param(new ValidationPipe()) param: ParamRemoveGroup): Promise<void> {
     try {
       return this.menu_service.removeGroup(UtilService.parseIds(param.g_id));
@@ -109,7 +109,7 @@ export class RestaurantMenuController {
   @ApiOperation({ summary: '그룹 업로드' })
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: ResUploadGroup })
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   @ApiConflictResponse()
   public async uploadGroup(@Body(new ValidationPipe()) payload: DtoUploadGroup): Promise<ResUploadGroup> {
     try {
@@ -124,7 +124,7 @@ export class RestaurantMenuController {
   @ApiOperation({ summary: '메뉴 수정' })
   @ApiBearerAuth()
   @ApiOkResponse()
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async editMenu(@Body(new ValidationPipe()) payload: DtoEditMenu): Promise<void> {
     try {
       return this.menu_service.editMenu(payload);
@@ -139,7 +139,7 @@ export class RestaurantMenuController {
   @ApiBearerAuth()
   @ApiQuery({ name: 'mc_id' })
   @ApiOkResponse({ type: [ResGetMenuList] })
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async getMenuList(@Query(new ValidationPipe()) query: QueryGetMenuList): Promise<ResGetMenuList[]> {
     try {
       return this.menu_service.getMenuList(query);
@@ -153,7 +153,7 @@ export class RestaurantMenuController {
   @ApiOperation({ summary: '메뉴 삭제' })
   @ApiBearerAuth()
   @ApiOkResponse()
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async removeMenu(@Param(new ValidationPipe()) param: ParamRemoveMenu): Promise<void> {
     try {
       return this.menu_service.removeMenu(UtilService.parseIds(param.m_id));
@@ -167,7 +167,7 @@ export class RestaurantMenuController {
   @ApiOperation({ summary: '메뉴 업로드' })
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: ResUploadMenu })
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   @ApiConflictResponse()
   public async uploadMenu(@Body(new ValidationPipe()) payload: DtoUploadMenu): Promise<ResUploadMenu> {
     try {
@@ -182,7 +182,7 @@ export class RestaurantMenuController {
   @ApiOperation({ summary: '메뉴 카테고리 수정' })
   @ApiBearerAuth()
   @ApiOkResponse()
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   @ApiConflictResponse()
   public async editMenuCategory(@Body(new ValidationPipe()) payload: DtoEditMenuCategory): Promise<void> {
     try {
@@ -197,7 +197,7 @@ export class RestaurantMenuController {
   @ApiOperation({ summary: '메뉴 카테고리 리스트 불러오기' })
   @ApiBearerAuth()
   @ApiOkResponse({ type: [ResGetMenuCategoryList] })
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async getMenuCategoryList(@Req() { user: { id } }: RequestClass): Promise<ResGetMenuCategoryList[]> {
     try {
       return this.menu_service.getMenuCategoryList(id);
@@ -211,7 +211,7 @@ export class RestaurantMenuController {
   @ApiOperation({ summary: '메뉴 카테고리 삭제' })
   @ApiBearerAuth()
   @ApiOkResponse()
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async removeMenuCategory(
     @Param(new ValidationPipe()) param: ParamRemoveMenuCategory,
   ): Promise<void> {
@@ -228,7 +228,7 @@ export class RestaurantMenuController {
   @ApiOperation({ summary: '메뉴 카테고리 업로드' })
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: ResUploadMenuCategory })
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   @ApiConflictResponse()
   public async uploadMenuCategory(
     @Req() { user: { id } }: RequestClass,
@@ -246,7 +246,7 @@ export class RestaurantMenuController {
   @ApiOperation({ summary: '옵션 수정' })
   @ApiBearerAuth()
   @ApiOkResponse()
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async editOption(@Body(new ValidationPipe()) payload: DtoEditOption): Promise<void> {
     try {
       return this.menu_service.editOption(payload);
@@ -261,7 +261,7 @@ export class RestaurantMenuController {
   @ApiBearerAuth()
   @ApiQuery({ name: 'g_id' })
   @ApiOkResponse({ type: [ResGetOptionList] })
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async getOptionList(
     @Query(new ValidationPipe()) query: QueryGetOptionList,
   ): Promise<ResGetOptionList[]> {
@@ -277,7 +277,7 @@ export class RestaurantMenuController {
   @ApiOperation({ summary: '옵션 삭제' })
   @ApiBearerAuth()
   @ApiOkResponse()
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async removeOption(@Param(new ValidationPipe()) param: ParamRemoveOption): Promise<void> {
     try {
       return this.menu_service.removeOption(UtilService.parseIds(param.o_id));
@@ -291,7 +291,7 @@ export class RestaurantMenuController {
   @ApiOperation({ summary: '옵션 업로드' })
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: ResUploadOption })
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   @ApiConflictResponse()
   public async uploadOption(@Body(new ValidationPipe()) payload: DtoUploadOption): Promise<ResUploadOption> {
     try {

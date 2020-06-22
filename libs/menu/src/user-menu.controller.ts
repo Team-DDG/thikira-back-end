@@ -16,11 +16,11 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
-  ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { MenuService } from './menu.service';
 
@@ -36,7 +36,7 @@ export class UserMenuController {
   @ApiBearerAuth()
   @ApiQuery({ name: 'mc_id' })
   @ApiOkResponse({ type: [ResGetMenuList] })
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async getMenuList(@Query(new ValidationPipe()) query: QueryGetMenuList): Promise<ResGetMenuList[]> {
     try {
       return this.menu_service.getMenuList(query);
@@ -51,7 +51,7 @@ export class UserMenuController {
   @ApiBearerAuth()
   @ApiQuery({ name: 'r_id' })
   @ApiOkResponse({ type: [ResGetMenuCategoryList] })
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async getMenuCategoryList(
     @Query(new ValidationPipe()) query: QueryGetMenuCategoryList,
   ): Promise<ResGetMenuCategoryList[]> {

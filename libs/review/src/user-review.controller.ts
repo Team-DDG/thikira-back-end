@@ -28,11 +28,11 @@ import {
 import {
   ApiBearerAuth,
   ApiConflictResponse,
-  ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { ReviewService } from './review.service';
 
@@ -47,7 +47,7 @@ export class UserReviewController {
   @ApiOperation({ summary: '리뷰 등록 가능 여부 확인' })
   @ApiBearerAuth()
   @ApiOkResponse({ type: [ResGetReviewList] })
-  @ApiForbiddenResponse({ description: '\"user haven\'t order by the restaurant\" | null' })
+  @ApiUnauthorizedResponse({ description: '\"user haven\'t order by the restaurant\" | null' })
   @ApiConflictResponse()
   public async checkReview(
     @Req() { user: { id } }: RequestClass,
@@ -82,7 +82,7 @@ export class UserReviewController {
   @ApiOperation({ summary: '주문 조회' })
   @ApiBearerAuth()
   @ApiOkResponse({ type: [ResGetReviewList] })
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   @ApiNotFoundResponse()
   public async getReviewList(@Req() { user: { id } }: RequestClass): Promise<ResGetReviewListByUser[]> {
     try {
@@ -97,7 +97,7 @@ export class UserReviewController {
   @ApiOperation({ summary: '업체 리뷰 통계 조회' })
   @ApiBearerAuth()
   @ApiOkResponse({ type: ResGetReviewStatistic })
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   @ApiNotFoundResponse()
   public async getReviewStatistic(
     @Query(new ValidationPipe()) query: QueryGetReviewStatistic,
@@ -114,7 +114,7 @@ export class UserReviewController {
   @ApiOperation({ summary: '리뷰 수정' })
   @ApiBearerAuth()
   @ApiOkResponse()
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async editReview(
     @Req() { user: { id } }: RequestClass,
     @Body(new ValidationPipe()) payload: DtoEditReview,
@@ -131,7 +131,7 @@ export class UserReviewController {
   @ApiOperation({ summary: '리뷰 삭제' })
   @ApiBearerAuth()
   @ApiOkResponse()
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async removeReview(
     @Req() { user: { id } }: RequestClass,
     @Param(new ValidationPipe()) param: ParamRemoveReview,

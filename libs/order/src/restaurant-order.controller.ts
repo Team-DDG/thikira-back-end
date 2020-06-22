@@ -11,7 +11,13 @@ import {
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { OrderService } from './order.service';
 
 @ApiTags('restaurant/order')
@@ -25,7 +31,7 @@ export class RestaurantOrderController {
   @ApiOperation({ summary: '주문 조회' })
   @ApiBearerAuth()
   @ApiOkResponse({ type: [ResGetOrderList] })
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async getOrderList(@Req() { user: { id } }: RequestClass): Promise<ResGetOrderListByRestaurant[]> {
     try {
       return this.od_service.getListByRestaurant(id);
@@ -39,7 +45,7 @@ export class RestaurantOrderController {
   @ApiOperation({ summary: '주문 상태 수정' })
   @ApiBearerAuth()
   @ApiOkResponse()
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async editOrderStatus(@Body(new ValidationPipe()) payload: DtoEditOrderStatus): Promise<void> {
     try {
       return this.od_service.editOrderStatus(payload);

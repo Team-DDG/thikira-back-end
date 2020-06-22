@@ -25,11 +25,11 @@ import {
 import {
   ApiBearerAuth,
   ApiConflictResponse,
-  ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { ReviewService } from './review.service';
 
@@ -44,7 +44,7 @@ export class RestaurantReviewController {
   @ApiOperation({ summary: '업체 답변 리뷰 수정' })
   @ApiBearerAuth()
   @ApiOkResponse()
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async editReplyReview(
     @Req() { user: { id } }: RequestClass,
     @Body(new ValidationPipe()) payload: DtoEditReplyReview,
@@ -61,7 +61,7 @@ export class RestaurantReviewController {
   @ApiOperation({ summary: '업체 리뷰 조회' })
   @ApiBearerAuth()
   @ApiOkResponse({ type: [ResGetReviewList] })
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   @ApiNotFoundResponse()
   public async getReviewList(@Req() { user: { id } }: RequestClass): Promise<ResGetReviewListByRestaurant[]> {
     try {
@@ -76,7 +76,7 @@ export class RestaurantReviewController {
   @ApiOperation({ summary: '업체 리뷰 통계 조회' })
   @ApiBearerAuth()
   @ApiOkResponse({ type: ResGetReviewStatistic })
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   @ApiNotFoundResponse()
   public async getReviewStatistic(@Req() { user: { id } }: RequestClass): Promise<ResGetReviewStatistic> {
     try {
@@ -91,7 +91,7 @@ export class RestaurantReviewController {
   @ApiOperation({ summary: '업체 답변 리뷰 삭제' })
   @ApiBearerAuth()
   @ApiOkResponse()
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async removeReplyReview(
     @Req() { user: { id } }: RequestClass,
     @Param(new ValidationPipe()) param: ParamRemoveReplyReview,

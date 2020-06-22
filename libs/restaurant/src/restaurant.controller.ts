@@ -30,12 +30,12 @@ import {
   ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
-  ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { RestaurantService } from './restaurant.service';
 
@@ -64,7 +64,7 @@ export class RestaurantController {
   @ApiOperation({ summary: '업체 주소 수정' })
   @ApiBearerAuth()
   @ApiOkResponse()
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async editAddress(
     @Req() { user: { id } }: RequestClass,
     @Body(new ValidationPipe()) payload: DtoEditAddress,
@@ -81,7 +81,7 @@ export class RestaurantController {
   @ApiOperation({ summary: '업체 접근 토큰 확인' })
   @ApiBearerAuth()
   @ApiOkResponse()
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public auth(): void {
   }
 
@@ -103,7 +103,7 @@ export class RestaurantController {
   @ApiOperation({ summary: '업체 비밀번호 확인' })
   @ApiBearerAuth()
   @ApiCreatedResponse()
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async checkPassword(
     @Req() { user: { id } }: RequestClass,
     @Body(new ValidationPipe()) payload: DtoCheckPassword,
@@ -120,7 +120,7 @@ export class RestaurantController {
   @ApiOperation({ summary: '업체 토큰 재발급' })
   @ApiBearerAuth()
   @ApiOkResponse({ type: ResRefresh })
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public refresh(@Req() { user: { id } }: RequestClass): ResRefresh {
     return this.restaurant_service.refresh(id);
   }
@@ -154,7 +154,7 @@ export class RestaurantController {
   @ApiOperation({ summary: '업체 정보 수정' })
   @ApiBearerAuth()
   @ApiOkResponse()
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async editInfo(
     @Req() { user: { id } }: RequestClass,
     @Body(new ValidationPipe()) payload: DtoEditRestaurantInfo,
@@ -171,7 +171,7 @@ export class RestaurantController {
   @ApiOperation({ summary: '업체 회원 탈퇴' })
   @ApiBearerAuth()
   @ApiOkResponse()
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async leave(@Req() { user: { id } }: RequestClass): Promise<void> {
     try {
       return this.restaurant_service.leave(id);
@@ -185,7 +185,7 @@ export class RestaurantController {
   @ApiOperation({ summary: '업체 비밀번호 수정' })
   @ApiBearerAuth()
   @ApiOkResponse()
-  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
   public async editPassword(
     @Req() { user: { id } }: RequestClass,
     @Body(new ValidationPipe()) payload: DtoEditPassword,
