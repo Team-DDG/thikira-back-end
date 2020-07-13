@@ -18,26 +18,16 @@ export class ConfigService {
   public readonly ENCRYPTION: string;
   @IsString() @IsOptional()
   public readonly HOST?: string;
-  @IsString() @IsOptional()
-  public readonly JWT_SECRET?: string = randomBytes(16).toString();
-  @IsString() @IsOptional()
-  public readonly MONGODB_URL: string;
   @IsString()
-  public readonly MYSQL_HOST: string;
+  public readonly JWT_SECRET: string = randomBytes(16).toString();
   @IsString()
-  public readonly MYSQL_PASS: string;
-  @IsNumberString() @IsOptional()
-  public readonly MYSQL_PORT: string = '3306';
+  public readonly MONGO_URL: string;
   @IsString()
-  public readonly MYSQL_SCHEMA: string;
-  @IsString()
-  public readonly MYSQL_TYPE: 'mysql' | 'mariadb' = 'mysql';
-  @IsString()
-  public readonly MYSQL_USER: string;
+  public readonly DATABASE_URL: string;
   @IsEnum(NodeEnv)
-  public readonly NODE_ENV: NodeEnv;
-  @IsNumberString() @IsOptional()
-  public readonly PORT?: string = '3000';
+  public readonly NODE_ENV: NodeEnv = NodeEnv.development;
+  @IsNumberString()
+  public readonly PORT: string = '3000';
   public readonly mysql_config: TypeOrmModuleOptions;
   public readonly mongodb_config: TypeOrmModuleOptions;
 
@@ -58,22 +48,18 @@ export class ConfigService {
     }
 
     this.mysql_config = {
-      database: this.MYSQL_SCHEMA,
       entities: mysqlEntities,
-      host: this.MYSQL_HOST,
       name: 'mysql',
-      password: this.MYSQL_PASS,
-      port: parseInt(this.MYSQL_PORT, 10),
       synchronize: true,
-      type: this.MYSQL_TYPE,
-      username: this.MYSQL_USER,
+      type: 'mysql',
+      url: this.DATABASE_URL,
     };
     this.mongodb_config = {
       entities: mongodbEntities,
       name: 'mongodb',
       synchronize: true,
       type: 'mongodb',
-      url: this.MONGODB_URL,
+      url: this.MONGO_URL,
       useUnifiedTopology: true,
     };
   }
