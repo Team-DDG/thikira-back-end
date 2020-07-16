@@ -10,27 +10,17 @@ env:
   HEROKU_APP: thikira
   HEROKU_IMAGE: registry.heroku.com/thikira/web
 jobs:
-  build_and_deploy:
+  upload:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - name: Authenticating Docker repositry
+      - name: authenticating Docker repositry
         run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_TOKEN }}
-      - name: Authenticating Heroku repositry
-        run: docker login registry.heroku.com -u _ -p ${{ secrets.HEROKU_API_KEY }}
-      - name: Build Docker Image
+      - name: build Docker Image
         run: docker build . --file Dockerfile --tag ${{ env.IMAGE_NAME }}:${{ env.VERSION }}
-      - name: Add Heroku Tag to image
-        run: docker tag ${{ env.IMAGE_NAME }}:${{ env.VERSION }} ${{ env.HEROKU_IMAGE }}
-      - name: Push to Repositry with Heroku tag
-        run: docker push ${{ env.HEROKU_IMAGE }}
-      - name: Heroku Login
-        run: heroku container:login
-      - name: Heroku Release
-        run: heroku container:release web
-      - name: Push Docker Image
+      - name: push Docker Image
         run: docker push ${{ env.IMAGE_NAME }}:${{ env.VERSION }}
-      - name: Tag Docker Image with Latest
+      - name: tag Docker Image with Latest
         run: docker tag ${{ env.IMAGE_NAME }}:${{ env.VERSION }} ${{ env.IMAGE_NAME }}:latest
-      - name: Push Docker Image tagged Latest
+      - name: push Docker Image tagged Latest
         run: docker push ${{ env.IMAGE_NAME }}:latest

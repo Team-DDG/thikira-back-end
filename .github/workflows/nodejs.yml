@@ -4,13 +4,8 @@ on: [push]
 env:
   CI: true
   ENCRYPTION: sha512
-  MONGODB_URL: mongodb://0.0.0.0:27017/test
-  MYSQL_HOST: 0.0.0.0
-  MYSQL_PASS: p@ssword
-  MYSQL_PORT: 3307
-  MYSQL_SCHEMA: test
-  MYSQL_TYPE: mariadb
-  MYSQL_USER: root
+  MONGO_URL: mongodb://0.0.0.0:27017/test
+  MYSQL_HOST: mysql://root:password@0.0.0.0:3307/test
 
 jobs:
   test:
@@ -32,10 +27,10 @@ jobs:
       - name: use mariadb 10
         uses: getong/mariadb-action@v1.1
         with:
-          container port: ${{ env.MYSQL_PORT }}
-          host port: ${{ env.MYSQL_PORT }}
-          mysql root password: ${{ env.MYSQL_PASS }}
-          mysql database: ${{ env.MYSQL_SCHEMA }}
+          container port: 3307
+          host port: 3307
+          mysql root password: password
+          mysql database: test
       - name: cache node modules
         uses: actions/cache@v1
         with:

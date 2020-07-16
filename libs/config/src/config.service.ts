@@ -1,7 +1,7 @@
 import { mongodbEntities, mysqlEntities } from '@app/entity';
 import { Injectable } from '@nestjs/common';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { IsEnum, IsNumberString, IsOptional, IsString, validateSync } from 'class-validator';
+import { IsEnum, IsIn, IsNumberString, IsOptional, IsString, validateSync } from 'class-validator';
 import { ValidationError } from 'class-validator/validation/ValidationError';
 import { randomBytes } from 'crypto';
 import { DotenvParseOutput, parse } from 'dotenv';
@@ -24,6 +24,8 @@ export class ConfigService {
   public readonly MONGO_URL: string;
   @IsString()
   public readonly DATABASE_URL: string;
+  @IsIn(['mysql', 'mariadb'])
+  public readonly DATABASE_TYPE: 'mysql' | 'mariadb';
   @IsEnum(NodeEnv)
   public readonly NODE_ENV: NodeEnv = NodeEnv.development;
   @IsNumberString()
@@ -51,7 +53,7 @@ export class ConfigService {
       entities: mysqlEntities,
       name: 'mysql',
       synchronize: true,
-      type: 'mysql',
+      type: this.DATABASE_TYPE,
       url: this.DATABASE_URL,
     };
     this.mongodb_config = {
