@@ -5,7 +5,7 @@ env:
   CI: true
   ENCRYPTION: sha512
   MONGO_URL: mongodb://0.0.0.0:27017/test
-  MYSQL_HOST: mysql://root:password@0.0.0.0:3307/test
+  DATABASE_URL: mysql://root:password@0.0.0.0:3307/test
 
 jobs:
   test:
