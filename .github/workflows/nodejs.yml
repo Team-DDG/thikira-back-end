@@ -6,6 +6,7 @@ env:
   ENCRYPTION: sha512
   MONGO_URL: mongodb://0.0.0.0:27017/test
   DATABASE_URL: mysql://root:password@0.0.0.0:3307/test
+  DATABASE_TYPE: mariadb
 
 jobs:
   test:
