@@ -19,19 +19,14 @@
 - JWT_SECRET
     - JWT token secret key
   - default: randomBytes(16)
-- MONGODB_URL
+- MONGO_URL
   - with log in: mongodb://{username}:{password}@{host}:{port}/{database}?{options}
   - without log in: mongodb://{host}:{port}/{database}?{options}
-- MYSQL_HOST
-- MYSQL_PASS
-- MYSQL_PORT
-  - default: 3306
-- MYSQL_SCHEMA
-  - same to mysql database
-- MYSQL_TYPE
+- DATABASE_TYPE
   - default: mysql
   - usable value: mysql, mariadb
-- MYSQL_USER
+- DATABASE_URL
+  - example: mysql://{username}:{password}@{host}:{port}/{database}?{options}
 - PORT
   - default: 3000
 
