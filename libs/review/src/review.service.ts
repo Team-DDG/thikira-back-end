@@ -75,7 +75,7 @@ export class ReviewService {
 
     ['r_id'].forEach((e: string) => Reflect.deleteProperty(payload, e));
 
-    Object.assign(review, { ...payload, restaurant: found_restaurant, user: found_user });
+    Object.assign(review, { ...payload, r_id: found_restaurant.r_id, u_id: found_user.u_id});
 
     await this.review_repo.insert(review);
 
@@ -200,10 +200,9 @@ export class ReviewService {
     if (!found_review) {
       throw new NotFoundException();
     }
-    const found_restaurant: Restaurant = await this.restaurant_repo.findOne(id);
 
     const reply_review: ReplyReview = new ReplyReview();
-    Object.assign(reply_review, { ...payload, restaurant: found_restaurant, review: found_review });
+    Object.assign(reply_review, { ...payload, r_id: found_review.r_id, u_id: found_review.u_id });
     await this.reply_review_repo.insert(reply_review);
   }
 
