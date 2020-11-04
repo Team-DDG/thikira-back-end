@@ -165,7 +165,7 @@ export class ReviewService {
     }
     const star: number[] = [];
     let mean: number = 0;
-    [...Array(5).keys()].forEach((e: number) => {
+    [...Array(6).keys()].forEach((e: number) => {
       star[e] = 0;
     });
     found_reviews.forEach((e_review: Review) => {
