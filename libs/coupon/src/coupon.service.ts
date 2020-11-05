@@ -37,7 +37,7 @@ export class CouponService {
 
     return found_coupons.map((e_coupon: Coupon): ResGetCouponList => {
       ['c_id'].forEach((e: string) => Reflect.deleteProperty(e_coupon, e));
-      return { ...e_coupon, isExpired: Date.now() < e_coupon.expired_day.valueOf() };
+      return { ...e_coupon, is_expired: Date.now() < e_coupon.expired_day.valueOf() };
     });
   }
 

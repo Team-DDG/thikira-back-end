@@ -6,5 +6,5 @@ export class ResGetCouponList {
   @ApiProperty()
   public readonly discount_amount: number;
   @ApiProperty()
-  public readonly isExpired: boolean;
+  public readonly is_expired: boolean;
 }
